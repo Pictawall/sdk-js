@@ -1,0 +1,53 @@
+{
+  "name": "pictawall-sdk-javascript",
+  "version": "1.0.0",
+  "description": "JavaScript SDK for the Pictawall API",
+  "keywords": [
+    "pictawall",
+    "sdk"
+  ],
+  "author": "Jean-Christophe Cuvelier <jcc@pictawall.com>",
+  "dependencies": {
+    "ampersand-collection": "^1.6.1",
+    "ampersand-model": "^5.0.3"
+  },
+  "scripts": {
+    "dist": "NODE_ENV=production gulp dist",
+    "dist-dev": "NODE_ENV=development gulp dist"
+  },
+  "devDependencies": {
+    "babel-loader": "^6.2.1",
+    "babel-plugin-transform-object-rest-spread": "^6.5.0",
+    "babel-plugin-transform-undefined-to-void": "^6.5.0",
+    "babel-preset-es2015": "^6.3.13",
+    "exports-loader": "^0.6.2",
+    "gulp": "^3.9.0",
+    "gulp-jsdoc3": "latest",
+    "json-loader": "^0.5.4",
+    "merge-stream": "^1.0.0",
+    "strip-loader": "^0.1.2",
+    "webpack": "^1.12.13"
+  },
+  "jshintConfig": {
+    "asi": false,
+    "browser": true,
+    "curly": false,
+    "expr": true,
+    "indent": 4,
+    "loopfunc": true,
+    "node": true,
+    "trailing": true,
+    "undef": true,
+    "white": true
+  },
+  "main": "server.js",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pictawall/sdk-js/issues"
+  },
+  "homepage": "https://github.com/pictawall/sdk-js#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pictawall/sdk-js.git"
+  }
+}
