@@ -2,18 +2,12 @@
 
 const gulp = require('gulp');
 
-gulp.task('refresh-example', function () {
-  gulp.src('./dist/**/*')
-    .pipe(browserSync.reload({ stream: true }))
-    .on('error', handleError);
-});
-
 const webpack = require('webpack');
 gulp.task('dist', function (callback) {
 
   webpack(require('./webpack.config'), function (err, stats) {
     if (err) {
-      handleError(err);
+      console.error(err);
     } else {
       console.log('[webpack]', stats.toString());
     }
@@ -24,7 +18,7 @@ gulp.task('dist', function (callback) {
 
 const jsdoc = require('gulp-jsdoc3');
 gulp.task('jsdoc', function () {
-  gulp.src('./src/js/**/*.js')
+  gulp.src('./src/**/*.js')
     .pipe(jsdoc({
       opts: {
         destination: './docs'
@@ -32,10 +26,10 @@ gulp.task('jsdoc', function () {
     }));
 });
 
-/**
- * Function for handing error
- */
-function handleError(error) {
-  console.error(error);
-  this.emit('end');
-}
+const KarmaServer = require('karma').Server;
+gulp.task('test', function (done) {
+  new KarmaServer({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start();
+});

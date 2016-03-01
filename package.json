@@ -8,14 +8,18 @@
   ],
   "author": "Jean-Christophe Cuvelier <jcc@pictawall.com>",
   "dependencies": {
-    "ampersand-collection": "^1.6.1",
-    "ampersand-model": "^5.0.3"
+    "ampersand-model": "^5.0.3",
+    "ampersand-rest-collection": "^5.0.0",
+    "ampersand-sync-with-promise": "^3.1.0",
+    "moment": "latest"
   },
   "scripts": {
     "dist": "NODE_ENV=production gulp dist",
     "dist-dev": "NODE_ENV=development gulp dist"
   },
   "devDependencies": {
+    "ampersand-collection": "latest",
+    "ampersand-sync": "latest",
     "babel-loader": "^6.2.1",
     "babel-plugin-transform-object-rest-spread": "^6.5.0",
     "babel-plugin-transform-undefined-to-void": "^6.5.0",
@@ -23,22 +27,19 @@
     "exports-loader": "^0.6.2",
     "gulp": "^3.9.0",
     "gulp-jsdoc3": "latest",
+    "jasmine-ajax": "^3.2.0",
+    "jasmine-core": "^2.4.1",
     "json-loader": "^0.5.4",
+    "karma": "^0.13.21",
+    "karma-chrome-launcher": "^0.2.2",
+    "karma-firefox-launcher": "^0.1.7",
+    "karma-jasmine": "^0.3.7",
+    "karma-safari-launcher": "^0.1.1",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^1.7.0",
     "merge-stream": "^1.0.0",
     "strip-loader": "^0.1.2",
     "webpack": "^1.12.13"
-  },
-  "jshintConfig": {
-    "asi": false,
-    "browser": true,
-    "curly": false,
-    "expr": true,
-    "indent": 4,
-    "loopfunc": true,
-    "node": true,
-    "trailing": true,
-    "undef": true,
-    "white": true
   },
   "main": "server.js",
   "license": "MIT",
@@ -48,6 +49,6 @@
   "homepage": "https://github.com/pictawall/sdk-js#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pictawall/sdk-js.git"
+    "url": "git+ssh://git@github.com:pictawall/sdk-js.git"
   }
 }

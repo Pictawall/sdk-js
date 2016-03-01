@@ -16,6 +16,7 @@ module.exports = {
     path: './dist/dev',
     filename: 'pictawall.sdk.js'
   },
+  devtool: 'inline-source-map',
   module: {
     loaders: [
       {
@@ -47,6 +48,8 @@ if (process.env.NODE_ENV === 'production') {
     test: /\.js$/,
     loader: 'strip-loader?strip[]=console.log'
   });
+
+  module.exports.devtool = false;
 
   // minify.
   module.exports.output.path = './dist';

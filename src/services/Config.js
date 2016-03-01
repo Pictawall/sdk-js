@@ -1,5 +1,14 @@
 'use strict';
 
+/**
+ * @class Config
+ *
+ * <p>Default values are:</p>
+ * <ul>
+ *   <li>endpoint: 'https://api.pictawall.com'</li>
+ *   <li>limit: 100</li>
+ * </ul>
+ */
 class Config {
 
   constructor() {
@@ -9,6 +18,13 @@ class Config {
     this.parameters.set('limit', 100);
   }
 
+  /**
+   * Returns the value of a configuration option or the default value if the option does not exist.
+   *
+   * @param {!string} parameterName The name of the configuration option to get.
+   * @param {*} [defaultValue = null] The value to return if the option is not found.
+   * @returns {*} The value of the configuration option.
+   */
   get(parameterName, defaultValue = null) {
     if (this.parameters.has(parameterName)) {
       return this.parameters.get(parameterName);
@@ -17,8 +33,13 @@ class Config {
     return defaultValue;
   }
 
-  set(parameter, value) {
-    this.parameters.set(parameter, value);
+  /**
+   * Sets a configuration option
+   * @param {!string} parameterName The name of the configuration option to set.
+   * @param {*} value The value of the option.
+   */
+  set(parameterName, value) {
+    this.parameters.set(parameterName, value);
   }
 }
 

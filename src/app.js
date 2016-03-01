@@ -3,6 +3,14 @@
 (function () {
 
   //noinspection JSUnresolvedVariable // WebPack var injection
+
+  /**
+   * @namespace SDK
+   * @property {!object} Models
+   * @property {!function} Models.Event
+   * @property {!String} version
+   * @property {!Config} config
+   */
   const SDK = {
     Models: {
       Event: require('./models/EventModel')
