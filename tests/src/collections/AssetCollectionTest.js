@@ -3,6 +3,8 @@
 const AssetCollection = require('../../../src/collections/AssetCollection');
 const XhrMock = require('../../mock/XhrMock');
 
+const EventModelTest = require('../models/EventModelTest');
+
 const ASSET_SOURCE = XhrMock.VALID_EVENT_ASSETS;
 
 describe('AssetCollection', () => {
@@ -10,7 +12,7 @@ describe('AssetCollection', () => {
   let collection;
 
   it('can be created', () => {
-    collection = new AssetCollection(null, { eventIdentifier: XhrMock.VALID_IDENTIFIER });
+    collection = new AssetCollection(null, { event: EventModelTest.event });
   });
 
   it('loads from the server', done => {
@@ -21,6 +23,7 @@ describe('AssetCollection', () => {
     loadMorePromise
       .then(() => done())
       .catch(e => {
+        console.log(e);
         fail(e);
         done();
       });

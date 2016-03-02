@@ -24,15 +24,15 @@ const AssetCollection = Collection.extend({
    *
    * @param {Object[]} defaultAssets - From ampersand, set to a falsy value or pass an array of objects containing the parameters to give to the {@link AssetModel} constructor.
    * @param {!Object} parameters - Constructor parameters.
-   * @param {!String} [eventIdentifier] - The identifier of the event from which to fetch the assets.
+   * @param {!EventModel} [event] - The event for which to fetch the assets.
    * @param {String} [parameters.orderBy = 'date_desc'] Order in which to fetch and sort the assets, values are (likes|likes_asc|date|date_desc).
    * @param {String} [parameters.assetKindFilter] - Restricts the kind of assets to fetch, values are (text|video|image).
    * @param {String} [parameters.url] - Override the url from which the assets will be fetched.
    * @param {number} [parameters.limit] - Sets how many assets are downloaded at once, default value is the one set in the {@link Config} instance.
    */
-  initialize(defaultAssets, { eventIdentifier, orderBy = 'date_desc', assetKindFilter, url, limit } = {}) {
-    if (!eventIdentifier) {
-      throw new Error('Event identifier is not set');
+  initialize(defaultAssets, { event, orderBy = 'date_desc', assetKindFilter, url, limit } = {}) {
+    if (!event) {
+      throw new Error('Event is not set');
     }
 
     this.fetchOptions.order_by = orderBy;// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
@@ -41,7 +41,7 @@ const AssetCollection = Collection.extend({
       this.fetchOptions.kind = assetKindFilter;
     }
 
-    this.url = url || (config.get('endpoint') + '/events/' + eventIdentifier + '/assets');
+    this.url = url || (config.get('endpoint') + '/events/' + event.identifier + '/assets');
   },
 
   setOrder(order) {

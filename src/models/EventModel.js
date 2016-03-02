@@ -152,11 +152,12 @@ const EventModel = Model.extend({
    * @param {Object} assetParameters - The parameters to pass to the {@link AssetCollection} constructor.
    * @param autoUpdate
    */
-  initialize({ identifier, autoUpdate = false, assetParameters = { eventIdentifier: identifier } } = {}) {
+  initialize({ identifier, autoUpdate = false, assetParameters = {} } = {}) {
     if (!identifier) {
       throw new Error('Event identifier is not set');
     }
 
+    assetParameters.event = this;
     this.set('assetCollection', new AssetCollection(null, assetParameters));
 
     Promise.all([

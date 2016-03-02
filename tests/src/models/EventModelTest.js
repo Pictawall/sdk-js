@@ -5,6 +5,8 @@ const XhrMock = require('../../mock/XhrMock');
 
 describe('EventModel', () => {
 
+  let event;
+
   describe('constructor', () => {
     it('requires an event identifier', () => {
       try {
@@ -27,7 +29,8 @@ describe('EventModel', () => {
     });
 
     it('sends a synchronised event when the identifier is valid', done => {
-      const event = new EventModel({ identifier: XhrMock.VALID_IDENTIFIER });
+      event = new EventModel({ identifier: XhrMock.VALID_IDENTIFIER });
+      module.exports.event = event;
 
       event.once('synchronised', () => {
         done();
@@ -41,13 +44,10 @@ describe('EventModel', () => {
   });
 
   describe('static constructor', () => {
+    let eventPromise;
+
     it('exists', () => {
       expect(EventModel.createAsync).toEqual(jasmine.any(Function));
-    });
-
-    it('returns a promise', () => {
-      const eventPromise = EventModel.createAsync({ identifier: XhrMock.INVALID_IDENTIFIER });
-      expect(eventPromise).toEqual(jasmine.any(Promise));
     });
 
     it('rejects the promise if the identifier is invalid', done => {
@@ -57,9 +57,13 @@ describe('EventModel', () => {
         .catch(() => done());
     });
 
+    it('returns a promise', () => {
+      eventPromise = EventModel.createAsync({ identifier: XhrMock.VALID_IDENTIFIER });
+      expect(eventPromise).toEqual(jasmine.any(Promise));
+    });
+
     it('resolves the event once everything is loaded', done => {
-      EventModel
-        .createAsync({ identifier: XhrMock.VALID_IDENTIFIER })
+      eventPromise
         .then(event => {
           expect(event).toEqual(jasmine.any(EventModel));
 
