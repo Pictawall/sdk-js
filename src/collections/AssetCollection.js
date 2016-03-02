@@ -61,8 +61,8 @@ const AssetCollection = Collection.extend({
       this.currentPage = page;
     }
 
-    this.pageCount = pages >> 0;
-    this.total = total >> 0;
+    this.pageCount = pages;
+    this.total = total;
     this.lastUpdate = since;
 
     return data;

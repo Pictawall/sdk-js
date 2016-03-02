@@ -29,16 +29,18 @@ describe('AssetCollection', () => {
       });
   });
 
-  it('stores the data loaded from the server', () => {
+  it('stores the request metadata', () => {
+    expect(collection.lastUpdate).toBe(ASSET_SOURCE.since);
+    expect(collection.total).toBe(ASSET_SOURCE.total);
+    expect(collection.currentPage).toBe(ASSET_SOURCE.page);
+    expect(collection.pageCount).toBe(ASSET_SOURCE.pages);
+  });
+
+  it('stores the models', () => {
     expect(collection.length).toBe(ASSET_SOURCE.data.length);
 
     const localCollection = collection.models;
     const remoteCollection = ASSET_SOURCE.data;
-
-    expect(localCollection.since).toBe(remoteCollection.since);
-    expect(localCollection.total).toBe(remoteCollection.total);
-    expect(localCollection.page).toBe(remoteCollection.page);
-    expect(localCollection.pages).toBe(remoteCollection.pages);
 
     for (let i = 0; i < localCollection.length; i++) {
       const remoteModel = remoteCollection[i];
