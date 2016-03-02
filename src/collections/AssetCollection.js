@@ -22,7 +22,7 @@ const AssetCollection = Collection.extend({
    *
    * @constructs AssetCollection
    *
-   * @param {Object[]} defaultAssets - Set to a falsy value to fetch the assets from the server, or pass an array of objects containing the parameters to give to the {@link AssetModel} constructor.
+   * @param {Object[]} defaultAssets - From ampersand, set to a falsy value or pass an array of objects containing the parameters to give to the {@link AssetModel} constructor.
    * @param {!Object} parameters - Constructor parameters.
    * @param {!String} [eventIdentifier] - The identifier of the event from which to fetch the assets.
    * @param {String} [parameters.orderBy = 'date_desc'] Order in which to fetch and sort the assets, values are (likes|likes_asc|date|date_desc).
