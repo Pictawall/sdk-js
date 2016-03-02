@@ -1,9 +1,7 @@
 'use strict';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
-
 const EventModel = require('../../../src/models/EventModel');
-const XhrMock = require('../../XhrMock');
+const XhrMock = require('../../mock/XhrMock');
 
 describe('EventModel', () => {
 
@@ -36,8 +34,7 @@ describe('EventModel', () => {
       });
 
       event.once('synchronise-failed', e => {
-        console.error(e);
-        fail('Synchronise-failed called');
+        fail(e);
         done();
       });
     });
@@ -66,14 +63,14 @@ describe('EventModel', () => {
         .then(event => {
           expect(event).toEqual(jasmine.any(EventModel));
 
-          // Collection has loaded
+          // Collections have loaded
           expect(event.assetCollection.currentPage).not.toBeNull();
+          // TODO add more collections
 
           done();
         })
         .catch(e => {
-          console.error(e);
-          fail('Catch block invoked');
+          fail(e);
           done();
         });
     });

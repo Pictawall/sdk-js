@@ -1,18 +1,18 @@
 'use strict';
 
 const Collection = require('ampersand-rest-collection');
-const SyncPromise = require('ampersand-sync-with-promise');
+const SyncPromise = require('../ampersand/ampersand-rest-collection-promise');
 
 const AssetModel = require('../models/AssetModel.js');
 const config = require('../services/Config');
 
 const AssetCollection = Collection.extend({
   model: AssetModel,
-  sync: SyncPromise,
+  fetch: SyncPromise.fetch,
 
   fetchOptions: {},
-  currentPage: null,
-  pageCount: null,
+  currentPage: 0,
+  pageCount: 1,
   lastUpdate: null,
   total: 0,
 
@@ -22,14 +22,18 @@ const AssetCollection = Collection.extend({
    *
    * @constructs AssetCollection
    *
-   * @param {!String} eventIdentifier - The identifier of the event from which to fetch the assets.
+   * @param {Object[]} defaultAssets - Set to a falsy value to fetch the assets from the server, or pass an array of objects containing the parameters to give to the {@link AssetModel} constructor.
    * @param {!Object} parameters - Constructor parameters.
+   * @param {!String} [eventIdentifier] - The identifier of the event from which to fetch the assets.
    * @param {String} [parameters.orderBy = 'date_desc'] Order in which to fetch and sort the assets, values are (likes|likes_asc|date|date_desc).
    * @param {String} [parameters.assetKindFilter] - Restricts the kind of assets to fetch, values are (text|video|image).
    * @param {String} [parameters.url] - Override the url from which the assets will be fetched.
    * @param {number} [parameters.limit] - Sets how many assets are downloaded at once, default value is the one set in the {@link Config} instance.
    */
-  initialize(eventIdentifier, { orderBy = 'date_desc', assetKindFilter, url, limit }) {
+  initialize(defaultAssets, { eventIdentifier, orderBy = 'date_desc', assetKindFilter, url, limit } = {}) {
+    if (!eventIdentifier) {
+      throw new Error('Event identifier is not set');
+    }
 
     this.fetchOptions.order_by = orderBy;// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
     this.fetchOptions.limit = limit || config.get('limit');
@@ -38,10 +42,6 @@ const AssetCollection = Collection.extend({
     }
 
     this.url = url || (config.get('endpoint') + '/events/' + eventIdentifier + '/assets');
-
-    this.fetch({ data: this.fetchOptions })
-      .then(() => this.trigger('synchronised'))
-      .catch(e => this.trigger('synchronise-failed', e));
   },
 
   setOrder(order) {

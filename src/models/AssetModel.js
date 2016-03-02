@@ -37,22 +37,23 @@ const AssetModel = Model.extend({
     },
 
     /**
-     * TODO unknown
+     * Count of times the asset was displayed
      *
      * @type {!number}
      * @memberOf AssetModel
      * @instance
      * @readonly
      */
-    channel: {
+    displayCount: {
       type: 'number',
       required: true,
       setOnce: true
     },
 
     /*
-     "event": "batibouw-2016",
+     "event": "batibouw-2016", // unused
      */
+
     /**
      * Event to which this asset is attached.
      *
@@ -61,7 +62,7 @@ const AssetModel = Model.extend({
      * @instance
      * @readonly
      */
-    eventModel: { // set to the value of the parent event model
+    eventModel: {
       type: 'object',
       required: true,
       setOnce: true
@@ -69,7 +70,7 @@ const AssetModel = Model.extend({
 
     /**
      * @typedef {Object} AssetSource
-     * @property {!String} type - Source type, eg. 'twitter'
+     * @property {!String} network - Source type, eg. 'twitter'
      * @property {!String} id - Asset source id as used by the source itself.
      * @property {Object} additionalData - source-specific data.
      */
@@ -89,7 +90,7 @@ const AssetModel = Model.extend({
     },
 
     /**
-     * Asset type, eg. 'video', 'image', ...
+     * Asset type, eg. 'video', 'picture', ...
      *
      * @type {!String}
      * @memberOf AssetModel
@@ -105,7 +106,7 @@ const AssetModel = Model.extend({
     /**
      * @typedef {Object} AssetImage
      * @property {String} thumbnail - URL to the thumbnail version of the image/video or null if no media is attached to this asset.
-     * @property {String} default - URL to the regular version of the image/video if the asset type is 'image' or 'video'.
+     * @property {String} default - URL to the regular version of the image/video if the asset type is 'picture' or 'video'.
      * @property {String} small - URL to the small version of the image if the type is an image and the format is available.
      * @property {String} medium - URL to the medium version of the image if the type is an image and the format is available.
      * @property {String} large - URL to the large version of the image if the type is an image and the format is available.
@@ -113,15 +114,17 @@ const AssetModel = Model.extend({
 
     /**
      * Image or video associated with the medium.
+     * Null if the asset type is nor 'video' nor 'picture'.
      *
-     * @type {!AssetImage}
+     * @type {AssetImage}
      * @memberOf AssetModel
      * @instance
      * @readonly
      */
     media: {
       type: 'object',
-      required: true
+      required: false,
+      setOnce: true
     },
 
     /**
@@ -174,7 +177,7 @@ const AssetModel = Model.extend({
      * @instance
      * @readonly
      */
-    likes: {
+    likeCount: {
       type: 'number',
       required: true,
       setOnce: true
@@ -188,14 +191,14 @@ const AssetModel = Model.extend({
      * @instance
      * @readonly
      */
-    comments: {
+    commentCount: {
       type: 'number',
       required: true,
       setOnce: true
     },
 
     /**
-     * TODO unknown
+     * Whether or not the event manager favorited this asset.
      *
      * @type {!boolean}
      * @memberOf AssetModel
@@ -209,7 +212,7 @@ const AssetModel = Model.extend({
     },
 
     /**
-     * TODO unknown
+     * Whether or not the event manager featured this asset.
      *
      * @type {!boolean}
      * @memberOf AssetModel
@@ -223,46 +226,17 @@ const AssetModel = Model.extend({
     },
 
     /**
-     * TODO unknown
-     *
-     * @type {!boolean}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    effect: {
-      type: 'boolean',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * TODO unknown
-     *
-     * @type {!boolean}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    caption: {
-      type: 'boolean',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * @typedef {Object} AssetImage
-     * @property {String} thumbnail - URL to the thumbnail version of the image/video or null if no media is attached to this asset.
-     * @property {String} default - URL to the regular version of the image/video if the asset type is 'image' or 'video'.
-     * @property {String} small - URL to the small version of the image if the type is an image and the format is available.
-     * @property {String} medium - URL to the medium version of the image if the type is an image and the format is available.
-     * @property {String} large - URL to the large version of the image if the type is an image and the format is available.
+     * @typedef {Object} AssetOwner
+     * @property {!String} id - The id of the asset owner as used by the original source.
+     * @property {!String} author - The display name of the asset owner.
+     * @property {!String} username - The account name of the asset owner.
+     * @property {!String} avatar - URL poiting to the avatar of the asset owner.
      */
 
     /**
-     * TODO unknown
+     * Author of the asset.
      *
-     * @type {!boolean}
+     * @type {!AssetOwner}
      * @memberOf AssetModel
      * @instance
      * @readonly
@@ -291,6 +265,10 @@ const AssetModel = Model.extend({
         return moment.unix(this.postTime).fromNow();
       }
     }
+  },
+
+  parse(data) {
+    return data;
   },
 
   /**

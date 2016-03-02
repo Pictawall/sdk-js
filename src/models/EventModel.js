@@ -7,13 +7,9 @@ const AssetCollection = require('../collections/AssetCollection');
 
 const config = require('../services/Config');
 
-function promisifyEvent(collection) {
-  return new Promise((resolve, reject) => {
-    collection.once('synchronised', () => resolve(collection));
-    collection.once('synchronise-failed', error => reject(error));
-  });
-}
-
+/**
+ * @class EventModel
+ */
 const EventModel = Model.extend({
 
   sync: SyncPromise,
@@ -156,16 +152,16 @@ const EventModel = Model.extend({
    * @param {Object} assetParameters - The parameters to pass to the {@link AssetCollection} constructor.
    * @param autoUpdate
    */
-  initialize({ identifier, autoUpdate = false, assetParameters = {} } = {}) {
-    if (identifier === void 0) {
+  initialize({ identifier, autoUpdate = false, assetParameters = { eventIdentifier: identifier } } = {}) {
+    if (!identifier) {
       throw new Error('Event identifier is not set');
     }
 
-    this.set('assetCollection', new AssetCollection(identifier, assetParameters));
+    this.set('assetCollection', new AssetCollection(null, assetParameters));
 
     Promise.all([
       this.fetch(),
-      promisifyEvent(this.assetCollection)
+      this.assetCollection.loadMore()
     ]).then(() => {
       this.trigger('synchronised');
 
