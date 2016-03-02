@@ -57,4 +57,14 @@ describe('AssetCollection', () => {
       }
     }
   });
+
+  it('can filter favorited assets', () => {
+    const favorites = collection.getFavorites();
+
+    expect(favorites.length).toBe(1);
+
+    favorites.forEach(asset => {
+      expect(asset.favorited).toBe(true);
+    });
+  });
 });

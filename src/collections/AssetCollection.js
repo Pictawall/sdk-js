@@ -142,16 +142,35 @@ const AssetCollection = Collection.extend({
         return asset.get('display');
         break;
     }
+  },
+
+  /**
+   * <p>Returns the list of assets the content manager favorited.</p>
+   * <p>Note: This method only filters out non-favorited assets. It does not guarantee to return every favorited
+   * asset unless {@link AssetCollection#hasMore} returns false.</p>
+   *
+   * @returns {Array.<AssetModel>}
+   */
+  getFavorites() {
+    return this.models.filter(model => model.favorited);
+  },
+
+  /**
+   * Returns the featured tweet if any is available, null otherwise.
+   * @returns {AssetModel}
+   */
+  getFeatured() {
+    for (let i = 0; i < this.length; i++) {
+      const model = this.at(i);
+
+      if (model.featured) {
+        return model;
+      }
+    }
+
+    return null;
   }
 
-  //getFavorites() {
-  //  return this.where({ favorited: true });
-  //},
-  //
-  //getFeatured() {
-  //  return this.findWhere({ featured: true });
-  //},
-  //
   ////TODO sort, filter, exclude (filter)
   //getNextMedium(media = [], where = {}, options = {}) {
   //  let collection = this.clone();

@@ -166,7 +166,9 @@ const EventModel = Model.extend({
     ]).then(() => {
       this.trigger('synchronised');
 
-      // TODO start autoupdate
+      if (autoUpdate) {
+        this.startAutoUpdate();
+      }
     }).catch(e => {
       this.trigger('synchronise-failed', e);
     });
