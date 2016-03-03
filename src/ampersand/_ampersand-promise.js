@@ -15,8 +15,15 @@
 module.exports = function (originalImplementation) {
 
   function promisify(methodName, optionIndex) {
+    if (originalImplementation[methodName] === void 0) {
+      return void 0;
+    }
 
     return function (...args) {
+
+      if (typeof args[optionIndex] !== 'object') {
+        args[optionIndex] = {};
+      }
 
       const options = args[optionIndex];
 
@@ -46,8 +53,16 @@ module.exports = function (originalImplementation) {
   }
 
   return {
+    // collection & model
     sync: promisify('sync', 2),
-    fetch: promisify('fetch', 0)
+    save: promisify('save', 2),
+    fetch: promisify('fetch', 0),
+    destroy: promisify('destroy', 0),
+
+    // collection
+    create: promisify('create', 1),
+    getOrFetch: promisify('getOrFetch', 1),
+    fetchById: promisify('fetchById', 2)
   };
 };
 

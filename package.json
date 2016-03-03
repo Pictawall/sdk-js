@@ -10,17 +10,15 @@
   "dependencies": {
     "ampersand-model": "^5.0.3",
     "ampersand-rest-collection": "^5.0.0",
-    "ampersand-sync-with-promise": "^3.1.0",
     "moment": "latest",
-    "ampersand-collection-rest-mixin": "latest"
+    "ampersand-collection-rest-mixin": "latest",
+    "ampersand-sync": "latest"
   },
   "scripts": {
     "dist": "NODE_ENV=production gulp dist",
     "dist-dev": "NODE_ENV=development gulp dist"
   },
   "devDependencies": {
-    "ampersand-collection": "latest",
-    "ampersand-sync": "latest",
     "babel-loader": "^6.2.1",
     "babel-plugin-transform-object-rest-spread": "^6.5.0",
     "babel-plugin-transform-undefined-to-void": "^6.5.0",

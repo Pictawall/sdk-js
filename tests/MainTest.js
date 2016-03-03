@@ -1,10 +1,17 @@
 'use strict';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
 
 require('./mock/XhrMock').init();
 
-require('./src/appTest');
+describe('sdk', () => {
+  beforeEach(() => {
+    console.log();
+    console.log('New jasmine test');
+  });
 
-require('./src/models/EventModelTest');
-require('./src/collections/AssetCollectionTest');
+  require('./src/appTest');
+
+  require('./src/models/EventModelTest');
+  require('./src/collections/AssetCollectionTest');
+});

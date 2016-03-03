@@ -3,7 +3,7 @@
 /**
  * @example
  * Collection.extend({
- *  sync: require('ampersand-sync-promise').sync
+ *  fetch: require('./ampersand-rest-collection-promise').fetch
  * });
  *
  * @type AmpersandSync

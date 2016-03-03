@@ -69,13 +69,13 @@ const AssetCollection = Collection.extend({
   },
 
   /**
-   * Used by EventModel to auto-update the collection
+   * Reloads the collection.
    * @returns {Promise} the collection has been updated.
    *
    * @memberOf AssetCollection
    * @instance
    */
-  updateCollection() {
+  updateAll() {
     const fetchOptions = Object.assign({}, this.fetchOptions);
 
     if (this.lastUpdate) {
@@ -160,77 +160,33 @@ const AssetCollection = Collection.extend({
    * @returns {AssetModel}
    */
   getFeatured() {
-    for (let i = 0; i < this.length; i++) {
-      const model = this.at(i);
-
-      if (model.featured) {
-        return model;
-      }
-    }
-
-    return null;
+    // if not in collection, getById
+    // id is in EventModel
   }
 
-  ////TODO sort, filter, exclude (filter)
-  //getNextMedium(media = [], where = {}, options = {}) {
-  //  let collection = this.clone();
-  //  collection.setOrder(this._orderBy);
-  //  if (typeof options.order_by !== 'undefined') {
-  //    collection.setOrder(options.order_by);
-  //  }
+  // TODO replace by
+  // let filter = Object.assign({ id: { '$in': excludedAssets } }, whereFilter);
+  // this.find(filter).orderBy(orderBy).first();
+  //findFirst({ excludedAssets = [], whereFilter = {}, orderBy = this.fetchOptions.order_by, defaultAsset } = {}) {// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
+  //  const excludedAssetIds = excludedAssets.map(asset => {
+  //    return asset.id;
+  //  });
   //
-  //  collection.set(this.where(where).filter((medium) => {
-  //    for (let i in media) {
-  //      if (media[i].getId() == medium.getId()) {
-  //        return false;
-  //      }
-  //    }
-  //
-  //    return true;
+  //  const collection = this.clone();
+  //  collection.set(this.where(whereFilter).filter(asset => {
+  //    return !excludedAssetIds.includes(asset.id);
   //  }));
   //
+  //  collection.setOrder(orderBy);
   //  collection.sort();
   //
   //  if (collection.length > 0) {
   //    return collection.first();
+  //  } else if (defaultAsset !== void 0) {
+  //    return defaultAsset;
   //  } else {
-  //    if (typeof options.default != 'undefined') {
-  //      return options.default;
-  //    } else {
-  //      return this.findWhere(where);
-  //    }
+  //    return this.findWhere(where);
   //  }
-  //},
-  //
-  //getNextMediaByView(medium) {
-  //  if (typeof medium != 'undefined' && medium != null) {
-  //    var mediumCollection = this.clone();
-  //    mediumCollection.set(this.getMediumNot(medium));
-  //    mediumCollection.sort();
-  //    return mediumCollection.first();
-  //  } else {
-  //    this.sort();
-  //    return this.first();
-  //  }
-  //},
-  //
-  //getNextMediaByKindAndView(kind, medium) {
-  //  this.sort();
-  //  var media = this.where({ kind: kind });
-  //
-  //  if (typeof medium != 'undefined' && medium != null) {
-  //    media = media.filter(function (m) {
-  //      return m != medium;
-  //    });
-  //  }
-  //
-  //  return _.first(media);
-  //},
-  //
-  //getMediumNot(medium) {
-  //  return this.filter((m) => {
-  //    return m != medium;
-  //  });
   //}
 });
 

@@ -1,10 +1,8 @@
 'use strict';
 
 const Model = require('ampersand-model');
-const SyncPromise = require('ampersand-sync-with-promise');
-const moment = require('moment');
-
-const config = require('../services/Config');
+// TODO optional dep
+//const moment = require('moment');
 
 /**
  * @classdesc <p>Model for pictawall events' assets.</p>
@@ -13,7 +11,6 @@ const config = require('../services/Config');
  * @class AssetModel
  */
 const AssetModel = Model.extend({
-  sync: SyncPromise,
 
   /**
    * @ignore
@@ -245,25 +242,20 @@ const AssetModel = Model.extend({
       type: 'object',
       required: true,
       setOnce: true
-    }
-  },
-
-  derived: {
+    },
 
     /**
-     * MomentJS string representing the time at which the asset was created.
+     * Author of the asset.
      *
-     * @type {!string}
+     * @type {!AssetOwner}
      * @memberOf AssetModel
      * @instance
      * @readonly
      */
-    since: {
-      deps: ['postTime'],
-
-      fn: function () {
-        return moment.unix(this.postTime).fromNow();
-      }
+    safe: {
+      type: 'boolean',
+      required: true,
+      setOnce: true
     }
   },
 
@@ -279,6 +271,7 @@ const AssetModel = Model.extend({
    */
   markAvatarAsDead() {
     // TODO NYI
+    // PATCH assets/id/check/user
   },
 
   /**
@@ -289,6 +282,22 @@ const AssetModel = Model.extend({
    */
   markMediaAdDead() {
     // TODO NYI
+    // PATCH assets/id/check/
+  },
+
+  /**
+   * Report the asset for moderation.
+   *
+   * @memberOf AssetModel
+   * @instance
+   */
+  report() {
+    if (this.isSafe) {
+      return;
+    }
+
+    // TODO NYI
+    // PATCH assets/id/report
   }
 });
 

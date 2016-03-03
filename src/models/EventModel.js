@@ -1,7 +1,7 @@
 'use strict';
 
 const Model = require('ampersand-model');
-const SyncPromise = require('ampersand-sync-with-promise');
+const SyncPromise = require('../ampersand/ampersand-model-promise');
 
 const AssetCollection = require('../collections/AssetCollection');
 
@@ -11,8 +11,8 @@ const config = require('../services/Config');
  * @class EventModel
  */
 const EventModel = Model.extend({
+  fetch: SyncPromise.fetch,
 
-  sync: SyncPromise,
   urlRoot() {
     return config.get('endpoint') + '/events';
   },
@@ -35,7 +35,7 @@ const EventModel = Model.extend({
 
     // Fetched from the server
     /**
-     * TODO unknown.
+     * Event display name.
      *
      * @type {!string}
      * @memberOf EventModel
@@ -179,16 +179,17 @@ const EventModel = Model.extend({
       return;
     }
 
-    //let promises = [];
+    this.update().then(() => {
+      this.trigger('synchronised');
+      setTimeout(() => this._autoUpdate(), this.autoUpdateVelocity);
+    });
+  },
 
-    //promises.push(this.getMediumCollection().updateCollection());
-    //promises.push(this.getAdCollection().updateCollection());
-    //promises.push(this.getMessageCollection().updateCollection());
-    //promises.push(this.getUserCollection().updateCollection());
-
-    //Promise.all(promises).then(() => {
-    //  setTimeout(() => this._autoUpdate(), this.get('autoUpdateVelocity'));
-    //});
+  updateAll() {
+    return Promise.all(
+      this.fetch(),
+      this.assetCollection.updateAll()
+    );
   },
 
   stopAutoUpdate() {
