@@ -1,13 +1,20 @@
 'use strict';
 
 require('jasmine-ajax');
-const config = require('../../src/services/Config');
-const StringUtil = require('./../util/StringUtil');
+const fetchMock = require('./fetchMock');
+
+const config = require('../../src/services/Config').instance;
+const StringUtil = require('../../src/util/StringUtil');
 
 function mockRequest(path, pathParams, response) {
-  jasmine.Ajax.stubRequest(new RegExp(config.get('endpoint') + StringUtil.format(path, pathParams) + '.*')).andReturn(response);
+  const stubbedPath = new RegExp(config.get('endpoint') + StringUtil.format(path, pathParams) + '.*');
+  console.info('Mocking xhr path /' + stubbedPath.source + '/');
+
+  fetchMock.stubRequest(stubbedPath, response);
+  jasmine.Ajax.stubRequest(stubbedPath).andReturn(response);
 }
 
+fetchMock.install();
 module.exports = {
   init() {
     jasmine.Ajax.install();

@@ -16,7 +16,7 @@
       Event: require('./models/EventModel')
     },
     version: PACKAGE_VERSION === void 0 ? 'unknown' : PACKAGE_VERSION,
-    config: require('./services/Config')
+    config: require('./services/Config').instance
   };
 
   if (typeof module === 'object' && module.exports) {

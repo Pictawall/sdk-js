@@ -1,6 +1,6 @@
 'use strict';
 
-const AssetCollection = require('../../../src/collections/AssetCollection');
+const AssetCollection = require('../../../src/old/collections/AssetCollection');
 const XhrMock = require('../../mock/XhrMock');
 
 const EventModelTest = require('../models/EventModelTest');

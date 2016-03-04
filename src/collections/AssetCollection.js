@@ -1,193 +1,52 @@
 'use strict';
 
-const Collection = require('ampersand-rest-collection');
-const SyncPromise = require('../ampersand/ampersand-rest-collection-promise');
+const PagedCollection = require('./PagedCollection');
+const AssetModel = require('../models/AssetModel');
 
-const AssetModel = require('../models/AssetModel.js');
-const config = require('../services/Config');
-
-const AssetCollection = Collection.extend({
-  model: AssetModel,
-  fetch: SyncPromise.fetch,
-
-  fetchOptions: {},
-  currentPage: 0,
-  pageCount: 1,
-  lastUpdate: null,
-  total: 0,
+class AssetCollection extends PagedCollection {
 
   /**
-   * @classdesc <p>Collection of {@link AssetModel}.</p>
-   * <p>The collection inherits from the [ampersand-collection]{@link https://ampersandjs.com/docs/#ampersand-collection} methods.</p>
-   *
-   * @constructs AssetCollection
-   *
-   * @param {Object[]} defaultAssets - From ampersand, set to a falsy value or pass an array of objects containing the parameters to give to the {@link AssetModel} constructor.
-   * @param {!Object} parameters - Constructor parameters.
-   * @param {!EventModel} [event] - The event for which to fetch the assets.
-   * @param {String} [parameters.orderBy = 'date_desc'] Order in which to fetch and sort the assets, values are (likes|likes_asc|date|date_desc).
-   * @param {String} [parameters.assetKindFilter] - Restricts the kind of assets to fetch, values are (text|video|image).
-   * @param {String} [parameters.url] - Override the url from which the assets will be fetched.
-   * @param {number} [parameters.limit] - Sets how many assets are downloaded at once, default value is the one set in the {@link Config} instance.
+   * @param {EventModel} event The owning event.
+   * @param {number} limit How many assets should be returned by each api call.
    */
-  initialize(defaultAssets, { event, orderBy = 'date_desc', assetKindFilter, url, limit } = {}) {
-    if (!event) {
-      throw new Error('Event is not set');
-    }
+  constructor(event, limit) {
+    super(AssetModel, {
+      eventId: event.getProperty('identifier')
+    }, limit);
 
-    this.fetchOptions.order_by = orderBy;// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
-    this.fetchOptions.limit = limit || config.get('limit');
-    if (assetKindFilter) {
-      this.fetchOptions.kind = assetKindFilter;
-    }
-
-    this.url = url || (config.get('endpoint') + '/events/' + event.identifier + '/assets');
-  },
-
-  setOrder(order) {
-    this.fetchOptions.order_by = order;// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
-  },
-
-  /**
-   * Called when a new asset page is successfully fetched.
-   * Used by ampersand.
-   *
-   * @memberOf AssetCollection
-   * @instance
-   * @private
-   */
-  parse({ page, pages, total, since, data }) {
-    if (page > this.currentPage) {
-      this.currentPage = page;
-    }
-
-    this.pageCount = pages;
-    this.total = total;
-    this.lastUpdate = since;
-
-    return data;
-  },
-
-  /**
-   * Reloads the collection.
-   * @returns {Promise} the collection has been updated.
-   *
-   * @memberOf AssetCollection
-   * @instance
-   */
-  updateAll() {
-    const fetchOptions = Object.assign({}, this.fetchOptions);
-
-    if (this.lastUpdate) {
-      fetchOptions.since = this.lastUpdate;
-    }
-
-    return this.fetch({ data: data, remove: false });
-  },
-
-  /**
-   * Returns whether or not there is more to be downloaded from the server.
-   * @returns {boolean}
-   *
-   * @memberOf AssetCollection
-   * @instance
-   */
-  hasMore() {
-    return this.currentPage < this.pageCount;
-  },
-
-  /**
-   * Loads the new asset page.
-   * @returns {Promise} Promise resolving once the data is loaded.
-   *
-   * @memberOf AssetCollection
-   * @instance
-   */
-  loadMore() {
-    if (!this.hasMore()) {
-      return Promise.reject(new Error('Could not fetch, no more data available.'));
-    }
-
-    const fetchOptions = Object.assign({}, this.fetchOptions);
-    fetchOptions.currentPage = this.currentPage + 1;
-
-    return this.fetch({
-      data: fetchOptions,
-      remove: false
-    });
-  },
-
-  /**
-   * Used by ampersand to sort the collection.
-   *
-   * @private
-   * @memberOf AssetCollection
-   * @instance
-   */
-  comparator(asset) {
-    switch (this.fetchOptions.order_by) {// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
-      case 'likes':
-        return [asset.get('likes'), -asset.get('date.date')];
-        break;
-      case 'likes_asc':
-        return [-asset.get('likes'), -asset.get('date.date')];
-        break;
-      case 'date':
-        return -asset.get('when');
-        break;
-      case 'date_desc':
-        return asset.get('when');
-        break;
-      default:
-        return asset.get('display');
-        break;
-    }
-  },
-
-  /**
-   * <p>Returns the list of assets the content manager favorited.</p>
-   * <p>Note: This method only filters out non-favorited assets. It does not guarantee to return every favorited
-   * asset unless {@link AssetCollection#hasMore} returns false.</p>
-   *
-   * @returns {Array.<AssetModel>}
-   */
-  getFavorites() {
-    return this.models.filter(model => model.favorited);
-  },
-
-  /**
-   * Returns the featured tweet if any is available, null otherwise.
-   * @returns {AssetModel}
-   */
-  getFeatured() {
-    // if not in collection, getById
-    // id is in EventModel
+    this._event = event;
+    this.setApiPath(`/events/${event.getProperty('identifier')}/assets`);
   }
 
-  // TODO replace by
-  // let filter = Object.assign({ id: { '$in': excludedAssets } }, whereFilter);
-  // this.find(filter).orderBy(orderBy).first();
-  //findFirst({ excludedAssets = [], whereFilter = {}, orderBy = this.fetchOptions.order_by, defaultAsset } = {}) {// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
-  //  const excludedAssetIds = excludedAssets.map(asset => {
-  //    return asset.id;
-  //  });
+  //getFeaturedAsset() {
+  //  const assetId = this._event.getProperty('featuredAssetId');
   //
-  //  const collection = this.clone();
-  //  collection.set(this.where(whereFilter).filter(asset => {
-  //    return !excludedAssetIds.includes(asset.id);
-  //  }));
-  //
-  //  collection.setOrder(orderBy);
-  //  collection.sort();
-  //
-  //  if (collection.length > 0) {
-  //    return collection.first();
-  //  } else if (defaultAsset !== void 0) {
-  //    return defaultAsset;
-  //  } else {
-  //    return this.findWhere(where);
+  //  if (assetId === -1) {
+  //    return null;
   //  }
+  //
+  //  // TODO get event id from collection or fetch it by id
   //}
-});
+
+  /**
+   * Parses the response from the server and returns the data to use for model creation.
+   *
+   * @override
+   */
+  parse(data) {
+    return data.data;
+  }
+
+  /**
+   * Creates a model using a piece of data from the server.
+   */
+  createModel(modelData) {
+    const model = new AssetModel(this._event);
+
+    model._setProperties(modelData);
+
+    return model;
+  }
+}
 
 module.exports = AssetCollection;

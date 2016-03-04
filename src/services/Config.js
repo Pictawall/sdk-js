@@ -14,7 +14,7 @@ class Config {
   constructor() {
     this.parameters = new Map();
 
-    this.parameters.set('endpoint', 'https://api.pictawall.com');
+    this.parameters.set('endpoint', 'https://api.pictawall.com/v2.5');
     this.parameters.set('limit', 100);
   }
 
@@ -43,4 +43,5 @@ class Config {
   }
 }
 
-module.exports = new Config();
+Config.instance = new Config();
+module.exports = Config;

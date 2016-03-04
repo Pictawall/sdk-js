@@ -15,7 +15,7 @@ const CardModel = Model.extend({
      * Medium ID.
      *
      * @type {!number}
-     * @memberOf AssetModel
+     * @memberOf UserModel
      * @instance
      * @readonly
      */
@@ -29,7 +29,7 @@ const CardModel = Model.extend({
      * Event to which this asset is attached.
      *
      * @type {!EventModel}
-     * @memberOf AssetModel
+     * @memberOf UserModel
      * @instance
      * @readonly
      */
@@ -43,7 +43,7 @@ const CardModel = Model.extend({
      * Asset type, eg. 'video', 'picture', ...
      *
      * @type {!String}
-     * @memberOf AssetModel
+     * @memberOf UserModel
      * @instance
      * @readonly
      */
@@ -67,7 +67,7 @@ const CardModel = Model.extend({
      * Null if the asset type is nor 'video' nor 'picture'.
      *
      * @type {AssetImage}
-     * @memberOf AssetModel
+     * @memberOf UserModel
      * @instance
      * @readonly
      */
@@ -81,7 +81,7 @@ const CardModel = Model.extend({
      * URL pointing to the original post on its original social network.
      *
      * @type {!string}
-     * @memberOf AssetModel
+     * @memberOf UserModel
      * @instance
      * @readonly
      */
@@ -95,7 +95,7 @@ const CardModel = Model.extend({
      * Message attached to the asset.
      *
      * @type {!string}
-     * @memberOf AssetModel
+     * @memberOf UserModel
      * @instance
      * @readonly
      */
