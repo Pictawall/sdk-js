@@ -1,11 +1,11 @@
 'use strict';
 
 const merge = require('../util/merge');
-const FetchMixin = require('../mixins/FetchMixin');
 const SdkError = require('../core/Errors').SdkError;
 
 /**
  * @mixes FetchMixin
+ * @mixes MongoCollectionSyntaxMixin
  */
 class BaseCollection {
 
@@ -33,7 +33,12 @@ class BaseCollection {
   }
 
   loadMore() {
-    return this.fetch(this.fetchOptions);
+    return this.fetch(this.fetchOptions)
+      .then(models => {
+        for (let model of models) {
+          this._models.push(model);
+        }
+      });
   }
 
   reset() {
@@ -55,8 +60,35 @@ class BaseCollection {
   get loaded() {
     return this._loaded;
   }
+
+  get length() {
+    return this._models.length;
+  }
+
+  at(pos) {
+    return this._models[pos];
+  }
+
+  [Symbol.iterator]() {
+    const _this = this;
+
+    return {
+      next: function () {
+        if (this._index >= _this.length) {
+          return { done: true };
+        }
+
+        return { done: false, value: _this.at(this._index++) };
+      },
+
+      _index: 0
+    };
+  }
 }
 
-merge(BaseCollection, FetchMixin);
+const FetchMixin = require('../mixins/FetchMixin');
+const MongoCollectionSyntaxMixin = require('../mixins/MongoCollectionSyntaxMixin');
+
+merge(BaseCollection, FetchMixin, MongoCollectionSyntaxMixin);
 
 module.exports = BaseCollection;

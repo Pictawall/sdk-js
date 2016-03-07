@@ -22,6 +22,8 @@ const FetchMixin = {
   /**
    * Sets the API endpoint of this model.
    * @param url The path pointing to the endpoint of the rest API with which the model can interact.
+   *
+   * @instance
    */
   setApiPath(path) {
     apiPaths.set(this, path);
@@ -31,6 +33,8 @@ const FetchMixin = {
    * Executes an HTTP GET on the api path of the model and returns the HTTP response as JSON.
    *
    * @returns {Promise.<any>}
+   *
+   * @instance
    */
   fetchRaw(queryParameters, pathParameters) {
     // TODO use queryParameters
@@ -47,6 +51,15 @@ const FetchMixin = {
       .then(json => this.parse(json));
   },
 
+  /**
+   * Parses the data retrieve by {@link fetchRaw}.
+   * Overwrite this method if you the data to use for the model / collection is not directly at the top level.
+   *
+   * @param {any} data The data from the API call, parsed as JSON.
+   * @returns {any} The data to use for the model / collection.
+   *
+   * @instance
+   */
   parse(data) {
     return data;
   }

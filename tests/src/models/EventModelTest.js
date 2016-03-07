@@ -2,6 +2,7 @@
 
 const EventModel = require('../../../src/models/EventModel');
 const XhrMock = require('../../mock/XhrMock');
+const AssertUtil = require('../../util/AssertUtil');
 
 describe('EventModel', () => {
 
@@ -40,10 +41,13 @@ describe('EventModel', () => {
       eventPromise.then(event => {
         expect(event).toEqual(jasmine.any(EventModel));
 
-        // Collections have loaded
+        // Collections have loaded.
         expect(event.assetCollection.loaded).toBe(true);
 
         // TODO add more collections
+
+        // data is loaded.
+        AssertUtil.assertModelLoaded(event, XhrMock.VALID_EVENT.data);
 
         module.exports.event = event;
 
@@ -55,3 +59,4 @@ describe('EventModel', () => {
     });
   });
 });
+

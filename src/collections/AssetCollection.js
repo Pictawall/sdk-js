@@ -7,9 +7,9 @@ class AssetCollection extends PagedCollection {
 
   /**
    * @param {EventModel} event The owning event.
-   * @param {number} limit How many assets should be returned by each api call.
+   * @param {number} [limit = 100] How many assets should be returned by each api call.
    */
-  constructor(event, limit) {
+  constructor(event, limit = 100) {
     super(AssetModel, {
       eventId: event.getProperty('identifier')
     }, limit);
@@ -34,6 +34,8 @@ class AssetCollection extends PagedCollection {
    * @override
    */
   parse(data) {
+    data = super.parse(data);
+
     return data.data;
   }
 

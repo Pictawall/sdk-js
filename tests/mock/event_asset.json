@@ -1,8 +1,8 @@
 {
   "since": 1456856265,
   "total": 6,
-  "page": 1,
-  "pages": 1,
+  "pageCount": 0,
+  "currentPage": 0,
   "data": [
     {
       "id": 18303,
@@ -70,7 +70,9 @@
       "source": {
         "network": "twitter",
         "id": "691560724217401344",
-        "additionalData": []
+        "additionalData": {
+          "retweetCount": 2
+        }
       },
       "kind": "text",
       "media": null,

@@ -12,6 +12,8 @@ describe('SDK', () => {
 
   require('./src/appTest');
 
+  require('./src/mixins/MongoQuery/MongoCursorTest');
+
   require('./src/models/EventModelTest');
-  //require('./src/collections/AssetCollectionTest');
+  require('./src/collections/AssetCollectionTest');
 });

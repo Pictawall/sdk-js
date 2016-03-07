@@ -4,7 +4,7 @@ const BaseCollection = require('./BaseCollection');
 
 class PagedCollection extends BaseCollection {
 
-  constructor(modelType, pathParams, limit = 100) {
+  constructor(modelType, pathParams, limit) {
     super(modelType, pathParams);
 
     this._limit = limit;
