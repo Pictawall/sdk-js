@@ -33,15 +33,16 @@ function executeQuery(obj) {
   }
 
   // 2. where + skip + limit
-  const itemMatches = parseWhereQuery(state.query);
+  const matchesItem = typeof state.query === 'function' ? state.query : parseWhereQuery(state.query);
   const matchList = [];
+
   for (let i = state.startAt || 0; i < array.length; i++) {
     if (state.limit && matchList.length >= state.limit) {
       break;
     }
 
     const item = array[i];
-    if (itemMatches(item.toJson ? item.toJson() : item)) {
+    if (matchesItem(item)) {
       matchList.push(item);
     }
   }
@@ -53,7 +54,7 @@ function executeQuery(obj) {
 class MongoCursor {
 
   /**
-   * @param {Object} query A [MongoDB find query syntax]{@link https://docs.mongodb.org/manual/reference/method/db.collection.find/}.
+   * @param {!Object, function} query A {@link Array#filter}-like function or a [MongoDB find query syntax]{@link https://docs.mongodb.org/manual/reference/method/db.collection.find/}.
    * @param {!Iterable.<Object>} iterable An iterable returning objects having, as a minimum, the properties listed in the query.
    *
    * @example
@@ -137,6 +138,14 @@ class MongoCursor {
     }
 
     return stateMap.get(this).result;
+  }
+
+  /**
+   * Returns the first matching item for the query or null if none matched.
+   * @returns {any}
+   */
+  first() {
+    return this.toArray()[0] || null;
   }
 
   /**

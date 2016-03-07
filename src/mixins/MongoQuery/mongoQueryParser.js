@@ -173,6 +173,10 @@ function parseSelectors(item, selectors) {
 
 module.exports = function (query) {
   return function (item) {
+    if (item.toJson) {
+      item = item.toJson();
+    }
+
     return parseSelectors(item, query);
   };
 };

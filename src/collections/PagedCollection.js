@@ -34,13 +34,18 @@ class PagedCollection extends BaseCollection {
       options.since = this._since;
     }
 
+    options.limit = this._limit;
+
     return options;
   }
 
   parse(data) {
     data = super.parse(data);
 
-    this._currentPage = data.currentPage;
+    if (data.currentPage > this._currentPage) {
+      this._currentPage = data.currentPage;
+    }
+
     this._pageCount = data.pageCount;
     this._total = data.total;
     this._since = data.since;
