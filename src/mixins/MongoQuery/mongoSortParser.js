@@ -13,8 +13,8 @@
  * });
  */
 function parseSortQuery(sortQuery) {
-  return function(a, b) {
-    return sortItem(a, b, sortQuery);
+  return function (a, b) {
+    return sortItems(a, b, sortQuery);
   };
 }
 

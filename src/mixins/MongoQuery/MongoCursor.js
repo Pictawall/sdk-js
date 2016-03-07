@@ -20,7 +20,15 @@ function executeQuery(obj) {
       }
     } else {
       const comparator = typeof sortQuery === 'function' ? sortQuery : parseSortQuery(sortQuery);
-      return array.sort(comparator);
+      array.sort(comparator);
+    }
+  }
+
+  if (state.query === void 0) {
+    if (state.startAt || state.limit) {
+      return array.splice(state.startAt || 0, state.limit || array.length);
+    } else {
+      return array;
     }
   }
 
