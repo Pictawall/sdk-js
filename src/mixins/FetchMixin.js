@@ -2,7 +2,7 @@
 
 const StringUtil = require('../util/StringUtil');
 const config = require('../services/Config').instance;
-const getName = require('../util/ClassUtil').getName;
+const SdkError = require('../core/Errors').SdkError;
 
 if (!window.fetch) {
   require.ensure([], require => {
@@ -41,7 +41,7 @@ const FetchMixin = {
         if (response.status === 200) {
           return response.json();
         } else {
-          throw new Error(`[${getName(this)}] API responded with http code ${response.status} for endpoint "${endpoint}"`);
+          throw new SdkError(this, `API responded with http code ${response.status} for endpoint "${endpoint}"`);
         }
       })
       .then(json => this.parse(json));
@@ -54,7 +54,7 @@ const FetchMixin = {
 
 function getEndpoint(pathParameters) {
   if (!apiPaths.has(this)) {
-    throw new Error(`[${getName(this)}] apiPath has not been set. Use #setApiPath(path)`);
+    throw new SdkError(this, `apiPath has not been set. Use #setApiPath(path)`);
   }
 
   let apiPath = apiPaths.get(this);

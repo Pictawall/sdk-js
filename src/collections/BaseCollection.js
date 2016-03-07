@@ -2,6 +2,7 @@
 
 const merge = require('../util/merge');
 const FetchMixin = require('../mixins/FetchMixin');
+const SdkError = require('../core/Errors').SdkError;
 
 /**
  * @mixes FetchMixin
@@ -17,9 +18,9 @@ class BaseCollection {
   }
 
   fetch(queryParameters) {
-    this.fetchRaw(queryParameters).then(modelsData => {
+    return this.fetchRaw(queryParameters).then(modelsData => {
       if (!Array.isArray(modelsData)) {
-        throw new Error('Invalid data for model creation, should have received array.');
+        throw new SdkError(this, 'Invalid data for model creation, should have received array.');
       }
 
       this._loaded = true;
@@ -40,7 +41,7 @@ class BaseCollection {
   }
 
   createModel() {
-    throw new Error('Not implemented by the collection.');
+    throw new SdkError(this, 'Not implemented by the collection.');
   }
 
   toJson() {
@@ -49,6 +50,10 @@ class BaseCollection {
 
   get fetchOptions() {
     return Object.assign({}, this._fetchOptions);
+  }
+
+  get loaded() {
+    return this._loaded;
   }
 }
 

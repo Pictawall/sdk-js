@@ -2,6 +2,7 @@
 
 const BaseModel = require('./BaseModel');
 const AssetCollection = require('../collections/AssetCollection');
+const SdkError = require('../core/Errors').SdkError;
 
 /**
  * @classdesc <p>Model for pictawall events.</p>
@@ -21,7 +22,7 @@ class EventModel extends BaseModel {
     super();
 
     if (typeof identifier !== 'string') {
-      return Promise.reject(new Error(`Event identifier "${identifier}" is not valid.`));
+      return Promise.reject(new SdkError(this, `Event identifier "${identifier}" is not valid.`));
     }
 
     //this.autoUpdateVelocity = autoUpdateVelocity;

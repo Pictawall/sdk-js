@@ -3,6 +3,7 @@
 const MapUtil = require('../util/MapUtil');
 const FetchMixin = require('../mixins/FetchMixin');
 const merge = require('../util/merge');
+const SdkError = require('../core/Errors').SdkError;
 
 /**
  * @mixes FetchMixin
@@ -18,6 +19,10 @@ class BaseModel {
   }
 
   _setProperties(newProperties) {
+    if (typeof newProperties !== 'object') {
+      throw new SdkError(this, `Invalid newProperties value "${newProperties}". This is the value returned by #parse(data).`);
+    }
+
     this._properties.clear();
 
     for (let propertyName of Object.getOwnPropertyNames(newProperties)) {

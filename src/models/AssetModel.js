@@ -2,6 +2,7 @@
 
 const BaseModel = require('./BaseModel');
 const EventModel = require('./EventModel');
+const SdkError = require('../core/Errors').SdkError;
 
 class AssetModel extends BaseModel {
 
@@ -12,7 +13,7 @@ class AssetModel extends BaseModel {
     super();
 
     if (!(event instanceof EventModel)) {
-      throw new Error('event must be an EventModel.');
+      throw new SdkError(this, 'event must be an EventModel.');
     }
 
     /**
