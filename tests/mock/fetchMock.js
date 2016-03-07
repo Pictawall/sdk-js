@@ -8,7 +8,7 @@ const fakeFetch = function (path, ...args) {
 
   for (let stubbedRequest of stubbedRequests) {
     if (stubbedRequest.pathRegex.test(path)) {
-      return Promise.resolve(stubbedRequest.response);
+      return Promise.resolve(new window.Response(...stubbedRequest.response));
     }
   }
 
@@ -28,9 +28,9 @@ module.exports = {
   stubRequest(pathRegex, response) {
     stubbedRequests.push({
       pathRegex,
-      response: new window.Response(response.responseText, {
+      response: [response.responseText, {
         status: response.status || 200
-      })
+      }]
     });
   }
 };

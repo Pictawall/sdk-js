@@ -20,7 +20,7 @@ class BaseCollection {
   fetch(queryParameters) {
     return this.fetchRaw(queryParameters).then(modelsData => {
       if (!Array.isArray(modelsData)) {
-        throw new SdkError(this, 'Invalid data for model creation, should have received array.');
+        throw new SdkError(this, `Invalid response from #parse(data). Should have returned array, got "${JSON.stringify(modelsData)}"`);
       }
 
       this._loaded = true;

@@ -15,7 +15,7 @@ describe('EventModel', () => {
         fail('EventModel should return a failed promise if the identifier is invalid.');
         done();
       }).catch(e => {
-        expect(e.message).toBe('Event identifier "undefined" is not valid.');
+        expect(e.message).toBe('[EventModel] Event identifier "undefined" is not valid.');
         done();
       });
     });
@@ -32,28 +32,26 @@ describe('EventModel', () => {
       });
     });
 
-    it('resolve once everything is loaded', done => {
+    it('resolves once everything is loaded', done => {
       const eventPromise = new EventModel({ identifier: XhrMock.VALID_IDENTIFIER });
 
       expect(eventPromise).toEqual(jasmine.any(Promise));
 
-      eventPromise
-        .then(event => {
-          expect(event).toEqual(jasmine.any(EventModel));
+      eventPromise.then(event => {
+        expect(event).toEqual(jasmine.any(EventModel));
 
-          // Collections have loaded
-          expect(event.assetCollection.currentPage).toBe(1);
+        // Collections have loaded
+        expect(event.assetCollection.loaded).toBe(true);
 
-          // TODO add more collections
+        // TODO add more collections
 
-          module.exports.event = event;
+        module.exports.event = event;
 
-          done();
-        })
-        .catch(e => {
-          fail(e);
-          done();
-        });
+        done();
+      }).catch(e => {
+        fail(e);
+        done();
+      });
     });
   });
 });

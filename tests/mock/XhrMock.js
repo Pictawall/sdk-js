@@ -7,7 +7,7 @@ const config = require('../../src/services/Config').instance;
 const StringUtil = require('../../src/util/StringUtil');
 
 function mockRequest(path, pathParams, response) {
-  const stubbedPath = new RegExp(config.get('endpoint') + StringUtil.format(path, pathParams) + '.*');
+  const stubbedPath = new RegExp('^' + config.get('endpoint') + StringUtil.format(path, pathParams) + '([\\?#].*)?$');
   console.info('Mocking xhr path /' + stubbedPath.source + '/');
 
   fetchMock.stubRequest(stubbedPath, response);
@@ -47,13 +47,6 @@ module.exports = {
   VALID_IDENTIFIER: 'VALID',
   INVALID_IDENTIFIER: 'INVALID',
 
-  VALID_EVENT: {
-    name: 'Batibouw 2016',
-    identifier: 'VALID',
-    ratio: 12,
-    showHashtag: false,
-    showTopUsers: false
-  },
-
+  VALID_EVENT: require('./event.json'),
   VALID_EVENT_ASSETS: require('./event_asset.json')
 };

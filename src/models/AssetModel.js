@@ -12,7 +12,7 @@ class AssetModel extends BaseModel {
   constructor(event) {
     super();
 
-    if (!(event instanceof EventModel)) {
+    if (typeof event !== 'object') {
       throw new SdkError(this, 'event must be an EventModel.');
     }
 
