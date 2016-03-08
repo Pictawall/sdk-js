@@ -1,9 +1,15 @@
 'use strict';
 
+/*
+ * Bower Entry point, NPM users: please includes the parts you need directly.
+ */
 (function () {
 
-  //noinspection JSUnresolvedVariable // WebPack var injection
+  if (window.pictawall === void 0) {
+    window.pictawall = {};
+  }
 
+  //noinspection JSUnresolvedVariable // Webpack var injection.
   /**
    * @namespace SDK
    * @property {!object} Models
@@ -11,21 +17,12 @@
    * @property {!String} version
    * @property {!Config} config
    */
-  const SDK = {
+  window.pictawall.SDK = {
     Models: {
-      Event: require('./models/EventModel')
+      Event: require('./models/EventModel'),
+      Channel: require('./models/ChannelModel')
     },
     version: PACKAGE_VERSION === void 0 ? 'unknown' : PACKAGE_VERSION,
     config: require('./services/Config').instance
   };
-
-  if (typeof module === 'object' && module.exports) {
-    module.exports = SDK;
-  } else if (typeof window === 'object') {
-    if (window.pictawall === void 0) {
-      window.pictawall = {};
-    }
-
-    window.pictawall.SDK = SDK;
-  }
 })();

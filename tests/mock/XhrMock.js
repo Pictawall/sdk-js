@@ -30,12 +30,39 @@ module.exports = {
       responseText: JSON.stringify(this.VALID_EVENT_ASSETS)
     });
 
+    mockRequest('/events/{0}/users', [this.VALID_IDENTIFIER], {
+      status: 200,
+      responseText: JSON.stringify(this.VALID_EVENT_USERS)
+    });
+
+    mockRequest('/events/{0}/ads', [this.VALID_IDENTIFIER], {
+      status: 200,
+      responseText: JSON.stringify(this.VALID_EVENT_ADS)
+    });
+
+    mockRequest('/events/{0}/messages', [this.VALID_IDENTIFIER], {
+      status: 200,
+      responseText: JSON.stringify(this.VALID_EVENT_MESSAGES)
+    });
+
     // INVALID ROUTES
     mockRequest('/events/{0}', [this.INVALID_IDENTIFIER], {
       status: 404
     });
 
     mockRequest('/events/{0}/assets', [this.INVALID_IDENTIFIER], {
+      status: 404
+    });
+
+    mockRequest('/events/{0}/users', [this.INVALID_IDENTIFIER], {
+      status: 404
+    });
+
+    mockRequest('/events/{0}/ads', [this.INVALID_IDENTIFIER], {
+      status: 404
+    });
+
+    mockRequest('/events/{0}/messages', [this.INVALID_IDENTIFIER], {
       status: 404
     });
   },
@@ -48,5 +75,8 @@ module.exports = {
   INVALID_IDENTIFIER: 'INVALID',
 
   VALID_EVENT: require('./event.json'),
-  VALID_EVENT_ASSETS: require('./event_asset.json')
+  VALID_EVENT_ASSETS: require('./event_asset.json'),
+  VALID_EVENT_USERS: require('./event_users.json'),
+  VALID_EVENT_ADS: require('./event_ads.json'),
+  VALID_EVENT_MESSAGES: require('./event_messages.json')
 };

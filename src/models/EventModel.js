@@ -2,6 +2,10 @@
 
 const BaseModel = require('./BaseModel');
 const AssetCollection = require('../collections/AssetCollection');
+const UserCollection = require('../collections/UserCollection');
+const AdCollection = require('../collections/AdCollection');
+const MessageCollection = require('../collections/MessageCollection');
+
 const SdkError = require('../core/Errors').SdkError;
 
 /**
@@ -11,29 +15,38 @@ class EventModel extends BaseModel {
 
   /**
    * <p>Creates a new Event model and its associated collections.</p>
+   * <p>You can fill it with server data by calling {@link #fetch}</p>
    *
+   * @param {!String} identifier - The pictawall event identifier.
    * @param {!Object} config - The constructor parameters.
-   * @param {!String} config.identifier - The pictawall event identifier.
    * @param {!boolean} [config.autoUpdate = false] - Should the collections periodically fetch their contents ?
    * @param {!number} [config.autoUpdateVelocity = 10000] - Time in ms between each auto-update.
-   * @return {Promise.<this>}
    */
-  constructor(/* config = */ { identifier, autoUpdate = false, autoUpdateVelocity = 10000, assetBatchSize = 100 } = {}) {
+  constructor(identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 10000, assetBatchSize = 100 } = {}) {
     super();
 
     if (typeof identifier !== 'string') {
-      return Promise.reject(new SdkError(this, `Event identifier "${identifier}" is not valid.`));
+      throw new SdkError(this, `Event identifier "${identifier}" is not valid.`);
     }
 
     //this.autoUpdateVelocity = autoUpdateVelocity;
 
     this.setProperty('identifier', identifier);
     this.setApiPath(`/events/${identifier}`);
-    this.assetCollection = new AssetCollection(this, assetBatchSize);
 
+    this.userCollection = new UserCollection(this);
+    this.assetCollection = new AssetCollection(this, assetBatchSize);
+    this.adCollection = new AdCollection(this);
+    this.messageCollection = new MessageCollection(this);
+  }
+
+  fetch() {
     return Promise.all([
-      this.fetch(),
-      this.assetCollection.loadMore()
+      super.fetch(),
+      this.userCollection.loadMore(),
+      this.assetCollection.loadMore(),
+      this.adCollection.loadMore(),
+      this.messageCollection.loadMore()
     ]).then(() => {
       //if (autoUpdate) {
       //  this.startAutoUpdate();
@@ -71,6 +84,15 @@ class EventModel extends BaseModel {
 
   parse(data) {
     return data.data;
+  }
+
+  static loadEvent(identifier, config) {
+    try {
+      const event = new EventModel(identifier, config);
+      return event.fetch();
+    } catch (e) {
+      return Promise.reject(e);
+    }
   }
 }
 

@@ -4,10 +4,11 @@ const BaseCollection = require('./BaseCollection');
 
 class PagedCollection extends BaseCollection {
 
-  constructor(modelType, pathParams, limit) {
-    super(modelType, pathParams);
+  constructor(limit, orderBy) {
+    super();
 
     this._limit = limit;
+    this._orderBy = orderBy;
 
     this._currentPage = 0;
     this._pageCount = null;
@@ -30,8 +31,12 @@ class PagedCollection extends BaseCollection {
     const options = super.fetchOptions;
     options.currentPage = this._currentPage + 1;
 
-    if (this._since !== null) {
+    if (this._since) {
       options.since = this._since;
+    }
+
+    if (this._orderBy) {
+      options.order_by = this._orderBy;// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
     }
 
     options.limit = this._limit;

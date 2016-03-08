@@ -9,22 +9,25 @@ const SdkError = require('../core/Errors').SdkError;
  */
 class BaseCollection {
 
-  constructor(fetchOptions = {}) {
-    this._fetchOptions = fetchOptions;
-
+  constructor() {
     this._loaded = false;
 
     this.reset();
   }
 
-  fetch(queryParameters) {
-    return this.fetchRaw(queryParameters).then(modelsData => {
+  fetch(queryParameters, pathParameters) {
+    return this.fetchRaw(queryParameters, pathParameters).then(modelsData => {
       if (!Array.isArray(modelsData)) {
         throw new SdkError(this, `Invalid response from #parse(data). Should have returned array, got "${JSON.stringify(modelsData)}"`);
       }
 
       this._loaded = true;
-      return modelsData.map(modelData => this.createModel(modelData));
+      return modelsData.map(modelData => {
+        const model = this.createModel(modelData);
+        model.setProperties(modelData);
+
+        return model;
+      });
     });
   }
 
@@ -36,9 +39,20 @@ class BaseCollection {
     return this.fetch(this.fetchOptions)
       .then(models => {
         for (let model of models) {
-          this._models.push(model);
+          this.add(model, true, false);
         }
       });
+  }
+
+  /**
+   * Adds a model to the collection.
+   *
+   * @param model
+   * @param {boolean} [replace = true] If a model with the same ID already exists, overwrite it if true. Ignore the new model if false.
+   * @param {boolean} [persist = true] Currently unused - Persist the model on the server.
+   */
+  add(model, replace = true, persist = true) {
+    this._models.push(model);
   }
 
   reset() {
@@ -54,7 +68,7 @@ class BaseCollection {
   }
 
   get fetchOptions() {
-    return Object.assign({}, this._fetchOptions);
+    return {};
   }
 
   get loaded() {

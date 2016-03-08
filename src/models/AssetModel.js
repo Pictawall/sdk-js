@@ -1,13 +1,12 @@
 'use strict';
 
 const BaseModel = require('./BaseModel');
-const EventModel = require('./EventModel');
 const SdkError = require('../core/Errors').SdkError;
 
 class AssetModel extends BaseModel {
 
   /**
-   * @param {EventModel} event The owning event model.
+   * @param {ChannelModel} event The owning event model.
    */
   constructor(event) {
     super();
@@ -17,7 +16,7 @@ class AssetModel extends BaseModel {
     }
 
     /**
-     * @type {EventModel}
+     * @type {ChannelModel}
      */
     this._event = event;
   }
@@ -28,64 +27,51 @@ class AssetModel extends BaseModel {
       properties.source.additionalData = {};
     }
 
-    this.setApiPath(AssetModel.getApiUrl(this._event.identifier, properties.id));
+    const userCollection = this._event.userCollection;
+    this._owner = userCollection.findOne({ id: properties.owner.id });
+    if (this._owner === null) {
+      const owner = userCollection.createModel(properties.owner);
+      owner.setProperties(properties.owner);
 
-    return super._setProperties(properties);
+      this._owner = userCollection.add(owner, false, false);
+    }
+
+    this.setApiPath(`/events/${this._event.identifier}/assets/${properties.id}`);
+
+    return super.setProperties(properties);
   }
 
-  ///**
-  // * @return {EventModel}
-  // */
-  //get event() {
-  //  return this._event;
-  //}
-  //
-  ///**
-  // * @return {UserModel}
-  // */
-  //get owner() {
-  //
-  //}
+  /**
+   * @return {!UserModel}
+   */
+  get owner() {
+    return this._owner;
+  }
 
-  ///**
-  // * Call this method if the owner.avatar url points to a dead link.
-  // *
-  // * @memberOf UserModel
-  // * @instance
-  // */
-  //markAvatarAsDead() {
-  //  // TODO NYI
-  //  // PATCH assets/id/check/user
-  //}
-  //
-  ///**
-  // * Call this method if the media.default url points to a dead link.
-  // *
-  // * @memberOf UserModel
-  // * @instance
-  // */
-  //markMediaAdDead() {
-  //  // TODO NYI
-  //  // PATCH assets/id/check/
-  //}
-  //
-  ///**
-  // * Report the asset for moderation.
-  // *
-  // * @memberOf UserModel
-  // * @instance
-  // */
-  //report() {
-  //  if (this.isSafe) {
-  //    return;
-  //  }
-  //
-  //  // TODO NYI
-  //  // PATCH assets/id/report
-  //}
+  /**
+   * Call this method if the media.default url points to a dead link.
+   *
+   * @memberOf UserModel
+   * @instance
+   */
+  markMediaAsDead() {
+    // TODO NYI
+    // PATCH assets/id/check/
+  }
 
-  static getApiUrl(eventIdentifier, assetId) {
-    return `/events/${eventIdentifier}/assets/${assetId}`;
+  /**
+   * Report the asset for moderation.
+   *
+   * @memberOf UserModel
+   * @instance
+   */
+  report() {
+    if (this.getProperty('isSafe')) {
+      return;
+    }
+
+    // TODO NYI
+    // PATCH assets/id/report
   }
 }
 

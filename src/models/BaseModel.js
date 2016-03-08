@@ -18,7 +18,7 @@ class BaseModel {
     this._properties = new Map();
   }
 
-  _setProperties(newProperties) {
+  setProperties(newProperties) {
     if (typeof newProperties !== 'object') {
       throw new SdkError(this, `Invalid newProperties value "${newProperties}". This is the value returned by #parse(data).`);
     }
@@ -49,7 +49,7 @@ class BaseModel {
   fetch(queryParameters) {
     return this.fetchRaw(queryParameters)
       .then(data => {
-        this._setProperties(data);
+        this.setProperties(data);
         return this;
       });
   }

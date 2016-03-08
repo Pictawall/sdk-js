@@ -1,0 +1,15 @@
+{
+  "data": [
+    {
+      "id": 11,
+      "title": "Super discount on golden shoes",
+      "content": "Use the coupon code 774-this-is-not-a-real-coupon before 7am for a 3% discount on your purchase.\n\nTerms and conditions may apply.\n",
+      "link": "string",
+      "duration": 0,
+      "position": 0,
+      "play": true,
+      "startAt": 0,
+      "endAt": 0
+    }
+  ]
+}

@@ -3,28 +3,40 @@
 const PagedCollection = require('./PagedCollection');
 const AssetModel = require('../models/AssetModel');
 
+// TODO: updateAll
+
 class AssetCollection extends PagedCollection {
 
   /**
-   * @param {EventModel} event The owning event.
-   * @param {number} [limit = 100] How many assets should be returned by each api call.
+   * @param {!ChannelModel} event The owning event.
+   * @param {object} [fetchOptions = {}] Asset fetch options.
+   * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
+   * @param {string} [fetchOptions.orderBy = 'date_desc'] Sort order returned by the API. See API Specifications for possible orders.
+   * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
    */
-  constructor(event, limit = 100, filter = { orderBy: 'date_desc', kind: null }) {
-    super(AssetModel, {
-      eventId: event.getProperty('identifier')
-    }, limit);
+  constructor(event, { limit = 100, orderBy = 'date_desc', kind } = {}) {
+    super(limit, orderBy);
 
     this._event = event;
     this.setApiPath(`/events/${event.getProperty('identifier')}/assets/{assetId}`);
-  }
 
-  updateAll() {
-    // TODO
+    this._kindFilter = kind;
   }
 
   /**
-   * Returns the featured tweet if any is available, null otherwise.
-   * @returns {UserModel}
+   *
+   * @returns {boolean}
+   */
+  hasFeaturedAsset() {
+    return this._event.getProperty('featuredAssetId') !== -1;
+  }
+
+  /**
+   * <p>Returns a promise containing the featured tweet if any is available. Null otherwise.</p>
+   * <p>This method fetches the asset from the server if it does not have it in its local collection.</p>
+   * <p>Use {@link #hasFeaturedAsset} to check if this event has a featured asset or not.</p>
+   *
+   * @returns {Promise.<UserModel>}
    */
   getFeaturedAsset() {
     const assetId = this._event.getProperty('featuredAssetId');
@@ -33,7 +45,22 @@ class AssetCollection extends PagedCollection {
       return null;
     }
 
-    // TODO get event id from collection or fetch it by id
+    const localResult = this.findOne({ featured: true });
+    if (localResult != null) {
+      return Promise.resolve(localResult);
+    }
+
+    return this.fetch(null, { assetId });
+  }
+
+  fetchById(assetId) {
+    return this.fetch(null, { assetId }).then(assets => {
+      if (assets.length === 1) {
+        return assets[0];
+      }
+
+      return null;
+    });
   }
 
   /**
@@ -53,9 +80,13 @@ class AssetCollection extends PagedCollection {
    * @readonly
    */
   get fetchOptions() {
-    return super.fetchOptions;
+    const options = super.fetchOptions;
 
-    // TODO: add options: order_by, and kind
+    if (this._kindFilter) {
+      options.kind = this._kindFilter;
+    }
+
+    return options;
   }
 
   /**
@@ -71,15 +102,9 @@ class AssetCollection extends PagedCollection {
 
   /**
    * Creates a model and sets its properties.
-   *
-   * @param {!object} modelData The properties of the model.
    */
-  createModel(modelData) {
-    const model = new AssetModel(this._event);
-
-    model._setProperties(modelData);
-
-    return model;
+  createModel() {
+    return new AssetModel(this._event);
   }
 }
 
