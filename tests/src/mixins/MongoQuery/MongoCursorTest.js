@@ -58,7 +58,7 @@ describe('MongoCursor', () => {
     expect(result[0].id).toBe(DATA[1].id);
   });
 
-  it('accepts all of the above at the same time', () => {
+  it('does not care when the sort query is called', () => {
     const cursor = new MongoCursor({}, DATA);
 
     const result = cursor.skip(2).limit(2).sort({ id: -1 }).toArray();
@@ -70,11 +70,62 @@ describe('MongoCursor', () => {
     expect(result[1].id).toBe(4);
   });
 
-  it('works with deeper queries', () => {
-    (new MongoCursor(DATA, {
-      id: { $not: { $lte: 5, $gte: 7 } }
-    })).sort({ id: -1 }).limit(1).skip(1).forEach(item => {
-      console.log(item.id);
+  it('works with forEach', () => {
+    let found = false;
+
+    (new MongoCursor({
+      $or: [{ id: 5 }, { id: 6 }]
+    }, DATA)).limit(1).sort({ id: -1 }).forEach(item => {
+      expect(item.id).toBe(6);
+      found = true;
+    });
+
+    if (!found) {
+      fail('Complex query failed to return any value.');
+    }
+  });
+
+  it('accepts . separator in item selectors', () => {
+
+    const result = (new MongoCursor({
+      'network.id': 1
+    }, [{
+      id: 1,
+      source: {
+        network: 'twitter',
+        id: 7
+      }
+    }, {
+      id: 7,
+      source: {
+        network: 'facebook',
+        id: 1
+      }
+    }])).toArray();
+
+    expect(result.length).toBe(1);
+    expect(result[0].id).toBe(7);
+  });
+
+  describe('$or selector', () => {
+    it('accepts primitive values', () => {
+      const result = (new MongoCursor({
+        id: { $or: [5, 6] }
+      }, DATA)).toArray();
+
+      expect(result.length).toBe(2);
+      expect(result[0].id).toBe(5);
+      expect(result[1].id).toBe(6);
+    });
+
+    it('accepts object values', () => {
+      const result = (new MongoCursor({
+        $or: [{ id: 5 }, { id: 4 }]
+      }, DATA)).toArray();
+
+      expect(result.length).toBe(2);
+      expect(result[0].id).toBe(4);
+      expect(result[1].id).toBe(5);
     });
   });
 });

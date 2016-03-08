@@ -91,7 +91,7 @@ const SELECTOR_HANDLERS = {
     }
 
     for (let selector of selectorArray) {
-      if (parseSelectors(item, selector)) {
+      if (executeQuery(item, selector)) {
         return true;
       }
     }
@@ -109,7 +109,7 @@ const SELECTOR_HANDLERS = {
     }
 
     for (let selector of selectorArray) {
-      if (!parseSelectors(item, selector)) {
+      if (!executeQuery(item, selector)) {
         return false;
       }
     }
@@ -122,49 +122,34 @@ const SELECTOR_HANDLERS = {
       throw new Error(`$not requires an object, got "${selector}".`);
     }
 
-    return !parseSelectors(item, selector);
+    return !executeQuery(item, selector);
   }
 };
 
-/**
- *
- * @param item
- * @param selectors
- */
-function parseSelectors(item, selectors) {
+function executeQuery(item, selectors) {
+  if (typeof selectors !== 'object' || Array.isArray(selectors)) {
+    return SELECTOR_HANDLERS.eq(item, selectors);
+  }
+
   for (let selectorName of Object.getOwnPropertyNames(selectors)) {
-    const selectorParameter = selectors[selectorName]; // data to give to the selector. Ex: { id: 5 } => 5. { id: { '$eq': 5 } } => { '$eq': 5 }
+    const selectorParameter = selectors[selectorName];
 
-    let itemToCompare;
-    let selectorHandler; // handler for a selector
+    if (selectorName.charAt(0) === '$') {
+      // { <proprietarySelector>: <selectorParameter> } case. ie { $or: [{ $id: 5 }, { $id: 7 }] }
+      const selectorHandler = SELECTOR_HANDLERS[selectorName.substr(1)];
 
-    if (!selectorName.startsWith('$')) {
-      // TODO support for itemProperty dot syntax, ex { 'source.network': 'twitter' }
-
-      itemToCompare = item[selectorName]; // value to compare
-
-      // ex item={ id: 4 }, selector={ id: { $lt: 45 } }
-      // => item=4, selector={ $lt: 45 }
-      if (typeof selectorParameter === 'object' && !Array.isArray(selectorParameter)) {
-        if (!parseSelectors(itemToCompare, selectorParameter)) {
-          return false;
-        }
-      }
-
-      // ex item={ id: 4 }, selector={ id: 45 }, itemToCompare=4, selectorParameter=45
-      selectorHandler = SELECTOR_HANDLERS.eq;
-    } else {
-      // ex item={ id: 4 }, selector={ $or: [{ $id: 5 }, { $id: 2 }] }, itemToCompare={ id: 4 }, selectorParameter=[{ $id: 5 }, { $id: 2 }]
-      selectorHandler = SELECTOR_HANDLERS[selectorName.substr(1)];
       if (selectorHandler === void 0) {
         throw new Error(`Unknown WHERE selector "${selectorName}"`);
       }
 
-      itemToCompare = item;
-    }
+      if (!selectorHandler(item, selectorParameter)) {
+        return false;
+      }
+    } else {
+      // { <item>: <query> } case
+      // split item here.
 
-    if (!selectorHandler(itemToCompare, selectorParameter)) {
-      return false;
+      return executeQuery(item[selectorName], selectorParameter);
     }
   }
 
@@ -177,6 +162,6 @@ module.exports = function (query) {
       item = item.toJson();
     }
 
-    return parseSelectors(item, query);
+    return executeQuery(item, query);
   };
 };
