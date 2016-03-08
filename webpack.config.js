@@ -18,7 +18,7 @@ module.exports = {
   },
   devtool: 'inline-source-map',
   module: {
-    loaders: [
+    preLoaders: [
       {
         test: /\.js$/,
         exclude: /node_modules/,
