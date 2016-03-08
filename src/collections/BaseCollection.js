@@ -1,6 +1,6 @@
 'use strict';
 
-const merge = require('../util/merge');
+const ClassUtil = require('../util/ClassUtil');
 const SdkError = require('../core/Errors').SdkError;
 
 /**
@@ -89,6 +89,6 @@ class BaseCollection {
 const FetchMixin = require('../mixins/FetchMixin');
 const FindMixin = require('../mixins/FindMixin');
 
-merge(BaseCollection, FetchMixin, FindMixin);
+ClassUtil.merge(BaseCollection, FetchMixin, FindMixin);
 
 module.exports = BaseCollection;

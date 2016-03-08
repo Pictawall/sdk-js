@@ -2,7 +2,7 @@
 
 const MapUtil = require('../util/MapUtil');
 const FetchMixin = require('../mixins/FetchMixin');
-const merge = require('../util/merge');
+const ClassUtil = require('../util/ClassUtil');
 const SdkError = require('../core/Errors').SdkError;
 
 /**
@@ -55,6 +55,6 @@ class BaseModel {
   }
 }
 
-merge(BaseModel, FetchMixin);
+ClassUtil.merge(BaseModel, FetchMixin);
 
 module.exports = BaseModel;
