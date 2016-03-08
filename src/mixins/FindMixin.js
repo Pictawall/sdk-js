@@ -4,7 +4,7 @@ const Errors = require('../core/Errors');
 const MongoCursor = require('./MongoQuery/MongoCursor');
 
 /**
- * <p>This mixin adds a MongoDB-like find syntax to a collection.</p>
+ * <p>This mixin adds a MongoDB-like find syntax to iterables.</p>
  * <p>The syntax does not exactly match the MongoDB one but is highly inspired from it. For instance,
  *    it would be silly to make these methods asynchronous as they're not performing any IO operation.<p>
  * <p>The point is however to add as much support for the query syntax as possible.<p>

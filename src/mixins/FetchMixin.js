@@ -37,12 +37,11 @@ const FetchMixin = {
    * @instance
    */
   fetchRaw(queryParameters, pathParameters) {
-    // TODO use queryParameters
     const endpoint = getEndpoint.call(this, pathParameters);
 
-    return window.fetch(endpoint)
+    return window.fetch(endpoint + StringUtil.buildQueryParameters(queryParameters))
       .then(response => {
-        if (response.status === 200) {
+        if (response.ok) {
           return response.json();
         } else {
           throw new SdkError(this, `API responded with http code ${response.status} for endpoint "${endpoint}"`);
