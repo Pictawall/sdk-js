@@ -85,7 +85,7 @@ describe('MongoCursor', () => {
     }
   });
 
-  it('accepts . separator in item selectors', () => {
+  it('accepts . separator in where queries', () => {
 
     const result = (new MongoCursor({
       'source.id': 1
@@ -105,6 +105,34 @@ describe('MongoCursor', () => {
 
     expect(result.length).toBe(1);
     expect(result[0].id).toBe(7);
+  });
+
+  it('accepts . separator in sort queries', () => {
+
+    const result = (new MongoCursor({}, [{
+      id: 1,
+      source: {
+        network: 'twitter',
+        id: 7
+      }
+    }, {
+      id: 7,
+      source: {
+        network: 'facebook',
+        id: 1
+      }
+    }, {
+      id: 19,
+      source: {
+        network: 'facebook',
+        id: 3
+      }
+    }])).sort({ 'source.id': 1 }).toArray();
+
+    expect(result.length).toBe(3);
+    expect(result[0].source.id).toBe(1);
+    expect(result[1].source.id).toBe(3);
+    expect(result[2].source.id).toBe(7);
   });
 
   describe('$or selector', () => {

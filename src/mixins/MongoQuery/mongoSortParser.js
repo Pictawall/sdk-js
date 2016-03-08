@@ -1,5 +1,7 @@
 'use strict';
 
+const ObjectUtil = require('../../util/ObjectUtil');
+
 /**
  * Converts a sort query into a comparator function.
  * @param {!Object} sortQuery
@@ -27,10 +29,9 @@ function parseSortQuery(sortQuery) {
 function sortItems(a, b, sortQuery) {
   for (let fieldName of Object.getOwnPropertyNames(sortQuery)) {
     const sortOrder = sortQuery[fieldName];
-    const fieldA = a[fieldName];
-    const fieldB = b[fieldName];
 
-    // TODO add support for x.y notation
+    const fieldA = ObjectUtil.find(a, fieldName);
+    const fieldB = ObjectUtil.find(b, fieldName);
 
     let result;
     if (typeof sortOrder === 'object') {
