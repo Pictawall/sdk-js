@@ -4,7 +4,7 @@ const stubbedRequests = [];
 
 const originalFetch = window.fetch;
 
-const fakeFetch = function (path, ...args) {
+const fakeFetch = function (path) {
 
   for (let stubbedRequest of stubbedRequests) {
     if (stubbedRequest.pathRegex.test(path)) {
@@ -12,8 +12,7 @@ const fakeFetch = function (path, ...args) {
     }
   }
 
-  console.warn('No mock path found for ' + path);
-  return originalFetch(path, ...args);
+  throw new Error('No mock path found for ' + path);
 };
 
 module.exports = {

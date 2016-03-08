@@ -8,6 +8,7 @@ require('./mock/XhrMock').init();
 
 require('./src/appTest');
 
+require('./src/services/ConfigTest');
 require('./src/mixins/MongoQuery/MongoCursorTest');
 
 require('./src/models/EventModelTest');

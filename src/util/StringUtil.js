@@ -22,6 +22,10 @@ module.exports = {
   },
 
   buildQueryParameters(queryObject = {}) {
+    if (queryObject == null) {
+      return '';
+    }
+
     const queryParts = Object.getOwnPropertyNames(queryObject);
 
     if (queryParts.length === 0) {

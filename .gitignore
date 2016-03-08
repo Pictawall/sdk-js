@@ -2,5 +2,6 @@
 /node_modules
 /docs
 /dist/dev
+/coverage
 
 .DS_STORE

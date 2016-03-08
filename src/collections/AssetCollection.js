@@ -50,28 +50,19 @@ class AssetCollection extends PagedCollection {
       return Promise.resolve(localResult);
     }
 
-    return this.fetch(null, { assetId });
-  }
-
-  fetchById(assetId) {
-    return this.fetch(null, { assetId }).then(assets => {
-      if (assets.length === 1) {
-        return assets[0];
-      }
-
-      return null;
-    });
+    return this.fetchById(assetId);
   }
 
   /**
-   * <p>Returns the list of assets the content manager favorited.</p>
-   * <p>Note: This method only filters out non-favorited assets. It does not guarantee to return every favorited
-   * asset unless {@link PagedCollection#hasMore} returns false.</p>
+   * Retrieves the asset matching the passed ID.
    *
-   * @returns {Array.<UserModel>}
+   * @param {number} assetId The ID of the asset to fetch.
+   * @returns {!Promise.<AssetModel>}
    */
-  getFavorites() {
-    return this.find({ favorited: true }).toArray();
+  fetchById(assetId) {
+    return this.fetchRaw(null, { assetId }).then(asset => {
+      return this.buildModel(asset);
+    });
   }
 
   /**

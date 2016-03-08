@@ -6,7 +6,6 @@
  * <p>Default values are:</p>
  * <ul>
  *   <li>endpoint: 'https://api.pictawall.com'</li>
- *   <li>limit: 100</li>
  * </ul>
  */
 class Config {
@@ -15,7 +14,6 @@ class Config {
     this.parameters = new Map();
 
     this.parameters.set('endpoint', 'https://api.pictawall.com/v2.5');
-    this.parameters.set('limit', 100);
   }
 
   /**

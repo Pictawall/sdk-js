@@ -43,10 +43,10 @@ class EventModel extends BaseModel {
   fetch() {
     return Promise.all([
       super.fetch(),
-      this.userCollection.loadMore(),
-      this.assetCollection.loadMore(),
-      this.adCollection.loadMore(),
-      this.messageCollection.loadMore()
+      this.userCollection.fetch(),
+      this.assetCollection.fetch(),
+      this.adCollection.fetch(),
+      this.messageCollection.fetch()
     ]).then(() => {
       //if (autoUpdate) {
       //  this.startAutoUpdate();

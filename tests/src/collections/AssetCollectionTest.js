@@ -4,10 +4,15 @@ const AssetCollection = require('../../../src/collections/AssetCollection');
 const XhrMock = require('../../mock/XhrMock');
 const EventModelTest = require('../models/EventModelTest');
 
+const EventModel = require('../../../src/models/EventModel');
+
 const ASSET_SOURCE = XhrMock.VALID_EVENT_ASSETS;
 
 describe('AssetCollection', () => {
 
+  /**
+   * @type AssetCollection
+   */
   let collection;
 
   it('can be created', () => {
@@ -15,11 +20,11 @@ describe('AssetCollection', () => {
   });
 
   it('loads from the server', done => {
-    const loadMorePromise = collection.loadMore();
+    const fetchPromise = collection.fetch();
 
-    expect(loadMorePromise).toEqual(jasmine.any(Promise));
+    expect(fetchPromise).toEqual(jasmine.any(Promise));
 
-    loadMorePromise
+    fetchPromise
       .then(() => {
         expect(collection._since).toBe(ASSET_SOURCE.since);
         expect(collection._total).toBe(ASSET_SOURCE.total);
@@ -59,6 +64,43 @@ describe('AssetCollection', () => {
 
     favorites.forEach(asset => {
       expect(asset.getProperty('favorited')).toBe(true);
+    });
+  });
+
+  let eventWithFeatured;
+  describe('hasFeaturedAsset', () => {
+
+    it('returns true if the event has a featured asset', () => {
+      expect(collection.hasFeaturedAsset()).toBe(false);
+    });
+
+    it('returns false otherwise', done => {
+      EventModel.loadEvent(XhrMock.VALID_IDENTIFIER_FEATURED).then(event => {
+        expect(event.assetCollection.hasFeaturedAsset()).toBe(true);
+        eventWithFeatured = event;
+        done();
+      }).catch(e => {
+        fail(e);
+        done();
+      });
+    });
+  });
+
+  describe('getFeaturedAsset', () => {
+
+    it('returns true if the event has a featured asset', () => {
+      expect(collection.getFeaturedAsset()).toBe(null);
+    });
+
+    it('returns false otherwise', done => {
+      eventWithFeatured.assetCollection.getFeaturedAsset().then(asset => {
+        expect(asset.getProperty('id')).toBe(eventWithFeatured.getProperty('featuredAssetId'));
+        expect(asset.getProperty('featured')).toBe(true);
+        done();
+      }).catch(e => {
+        fail(e);
+        done();
+      });
     });
   });
 });

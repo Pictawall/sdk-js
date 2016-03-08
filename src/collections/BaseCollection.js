@@ -15,32 +15,52 @@ class BaseCollection {
     this.reset();
   }
 
-  fetch(queryParameters, pathParameters) {
-    return this.fetchRaw(queryParameters, pathParameters).then(modelsData => {
-      if (!Array.isArray(modelsData)) {
-        throw new SdkError(this, `Invalid response from #parse(data). Should have returned array, got "${JSON.stringify(modelsData)}"`);
-      }
+  /**
+   * Creates a model using the {@link #createModel} factory, then sets its properties.
+   *
+   * @param {!object} modelData Initialisation data for the model.
+   * @returns {!BaseModel}
+   */
+  buildModel(modelData) {
+    const model = this.createModel();
+    model.setProperties(modelData);
 
-      this._loaded = true;
-      return modelsData.map(modelData => {
-        const model = this.createModel(modelData);
-        model.setProperties(modelData);
+    return model;
+  }
 
-        return model;
-      });
-    });
+  /**
+   * Model factory
+   * @return {!BaseModel}
+   */
+  createModel() {
+    throw new SdkError('CreateModel not implemented');
   }
 
   hasMore() {
     return !this._loaded;
   }
 
-  loadMore() {
-    return this.fetch(this.fetchOptions)
-      .then(models => {
-        for (let model of models) {
-          this.add(model, true, false);
+  /**
+   * Downloads and populates the collection.
+   * @returns {Promise.<this>}
+   */
+  fetch() {
+    return this.fetchRaw(this.fetchOptions)
+      .then(modelsData => {
+        if (!Array.isArray(modelsData)) {
+          throw new SdkError(this, `Invalid response from #parse(data). Should have returned array, got "${JSON.stringify(modelsData)}"`);
         }
+
+        modelsData.forEach(data => {
+          const model = this.createModel(data);
+          model.setProperties(data);
+
+          this.add(model, true, false);
+        });
+
+        this._loaded = true;
+
+        return this;
       });
   }
 
@@ -57,10 +77,6 @@ class BaseCollection {
 
   reset() {
     this._models = [];
-  }
-
-  createModel() {
-    throw new SdkError(this, 'Not implemented by the collection.');
   }
 
   toJson() {
