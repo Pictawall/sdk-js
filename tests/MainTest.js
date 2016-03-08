@@ -4,14 +4,13 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
 
 require('./mock/XhrMock').init();
 
-describe('sdk', () => {
-  beforeEach(() => {
-    console.log();
-    console.log('New jasmine test');
-  });
+//describe('SDK', () => {
 
-  require('./src/appTest');
+require('./src/appTest');
 
-  require('./src/models/EventModelTest');
-  require('./src/collections/AssetCollectionTest');
-});
+require('./src/mixins/MongoQuery/MongoCursorTest');
+
+require('./src/models/EventModelTest');
+require('./src/collections/AssetCollectionTest');
+
+//});

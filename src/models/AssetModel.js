@@ -1,203 +1,78 @@
 'use strict';
 
-const CardModel = require('./CardModel');
+const BaseModel = require('./BaseModel');
+const SdkError = require('../core/Errors').SdkError;
 
-// TODO optional dep
-//const moment = require('moment');
-
-/**
- * @classdesc <p>Model for pictawall events' assets.</p>
- * <p>The model inherits from the [ampersand-model]{@link https://ampersandjs.com/docs/#ampersand-model} methods.</p>
- *
- * @class AssetModel
- * @inherits {CardModel}
- */
-const AssetModel = CardModel.extend({
-
-  props: {
-
-    /**
-     * Count of times the asset was displayed
-     *
-     * @type {!number}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    displayCount: {
-      type: 'number',
-      required: true,
-      setOnce: true
-    },
-
-    /*
-     "event": "batibouw-2016", // unused
-     */
-
-    /**
-     * @typedef {Object} AssetSource
-     * @property {!String} network - Source type, eg. 'twitter'
-     * @property {!String} id - Asset source id as used by the source itself.
-     * @property {Object} additionalData - source-specific data.
-     */
-
-    /**
-     * Asset original source.
-     *
-     * @type {!AssetSource}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    source: {
-      type: 'object',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * Timestamp in seconds at which the asset was originally posted.
-     *
-     * @type {!number}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    postTime: {
-      type: 'number',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * Asset like count.
-     *
-     * @type {!number}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    likeCount: {
-      type: 'number',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * Asset comment count.
-     *
-     * @type {!number}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    commentCount: {
-      type: 'number',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * Whether or not the event manager favorited this asset.
-     *
-     * @type {!boolean}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    favorited: {
-      type: 'boolean',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * Whether or not the event manager featured this asset.
-     *
-     * @type {!boolean}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    featured: {
-      type: 'boolean',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * @typedef {Object} AssetOwner
-     * @property {!String} id - The id of the asset owner as used by the original source.
-     * @property {!String} author - The display name of the asset owner.
-     * @property {!String} username - The account name of the asset owner.
-     * @property {!String} avatar - URL poiting to the avatar of the asset owner.
-     */
-
-    /**
-     * Author of the asset.
-     *
-     * @type {!AssetOwner}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    owner: {
-      type: 'object',
-      required: true,
-      setOnce: true
-    },
-
-    /**
-     * Author of the asset.
-     *
-     * @type {!AssetOwner}
-     * @memberOf AssetModel
-     * @instance
-     * @readonly
-     */
-    safe: {
-      type: 'boolean',
-      required: true,
-      setOnce: true
-    }
-  },
+class AssetModel extends BaseModel {
 
   /**
-   * Call this method if the owner.avatar url points to a dead link.
-   *
-   * @memberOf AssetModel
-   * @instance
+   * @param {ChannelModel} event The owning event model.
    */
-  markAvatarAsDead() {
-    // TODO NYI
-    // PATCH assets/id/check/user
-  },
+  constructor(event) {
+    super();
+
+    if (typeof event !== 'object') {
+      throw new SdkError(this, 'event must be an EventModel.');
+    }
+
+    /**
+     * @type {ChannelModel}
+     */
+    this._event = event;
+  }
+
+  setProperties(properties) {
+    // hotfix api bug, thx php.
+    if (Array.isArray(properties.source.additionalData)) {
+      properties.source.additionalData = {};
+    }
+
+    const userCollection = this._event.userCollection;
+    this._owner = userCollection.findOne({ id: properties.owner.id });
+    if (this._owner === null) {
+      const owner = userCollection.createModel(properties.owner);
+      owner.setProperties(properties.owner);
+
+      this._owner = userCollection.add(owner, false, false);
+    }
+
+    this.setApiPath(`/events/${this._event.identifier}/assets/${properties.id}`);
+
+    return super.setProperties(properties);
+  }
+
+  /**
+   * @return {!UserModel}
+   */
+  get owner() {
+    return this._owner;
+  }
 
   /**
    * Call this method if the media.default url points to a dead link.
    *
-   * @memberOf AssetModel
+   * @memberOf UserModel
    * @instance
    */
-  markMediaAdDead() {
+  markMediaAsDead() {
     // TODO NYI
     // PATCH assets/id/check/
-  },
+  }
 
   /**
    * Report the asset for moderation.
    *
-   * @memberOf AssetModel
+   * @memberOf UserModel
    * @instance
    */
   report() {
-    if (this.isSafe) {
+    if (this.getProperty('isSafe')) {
       return;
     }
 
     // TODO NYI
     // PATCH assets/id/report
   }
-});
+}
 
 module.exports = AssetModel;

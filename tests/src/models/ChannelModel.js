@@ -6,13 +6,27 @@ const AssertUtil = require('../../util/AssertUtil');
 
 describe('EventModel', () => {
 
-  describe('fetch', () => {
+  describe('constructor', () => {
+    it('rejects if the identifier is invalid', done => {
+      const eventPromise = new EventModel();
+
+      expect(eventPromise).toEqual(jasmine.any(Promise));
+
+      eventPromise.then(() => {
+        fail('EventModel should return a failed promise if the identifier is invalid.');
+        done();
+      }).catch(e => {
+        expect(e.message).toBe('[EventModel] Event identifier "undefined" is not valid.');
+        done();
+      });
+    });
+
     it('rejects if the identifier is not found', done => {
-      const fetchPromise = (new EventModel(XhrMock.INVALID_IDENTIFIER )).fetch();
+      const eventPromise = new EventModel({ identifier: XhrMock.INVALID_IDENTIFIER });
 
-      expect(fetchPromise).toEqual(jasmine.any(Promise));
+      expect(eventPromise).toEqual(jasmine.any(Promise));
 
-      fetchPromise.then(() => {
+      eventPromise.then(() => {
         fail('EventModel should return a failed promise if the identifier is invalid.');
       }).catch(() => {
         done();
@@ -20,7 +34,7 @@ describe('EventModel', () => {
     });
 
     it('resolves once everything is loaded', done => {
-      const eventPromise = (new EventModel(XhrMock.VALID_IDENTIFIER)).fetch();
+      const eventPromise = new EventModel({ identifier: XhrMock.VALID_IDENTIFIER });
 
       expect(eventPromise).toEqual(jasmine.any(Promise));
 
@@ -29,9 +43,8 @@ describe('EventModel', () => {
 
         // Collections have loaded.
         expect(event.assetCollection.loaded).toBe(true);
-        expect(event.userCollection.loaded).toBe(true);
-        expect(event.adCollection.loaded).toBe(true);
-        expect(event.messageCollection.loaded).toBe(true);
+
+        // TODO add more collections
 
         // data is loaded.
         AssertUtil.assertModelLoaded(event, XhrMock.VALID_EVENT.data);

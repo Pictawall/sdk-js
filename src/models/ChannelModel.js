@@ -1,18 +1,60 @@
 'use strict';
 
-const Model = require('ampersand-model');
+const BaseModel = require('./BaseModel');
+const EventModel = require('./EventModel');
+const SdkError = require('../core/Errors').SdkError;
 
-const AssetCollection = require('../collections/AssetCollection');
+/**
+ * @classdesc <p>Model for pictawall channels.</p>
+ */
+class ChannelModel extends BaseModel {
 
-const config = require('../services/Config');
+  /**
+   * <p>Creates a new Channel Model, you can fill it with server data by calling {@link #fetch}</p>
+   *
+   * @param {!String} channelId - The pictawall channel identifier.
+   */
+  constructor(channelId) {
+    super();
 
-// TODO contains an event
-// Note: the event can change so autoupdate option + event
-const ChannelModel = Model.extend({
+    if (typeof channelId !== 'string') {
+      return Promise.reject(new SdkError(this, `Channel identifier "${channelId}" is not valid.`));
+    }
 
-  urlRoot() {
-    return config.get('endpoint') + '/channels';
+    this.setApiPath(`/channels/${channelId}`);
   }
-});
+
+  /**
+   * Loads an event from the server.
+   */
+  setProperties(properties) {
+    const eventProperties = properties.event;
+    this._event = new EventModel(eventProperties.identifier);
+    this._event.setProperties(eventProperties);
+
+    return super.setProperties(properties);
+  }
+
+  /**
+   *
+   * @returns {EventModel|exports|module.exports|*}
+   */
+  get event() {
+    return this._event;
+  }
+
+  parse(data) {
+    return data.data;
+  }
+
+  static loadChannel(channelProps) {
+    try {
+      const channel = new ChannelModel(channelProps);
+      return channel.fetch();
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  }
+}
 
 module.exports = ChannelModel;

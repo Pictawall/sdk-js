@@ -1,15 +1,7 @@
 'use strict';
 
-const CardModel = require('./CardModel');
+const BaseModel = require('./BaseModel');
 
-const AdModel = CardModel.extend({
-
-  props: {
-    /*
-     displayOrder: # (optionnal) TODO unknown
-     embed: # (boolean) TODO unknown
-     */
-  }
-});
+class AdModel extends BaseModel {}
 
 module.exports = AdModel;
