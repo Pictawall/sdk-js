@@ -1,10 +1,7 @@
 'use strict';
 
 const ArrayUtil = require('../../util/ArrayUtil');
-
-//{
-//  $and: [{ "lname": "ford" }, { "marks.english": { $gt: 35 } }]
-//}
+const ObjectUtil = require('../../util/ObjectUtil');
 
 const SELECTOR_HANDLERS = {
 
@@ -121,7 +118,6 @@ const SELECTOR_HANDLERS = {
     if (typeof selector !== 'object') {
       throw new Error(`$not requires an object, got "${selector}".`);
     }
-
     return !executeQuery(item, selector);
   }
 };
@@ -147,9 +143,9 @@ function executeQuery(item, selectors) {
       }
     } else {
       // { <item>: <query> } case
-      // split item here.
+      const itemProperty = ObjectUtil.find(item, selectorName);
 
-      return executeQuery(item[selectorName], selectorParameter);
+      return executeQuery(itemProperty, selectorParameter);
     }
   }
 

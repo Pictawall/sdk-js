@@ -88,7 +88,7 @@ describe('MongoCursor', () => {
   it('accepts . separator in item selectors', () => {
 
     const result = (new MongoCursor({
-      'network.id': 1
+      'source.id': 1
     }, [{
       id: 1,
       source: {
