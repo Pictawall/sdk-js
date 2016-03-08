@@ -69,4 +69,12 @@ describe('MongoCursor', () => {
     expect(result[0].id).toBe(5);
     expect(result[1].id).toBe(4);
   });
+
+  it('works with deeper queries', () => {
+    (new MongoCursor(DATA, {
+      id: { $not: { $lte: 5, $gte: 7 } }
+    })).sort({ id: -1 }).limit(1).skip(1).forEach(item => {
+      console.log(item.id);
+    });
+  });
 });

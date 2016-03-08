@@ -21,13 +21,7 @@ const MongoCollectionSyntaxMixin = {
    * @instance
    */
   findOne(query) {
-    const result = this.find(query).limit(1).first();
-
-    if (result.length === 0) {
-      return null;
-    }
-
-    return result[0];
+    return this.find(query).limit(1).first();
   },
 
   /**

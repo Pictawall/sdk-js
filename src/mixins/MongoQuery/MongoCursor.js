@@ -1,12 +1,11 @@
 'use strict';
 
 const parseSortQuery = require('./mongoSortParser');
-const parseWhereQuery = require('./mongoQueryParser');
+const parseWhereQuery = require('./mongoWhereParser');
 
 const stateMap = new WeakMap();
 
-function executeQuery(obj) {
-  const state = stateMap.get(obj);
+function executeQuery(state) {
 
   // 0. clone
   const array = Array.from(state.iterable);
@@ -24,6 +23,7 @@ function executeQuery(obj) {
     }
   }
 
+  // 2. where + skip + limit
   if (state.query === void 0) {
     if (state.startAt || state.limit) {
       return array.splice(state.startAt || 0, state.limit || array.length);
@@ -32,7 +32,6 @@ function executeQuery(obj) {
     }
   }
 
-  // 2. where + skip + limit
   const matchesItem = typeof state.query === 'function' ? state.query : parseWhereQuery(state.query);
   const matchList = [];
 
@@ -48,7 +47,7 @@ function executeQuery(obj) {
   }
 
   // 3. return
-  state.result = matchList;
+  return matchList;
 }
 
 class MongoCursor {
@@ -133,11 +132,13 @@ class MongoCursor {
    * @returns {!Array.<any>} The list of items from the iterable matching the query.
    */
   toArray() {
-    if (!this._ready()) {
-      executeQuery(this);
+    const state = stateMap.get(this);
+
+    if (state.result === void 0) {
+      state.result = executeQuery(state);
     }
 
-    return stateMap.get(this).result;
+    return state.result;
   }
 
   /**

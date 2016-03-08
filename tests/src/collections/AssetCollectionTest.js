@@ -44,7 +44,7 @@ describe('AssetCollection', () => {
       const remoteModel = remoteCollection[i];
       const localModel = localCollection.findOne({ id: remoteModel.id });
 
-      expect(localModel).not.toBeNull();
+      expect(localModel).toBeDefined();
 
       for (let propertyName of Object.getOwnPropertyNames(remoteModel)) {
         expect(localModel.getProperty(propertyName)).toEqual(remoteModel[propertyName]);
