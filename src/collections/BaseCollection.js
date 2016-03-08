@@ -5,7 +5,7 @@ const SdkError = require('../core/Errors').SdkError;
 
 /**
  * @mixes FetchMixin
- * @mixes MongoCollectionSyntaxMixin
+ * @mixes FindMixin
  */
 class BaseCollection {
 
@@ -87,8 +87,8 @@ class BaseCollection {
 }
 
 const FetchMixin = require('../mixins/FetchMixin');
-const MongoCollectionSyntaxMixin = require('../mixins/MongoCollectionSyntaxMixin');
+const FindMixin = require('../mixins/FindMixin');
 
-merge(BaseCollection, FetchMixin, MongoCollectionSyntaxMixin);
+merge(BaseCollection, FetchMixin, FindMixin);
 
 module.exports = BaseCollection;

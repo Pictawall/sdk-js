@@ -9,9 +9,9 @@ const MongoCursor = require('./MongoQuery/MongoCursor');
  *    it would be silly to make these methods asynchronous as they're not performing any IO operation.<p>
  * <p>The point is however to add as much support for the query syntax as possible.<p>
  *
- * @mixin MongoCollectionSyntaxMixin
+ * @mixin FindMixin
  */
-const MongoCollectionSyntaxMixin = {
+const FindMixin = {
 
   /**
    * Returns the first model matching the [MongoDB find query syntax]{@link https://docs.mongodb.org/manual/reference/method/db.collection.find/}.
@@ -37,4 +37,4 @@ const MongoCollectionSyntaxMixin = {
   }
 };
 
-module.exports = MongoCollectionSyntaxMixin;
+module.exports = FindMixin;
