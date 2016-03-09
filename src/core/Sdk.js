@@ -4,6 +4,14 @@ const Config = require('./Config');
 const EventModel = require('../models/EventModel');
 const ChannelModel = require('../models/ChannelModel');
 
+const BrowserShim = require('./BrowserShim');
+
+if(typeof require.ensure !== 'function') {
+  require.ensure = function(dependencies, callback) {
+    callback(require);
+  };
+}
+
 class Sdk {
 
   /**
@@ -24,25 +32,35 @@ class Sdk {
    * @returns {!Promise}
    */
   loadPolyfills() {
-    const polyfillPromises = [];
+    try {
+      const polyfillPromises = [];
 
-    if (!window.fetch) {
-      polyfillPromises.push(new Promise(resolve => {
-        require.ensure(['whatwg-fetch'], require => {
-          resolve(require('whatwg-fetch'));
-        }, 'fetch-polyfill');
-      }));
+      polyfillPromises.push(BrowserShim.loadFetchPolyfill());
+
+      if (!Map.prototype.toJSON) {
+        polyfillPromises.push(new Promise(resolve => {
+          require.ensure(['map.prototype.tojson'], require => {
+            resolve(require('map.prototype.tojson'));
+          }, 'Map.toJson-polyfill');
+        }));
+      }
+
+      if (!Array.prototype.includes) {
+        polyfillPromises.push(new Promise(resolve => {
+          require.ensure(['array-includes'], require => {
+            const includes = require('array-includes');
+
+            includes.shim();
+
+            resolve();
+          }, 'Array.includes-polyfill');
+        }));
+      }
+
+      return Promise.all(polyfillPromises);
+    } catch (e) {
+      return Promise.reject(e);
     }
-
-    if (!Map.prototype.toJSON) {
-      polyfillPromises.push(new Promise(resolve => {
-        require.ensure(['map.prototype.tojson'], require => {
-          resolve(require('map.prototype.tojson'));
-        }, 'Map.toJson-polyfill');
-      }));
-    }
-
-    return Promise.all(polyfillPromises);
   }
 
   /**

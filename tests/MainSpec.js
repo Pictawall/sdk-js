@@ -1,12 +1,11 @@
 'use strict';
 
-const XhrMock = require('./mock/XhrMock');
-
 require('./src/core/SdkTest');
 require('./src/core/ConfigTest');
 require('./src/mixins/MongoQuery/MongoCursorTest');
 
 describe('API', () => {
+  const XhrMock = require('./mock/XhrMock');
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
 
   beforeAll(() => XhrMock.init());

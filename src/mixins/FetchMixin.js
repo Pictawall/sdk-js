@@ -2,6 +2,7 @@
 
 const StringUtil = require('../util/StringUtil');
 const SdkError = require('../core/Errors').SdkError;
+const BrowserShim = require('../core/BrowserShim');
 
 const apiPaths = new WeakMap();
 
@@ -32,7 +33,7 @@ const FetchMixin = {
   fetchRaw(queryParameters, pathParameters) {
     const endpoint = getEndpoint.call(this, pathParameters);
 
-    return window.fetch(endpoint + StringUtil.buildQueryParameters(queryParameters))
+    return BrowserShim.fetch(endpoint + StringUtil.buildQueryParameters(queryParameters))
       .then(response => {
         if (response.ok) {
           return response.json();

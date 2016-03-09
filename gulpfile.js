@@ -17,10 +17,16 @@ gulp.task('dist', function (callback) {
   });
 });
 
-gulp.task('babel', function() {
-  return gulp.src('src/**/*.js')
+gulp.task('es5-copy-nonjs', function () {
+  return gulp
+    .src(['src/**/*', 'tests/**/*', '!**/*.js'], { base: '.' })
+    .pipe(gulp.dest('./es5'));
+});
+
+gulp.task('es5', ['es5-copy-nonjs'], function () {
+  return gulp.src(['src/**/*.js', 'tests/**/*.js'], { base: '.' })
     .pipe(babel())
-    .pipe(gulp.dest('src_es5'));
+    .pipe(gulp.dest('./es5'));
 });
 
 const jsdoc = require('gulp-jsdoc3');
@@ -31,12 +37,4 @@ gulp.task('jsdoc', function () {
         destination: './docs'
       }
     }));
-});
-
-const KarmaServer = require('karma').Server;
-gulp.task('test', function (done) {
-  new KarmaServer({
-    configFile: __dirname + '/karma.conf.js',
-    singleRun: true
-  }, done).start();
 });

@@ -3,5 +3,6 @@
 /docs
 /dist/dev
 /coverage
+/es5
 
 .DS_STORE

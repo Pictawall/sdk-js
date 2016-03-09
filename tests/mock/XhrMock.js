@@ -1,27 +1,20 @@
 'use strict';
 
-require('jasmine-ajax');
-const fetchMock = require('./fetchMock');
-
-const StringUtil = require('../../src/util/StringUtil');
-
 const config = require('../src/singletons').sdk.config;
+const StringUtil = require('../../src/util/StringUtil');
+const FakeFetch = require('./FakeFetch');
+const BrowserShim = require('../../src/core/BrowserShim');
+const oldFetch = BrowserShim.fetch;
+
 function mockRequest(path, pathParams, response) {
   const stubbedPath = new RegExp('^' + config.get('endpoint') + StringUtil.format(path, ...pathParams) + '([\\?#].*)?$');
 
-  console.log('Stubbing route', stubbedPath.source);
-
-  // whatwg-fetch polyfill fix https://github.com/github/fetch/blob/master/fetch.js#L358
-  response.response = response.responseText;
-
-  fetchMock.stubRequest(stubbedPath, response);
-  jasmine.Ajax.stubRequest(stubbedPath).andReturn(response);
+  FakeFetch.mockRoute(stubbedPath, response);
 }
 
-fetchMock.install();
 module.exports = {
   init() {
-    jasmine.Ajax.install();
+    BrowserShim.fetch = FakeFetch.fetch;
 
     const routes = ['/events/{0}', '/events/{0}/assets', '/events/{0}/users', '/events/{0}/ads', '/events/{0}/messages'];
     const defaultResponses = [this.VALID_EVENT, this.VALID_EVENT_ASSETS, this.VALID_EVENT_USERS, this.VALID_EVENT_ADS, this.VALID_EVENT_MESSAGES];
@@ -33,8 +26,7 @@ module.exports = {
         }
 
         mockRequest(route, [identifier], {
-          status: 200,
-          responseText: JSON.stringify(defaultResponses[index])
+          body: JSON.stringify(defaultResponses[index])
         });
       });
     }
@@ -44,13 +36,11 @@ module.exports = {
     registerValidRoutes(this.VALID_IDENTIFIER_FEATURED, [routes[0]]);
 
     mockRequest(routes[0], [this.VALID_IDENTIFIER_FEATURED], {
-      status: 200,
-      responseText: JSON.stringify(this.VALID_EVENT__FEATURED)
+      body: JSON.stringify(this.VALID_EVENT__FEATURED)
     });
 
     mockRequest('/events/{0}/assets/{1}', [this.VALID_IDENTIFIER_FEATURED, this.VALID_EVENT__FEATURED.data.featuredAssetId], {
-      status: 200,
-      responseText: JSON.stringify(this.VALID_EVENT_ASSET_FEATURED)
+      body: JSON.stringify(this.VALID_EVENT_ASSET_FEATURED)
     });
 
     //1255548
@@ -64,7 +54,7 @@ module.exports = {
   },
 
   destroy() {
-    jasmine.Ajax.uninstall();
+    BrowserShim.fetch = oldFetch;
   },
 
   VALID_IDENTIFIER: 'VALID',
