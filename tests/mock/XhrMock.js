@@ -3,15 +3,17 @@
 require('jasmine-ajax');
 const fetchMock = require('./fetchMock');
 
-const config = require('../../src/services/Config').instance;
 const StringUtil = require('../../src/util/StringUtil');
 
+const config = require('../src/singletons').sdk.config;
 function mockRequest(path, pathParams, response) {
   const stubbedPath = new RegExp('^' + config.get('endpoint') + StringUtil.format(path, ...pathParams) + '([\\?#].*)?$');
 
-  //https://api.pictawall.com/v2.5/events/VALID_FEATURED/assets/1255548
-
   console.log('Stubbing route', stubbedPath.source);
+
+  // whatwg-fetch polyfill fix https://github.com/github/fetch/blob/master/fetch.js#L358
+  response.response = response.responseText;
+
   fetchMock.stubRequest(stubbedPath, response);
   jasmine.Ajax.stubRequest(stubbedPath).andReturn(response);
 }

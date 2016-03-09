@@ -12,7 +12,7 @@ class UserCollection extends PagedCollection {
    * @param {!ChannelModel} event The owning event.
    */
   constructor(event) {
-    super(5, 'score');
+    super(event.sdk, 5, 'score');
 
     this.setApiPath(`/events/${event.getProperty('identifier')}/users/{userId}`);
   }
@@ -59,7 +59,7 @@ class UserCollection extends PagedCollection {
    * Model method factory.
    */
   createModel() {
-    return new UserModel();
+    return new UserModel(this.sdk);
   }
 }
 

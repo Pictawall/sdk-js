@@ -2,18 +2,11 @@
 
 /**
  * @class Config
- *
- * <p>Default values are:</p>
- * <ul>
- *   <li>endpoint: 'https://api.pictawall.com'</li>
- * </ul>
  */
 class Config {
 
   constructor() {
     this.parameters = new Map();
-
-    this.parameters.set('endpoint', 'https://api.pictawall.com/v2.5');
   }
 
   /**
@@ -41,5 +34,4 @@ class Config {
   }
 }
 
-Config.instance = new Config();
 module.exports = Config;

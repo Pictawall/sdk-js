@@ -1,17 +1,21 @@
 'use strict';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
+const XhrMock = require('./mock/XhrMock');
 
-require('./mock/XhrMock').init();
-
-//describe('SDK', () => {
-
-require('./src/appTest');
-
-require('./src/services/ConfigTest');
+require('./src/core/SdkTest');
+require('./src/core/ConfigTest');
 require('./src/mixins/MongoQuery/MongoCursorTest');
 
-require('./src/models/EventModelTest');
-require('./src/collections/AssetCollectionTest');
+describe('API', () => {
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
 
-//});
+  beforeAll(() => XhrMock.init());
+
+  require('./src/models/EventModelTest');
+  require('./src/collections/AssetCollectionTest');
+
+  afterAll(() => XhrMock.destroy());
+});
+
+require('./src/util/ArrayUtilTest');
+require('./src/util/ClassUtilTest');

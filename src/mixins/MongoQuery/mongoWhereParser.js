@@ -154,8 +154,8 @@ function executeQuery(item, selectors) {
 
 module.exports = function (query) {
   return function (item) {
-    if (item.toJson) {
-      item = item.toJson();
+    if (item.toJSON) {
+      item = item.toJSON();
     }
 
     return executeQuery(item, query);

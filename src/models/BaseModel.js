@@ -1,6 +1,5 @@
 'use strict';
 
-const MapUtil = require('../util/MapUtil');
 const FetchMixin = require('../mixins/FetchMixin');
 const ClassUtil = require('../util/ClassUtil');
 const SdkError = require('../core/Errors').SdkError;
@@ -10,12 +9,21 @@ const SdkError = require('../core/Errors').SdkError;
  */
 class BaseModel {
 
-  constructor() {
+  /**
+   * @param {!Sdk} sdk The SDK in which this model is running.
+   */
+  constructor(sdk) {
     /**
      * Model properties, data returned by the server.
      * @type {JsonableMap}
      */
     this._properties = new Map();
+
+    /**
+     * The owning SDK.
+     * @type {!Sdk}
+     */
+    this.sdk = sdk;
   }
 
   setProperties(newProperties) {
@@ -42,8 +50,8 @@ class BaseModel {
     return this._properties.get(propName);
   }
 
-  toJson() {
-    return MapUtil.toJson(this._properties);
+  toJSON() {
+    return this._properties.toJSON();
   }
 
   fetch(queryParameters) {

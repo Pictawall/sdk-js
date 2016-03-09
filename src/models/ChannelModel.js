@@ -12,10 +12,11 @@ class ChannelModel extends BaseModel {
   /**
    * <p>Creates a new Channel Model, you can fill it with server data by calling {@link #fetch}</p>
    *
+   * @param {!Sdk} sdk The SDK in which this model is running.
    * @param {!String} channelId - The pictawall channel identifier.
    */
-  constructor(channelId) {
-    super();
+  constructor(sdk, channelId) {
+    super(sdk);
 
     if (typeof channelId !== 'string') {
       return Promise.reject(new SdkError(this, `Channel identifier "${channelId}" is not valid.`));
@@ -45,15 +46,6 @@ class ChannelModel extends BaseModel {
 
   parse(data) {
     return data.data;
-  }
-
-  static loadChannel(channelProps) {
-    try {
-      const channel = new ChannelModel(channelProps);
-      return channel.fetch();
-    } catch (e) {
-      return Promise.reject(e);
-    }
   }
 }
 

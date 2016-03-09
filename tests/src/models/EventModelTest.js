@@ -1,14 +1,16 @@
 'use strict';
 
-const EventModel = require('../../../src/models/EventModel');
-const XhrMock = require('../../mock/XhrMock');
 const AssertUtil = require('../../util/AssertUtil');
+const XhrMock = require('../../mock/XhrMock');
+
+const EventModel = require('../../../src/models/EventModel');
+const singletons = require('../singletons');
 
 describe('EventModel', () => {
 
   describe('fetch', () => {
     it('rejects if the identifier is not found', done => {
-      const fetchPromise = (new EventModel(XhrMock.INVALID_IDENTIFIER )).fetch();
+      const fetchPromise = (new EventModel(singletons.sdk, XhrMock.INVALID_IDENTIFIER)).fetch();
 
       expect(fetchPromise).toEqual(jasmine.any(Promise));
 
@@ -20,7 +22,7 @@ describe('EventModel', () => {
     });
 
     it('resolves once everything is loaded', done => {
-      const eventPromise = (new EventModel(XhrMock.VALID_IDENTIFIER)).fetch();
+      const eventPromise = (new EventModel(singletons.sdk, XhrMock.VALID_IDENTIFIER)).fetch();
 
       expect(eventPromise).toEqual(jasmine.any(Promise));
 
@@ -36,7 +38,7 @@ describe('EventModel', () => {
         // data is loaded.
         AssertUtil.assertModelLoaded(event, XhrMock.VALID_EVENT.data);
 
-        module.exports.event = event;
+        singletons.event = event;
 
         done();
       }).catch(e => {

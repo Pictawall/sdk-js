@@ -1,9 +1,12 @@
 'use strict';
 
 const BaseModel = require('./BaseModel');
-const EventModel = require('./EventModel');
 
 class UserModel extends BaseModel {
+
+  constructor(sdk) {
+    super(sdk);
+  }
 
   /**
    * Call this method if the owner.avatar url points to a dead link.

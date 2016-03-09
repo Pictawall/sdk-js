@@ -11,7 +11,7 @@ class MessageCollection extends BaseCollection {
    * @param {!ChannelModel} event The owning event.
    */
   constructor(event) {
-    super();
+    super(event.sdk);
 
     this.setApiPath(`/events/${event.getProperty('identifier')}/ads/{adId}`);
   }
@@ -31,7 +31,7 @@ class MessageCollection extends BaseCollection {
    * Model method factory.
    */
   createModel() {
-    return new MessageModel();
+    return new MessageModel(this.sdk);
   }
 }
 

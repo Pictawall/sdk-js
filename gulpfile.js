@@ -1,6 +1,7 @@
 'use strict';
 
 const gulp = require('gulp');
+const babel = require('gulp-babel');
 
 const webpack = require('webpack');
 gulp.task('dist', function (callback) {
@@ -14,6 +15,12 @@ gulp.task('dist', function (callback) {
 
     callback();
   });
+});
+
+gulp.task('babel', function() {
+  return gulp.src('src/**/*.js')
+    .pipe(babel())
+    .pipe(gulp.dest('src_es5'));
 });
 
 const jsdoc = require('gulp-jsdoc3');

@@ -15,7 +15,7 @@ class AssetCollection extends PagedCollection {
    * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
    */
   constructor(event, { limit = 100, orderBy = 'date_desc', kind } = {}) {
-    super(limit, orderBy);
+    super(event.sdk, limit, orderBy);
 
     this._event = event;
     this.setApiPath(`/events/${event.getProperty('identifier')}/assets/{assetId}`);

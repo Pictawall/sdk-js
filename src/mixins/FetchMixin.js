@@ -1,14 +1,7 @@
 'use strict';
 
 const StringUtil = require('../util/StringUtil');
-const config = require('../services/Config').instance;
 const SdkError = require('../core/Errors').SdkError;
-
-if (!window.fetch) {
-  require.ensure([], require => {
-    require('whatwg-fetch');
-  }, 'fetch-polyfill');
-}
 
 const apiPaths = new WeakMap();
 
@@ -76,7 +69,7 @@ function getEndpoint(pathParameters) {
     apiPath = apiPath.slice(0, -1);
   }
 
-  return config.get('endpoint') + apiPath;
+  return this.sdk.config.get('endpoint') + apiPath;
 }
 
 module.exports = FetchMixin;

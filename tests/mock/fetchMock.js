@@ -1,5 +1,7 @@
 'use strict';
 
+const hasNativeFetch = !!window.fetch;
+
 const stubbedRequests = [];
 
 const originalFetch = window.fetch;
@@ -17,14 +19,26 @@ const fakeFetch = function (path) {
 
 module.exports = {
   install() {
+    if (!hasNativeFetch) {
+      return;
+    }
+
     window.fetch = fakeFetch;
   },
 
   uninstall() {
+    if (!hasNativeFetch) {
+      return;
+    }
+
     window.fetch = originalFetch;
   },
 
   stubRequest(pathRegex, response) {
+    if (!hasNativeFetch) {
+      return;
+    }
+
     stubbedRequests.push({
       pathRegex,
       response: [response.responseText, {

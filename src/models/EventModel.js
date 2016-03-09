@@ -17,13 +17,14 @@ class EventModel extends BaseModel {
    * <p>Creates a new Event model and its associated collections.</p>
    * <p>You can fill it with server data by calling {@link #fetch}</p>
    *
+   * @param {!Sdk} sdk - The SDK in which this model is running.
    * @param {!String} identifier - The pictawall event identifier.
    * @param {!Object} config - The constructor parameters.
    * @param {!boolean} [config.autoUpdate = false] - Should the collections periodically fetch their contents ?
    * @param {!number} [config.autoUpdateVelocity = 10000] - Time in ms between each auto-update.
    */
-  constructor(identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 10000, assetBatchSize = 100 } = {}) {
-    super();
+  constructor(sdk, identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 10000, assetBatchSize = 100 } = {}) {
+    super(sdk);
 
     if (typeof identifier !== 'string') {
       throw new SdkError(this, `Event identifier "${identifier}" is not valid.`);
@@ -84,15 +85,6 @@ class EventModel extends BaseModel {
 
   parse(data) {
     return data.data;
-  }
-
-  static loadEvent(identifier, config) {
-    try {
-      const event = new EventModel(identifier, config);
-      return event.fetch();
-    } catch (e) {
-      return Promise.reject(e);
-    }
   }
 }
 

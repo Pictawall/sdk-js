@@ -29,7 +29,8 @@ module.exports = {
         test: /\.json$/,
         loader: 'json'
       }
-    ]
+    ],
+    loaders: []
   },
   plugins: [
     new webpack.DefinePlugin({

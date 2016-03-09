@@ -9,7 +9,7 @@ class AssetModel extends BaseModel {
    * @param {ChannelModel} event The owning event model.
    */
   constructor(event) {
-    super();
+    super(event.sdk);
 
     if (typeof event !== 'object') {
       throw new SdkError(this, 'event must be an EventModel.');

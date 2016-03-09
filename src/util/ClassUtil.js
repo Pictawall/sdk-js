@@ -1,5 +1,6 @@
 'use strict';
 
+const Errors = require('../core/Errors');
 
 function mergeClass(receivingClass, givingPrototype) {
   if (givingPrototype === Object.prototype) {
@@ -14,8 +15,12 @@ function mergeClass(receivingClass, givingPrototype) {
 
   const receivingPrototype = receivingClass.prototype;
   for (let propertyName of Object.getOwnPropertyNames(givingPrototype)) {
-    if (propertyName === 'contructor') {
+    if (propertyName === 'constructor') {
       continue;
+    }
+
+    if (receivingPrototype[propertyName]) {
+      throw new Errors.PictawallError(mergeClass, `Merge error, method ${propertyName} is already in the receiving prototype.`);
     }
 
     receivingPrototype[propertyName] = givingPrototype[propertyName];
@@ -31,12 +36,23 @@ const ClassUtil = {
    * <p>Debug Tool</p>
    * <p>Returns the name of the class of an instance</p>
    *
-   * @param {!any} instance An instance from which the class name will be fetched.
+   * @param {object} instance An instance from which the class name will be fetched.
    * @returns {string} The name of the instance's class.
    */
   getName(instance) {
-    const proto = Object.getPrototypeOf(instance);
-    return proto.constructor ? proto.constructor.name : 'Unknown Class';
+    if (instance == null) {
+      return String(instance);
+    }
+
+    let name;
+    if (typeof instance === 'function') {
+      name = instance.name;
+    } else {
+      const proto = Object.getPrototypeOf(instance);
+      name = proto.constructor.name;
+    }
+
+    return name ? name : 'nameless';
   },
 
   /**
@@ -49,23 +65,29 @@ const ClassUtil = {
    * @returns {*}
    */
   merge(receivingClass, ...mixins) {
+    if (typeof receivingClass !== 'function') {
+      throw new Errors.SdkError(this, 'Receiving Class is not a function');
+    }
+
     for (let i = 0; i < mixins.length; i++) {
       const mixin = mixins[i];
       if (mixin == null) {
-        throw new Error(`Invalid mixin n° ${i}`);
+        throw new Errors.SdkError(this, `Invalid mixin n° ${i}, not defined.`);
       }
 
       if (typeof mixin === 'object') {
         mergeClass(receivingClass, mixin);
-      }
-
-      if (typeof mixin === 'function') {
+      } else if (typeof mixin === 'function') {
         mergeClass(receivingClass, mixin.prototype);
+      } else {
+        throw new Errors.SdkError(this, `Invalid type for mixin n° ${i}, only functions and objects are accepted as mixins.`);
       }
     }
 
     return receivingClass;
   }
 };
+
+Object.freeze(ClassUtil);
 
 module.exports = ClassUtil;

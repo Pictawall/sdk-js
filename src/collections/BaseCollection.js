@@ -9,8 +9,14 @@ const SdkError = require('../core/Errors').SdkError;
  */
 class BaseCollection {
 
-  constructor() {
+  constructor(sdk) {
     this._loaded = false;
+
+    if (sdk === void 0) {
+      throw new SdkError('This model did not receive a SDK instance.');
+    }
+
+    this.sdk = sdk;
 
     this.reset();
   }
@@ -79,7 +85,7 @@ class BaseCollection {
     this._models = [];
   }
 
-  toJson() {
+  toJSON() {
     return this._models;
   }
 

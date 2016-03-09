@@ -11,7 +11,7 @@ class AdCollection extends BaseCollection {
    * @param {!ChannelModel} event The owning event.
    */
   constructor(event) {
-    super();
+    super(event.sdk);
 
     this.setApiPath(`/events/${event.getProperty('identifier')}/ads/{adId}`);
   }
@@ -31,7 +31,7 @@ class AdCollection extends BaseCollection {
    * Model method factory.
    */
   createModel() {
-    return new AdModel();
+    return new AdModel(this.sdk);
   }
 }
 

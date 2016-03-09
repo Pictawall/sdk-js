@@ -4,8 +4,8 @@ const BaseCollection = require('./BaseCollection');
 
 class PagedCollection extends BaseCollection {
 
-  constructor(limit, orderBy) {
-    super();
+  constructor(sdk, limit, orderBy) {
+    super(sdk);
 
     this._limit = limit;
     this._orderBy = orderBy;

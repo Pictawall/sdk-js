@@ -2,9 +2,7 @@
 
 const AssetCollection = require('../../../src/collections/AssetCollection');
 const XhrMock = require('../../mock/XhrMock');
-const EventModelTest = require('../models/EventModelTest');
-
-const EventModel = require('../../../src/models/EventModel');
+const singletons = require('../singletons');
 
 const ASSET_SOURCE = XhrMock.VALID_EVENT_ASSETS;
 
@@ -16,7 +14,7 @@ describe('AssetCollection', () => {
   let collection;
 
   it('can be created', () => {
-    collection = new AssetCollection(EventModelTest.event);
+    collection = new AssetCollection(singletons.event);
   });
 
   it('loads from the server', done => {
@@ -75,7 +73,7 @@ describe('AssetCollection', () => {
     });
 
     it('returns false otherwise', done => {
-      EventModel.loadEvent(XhrMock.VALID_IDENTIFIER_FEATURED).then(event => {
+      singletons.sdk.getEvent(XhrMock.VALID_IDENTIFIER_FEATURED).then(event => {
         expect(event.assetCollection.hasFeaturedAsset()).toBe(true);
         eventWithFeatured = event;
         done();
