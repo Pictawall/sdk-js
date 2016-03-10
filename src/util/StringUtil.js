@@ -43,7 +43,7 @@ const StringUtil = {
   /**
    * Converts an object of key -> values to a query string with the same key -> values.
    *
-   * @param {!Object.<String, *>} queryObject List of parameters to set in the query string.
+   * @param {Object.<String, *>} [queryObject = {}] List of parameters to set in the query string.
    * @returns {!String}
    *
    * @example
@@ -60,11 +60,22 @@ const StringUtil = {
       return '';
     }
 
-    return '?' + (queryParts.map(queryPart => {
+    const queryArray = [];
+
+    queryParts.forEach(queryPart => {
       const partValue = queryObject[queryPart];
 
-      return encodeURIComponent(queryPart) + '=' + encodeURIComponent(partValue);
-    }).join('&'));
+      // TODO enhance
+      if (Array.isArray(partValue)) {
+        partValue.forEach(value => {
+          queryArray.push(encodeURIComponent(queryPart) + '[]=' + encodeURIComponent(value));
+        });
+      } else {
+        queryArray.push(encodeURIComponent(queryPart) + '=' + encodeURIComponent(partValue));
+      }
+    });
+
+    return '?' + queryArray.join('&');
   }
 };
 
