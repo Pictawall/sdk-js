@@ -22,3 +22,4 @@ describe('API', function () {
 
 require('./src/util/ArrayUtilTest');
 require('./src/util/ClassUtilTest');
+require('./src/util/ObjectUtilTest');

@@ -8,8 +8,8 @@
   ],
   "author": "Jean-Christophe Cuvelier <jcc@pictawall.com>",
   "scripts": {
-    "dist": "NODE_ENV=production gulp dist",
-    "build": "NODE_ENV=development gulp dist && gulp babel",
+    "build": "NODE_ENV=production gulp dist && gulp es5",
+    "build-dev": "NODE_ENV=development gulp dist && gulp es5",
     "test": "npm run test-server && npm run test-client",
     "test-server": "gulp es5 && jasmine",
     "test-client": "karma start karma.conf.js"
