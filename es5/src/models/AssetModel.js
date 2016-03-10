@@ -15,6 +15,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var BaseModel = require('./BaseModel');
 var SdkError = require('../core/Errors').SdkError;
 
+/**
+ * Asset model.
+ */
+
 var AssetModel = function (_BaseModel) {
   _inherits(AssetModel, _BaseModel);
 
@@ -37,6 +41,11 @@ var AssetModel = function (_BaseModel) {
     _this._event = event;
     return _this;
   }
+
+  /**
+   * @inheritDoc
+   */
+
 
   _createClass(AssetModel, [{
     key: 'setProperties',
@@ -70,9 +79,6 @@ var AssetModel = function (_BaseModel) {
 
     /**
      * Call this method if the media.default url points to a dead link.
-     *
-     * @memberOf UserModel
-     * @instance
      */
     value: function markMediaAsDead() {}
     // TODO NYI
@@ -81,9 +87,6 @@ var AssetModel = function (_BaseModel) {
 
     /**
      * Report the asset for moderation.
-     *
-     * @memberOf UserModel
-     * @instance
      */
 
   }, {

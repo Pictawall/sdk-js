@@ -1,6 +1,6 @@
 'use strict';
 
-var MongoCursor = require('../../../../src/mixins/MongoQuery/MongoCursor');
+var MongoCursor = require('../../../../src/mixins/MongoQuery/MongoFinder');
 
 describe('MongoCursor', function () {
 

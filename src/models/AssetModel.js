@@ -3,6 +3,9 @@
 const BaseModel = require('./BaseModel');
 const SdkError = require('../core/Errors').SdkError;
 
+/**
+ * Asset model.
+ */
 class AssetModel extends BaseModel {
 
   /**
@@ -21,6 +24,9 @@ class AssetModel extends BaseModel {
     this._event = event;
   }
 
+  /**
+   * @inheritDoc
+   */
   setProperties(properties) {
     // hotfix api bug, thx php.
     if (Array.isArray(properties.source.additionalData)) {
@@ -50,9 +56,6 @@ class AssetModel extends BaseModel {
 
   /**
    * Call this method if the media.default url points to a dead link.
-   *
-   * @memberOf UserModel
-   * @instance
    */
   markMediaAsDead() {
     // TODO NYI
@@ -61,9 +64,6 @@ class AssetModel extends BaseModel {
 
   /**
    * Report the asset for moderation.
-   *
-   * @memberOf UserModel
-   * @instance
    */
   report() {
     if (this.getProperty('isSafe')) {

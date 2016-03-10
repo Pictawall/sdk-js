@@ -11,6 +11,16 @@ var ClassUtil = require('../util/ClassUtil');
 var SdkError = require('../core/Errors').SdkError;
 
 /**
+ * Maps containing the properties of the models.
+ * @type {WeakMap.<BaseModel, Map>}
+ * @private
+ */
+var _propertyMaps = new WeakMap();
+
+/**
+ * <p>Default model, can fetch from the api and store the data.</p>
+ * <p>Extend to add model-specific functionality.</p>
+ *
  * @mixes FetchMixin
  */
 
@@ -23,27 +33,33 @@ var BaseModel = function () {
   function BaseModel(sdk) {
     _classCallCheck(this, BaseModel);
 
-    /**
-     * Model properties, data returned by the server.
-     * @type {JsonableMap}
-     */
-    this._properties = new Map();
+    _propertyMaps.set(this, new Map());
 
     /**
-     * The owning SDK.
+     * The instance of the SDK that created this model.
      * @type {!Sdk}
+     * @readonly
      */
     this.sdk = sdk;
   }
+
+  /**
+   * Initializes the properties of the model.
+   *
+   * @param {!object} newProperties The set of properties to put in the model. Pre-existing ones will be overwritten.
+   * @returns {!BaseModel} this.
+   */
+
 
   _createClass(BaseModel, [{
     key: 'setProperties',
     value: function setProperties(newProperties) {
       if ((typeof newProperties === 'undefined' ? 'undefined' : _typeof(newProperties)) !== 'object') {
-        throw new SdkError(this, 'Invalid newProperties value "' + newProperties + '". This is the value returned by #parse(data).');
+        throw new SdkError(this, 'Invalid newProperties value "' + newProperties + '". This might be due to the server returning an invalid value, you can modify it using a fetch parser.');
       }
 
-      this._properties.clear();
+      var propertyMap = _propertyMaps.get(this);
+      propertyMap.clear();
 
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
@@ -56,7 +72,7 @@ var BaseModel = function () {
 
           var property = newProperties[propertyName];
 
-          this._properties.set(propertyName, property);
+          propertyMap.set(propertyName, property);
         }
       } catch (err) {
         _didIteratorError = true;
@@ -75,21 +91,48 @@ var BaseModel = function () {
 
       return this;
     }
+
+    /**
+     * Sets a property of the model.
+     *
+     * @param {!string} propertyName The name of the property to set.
+     * @param {!*} propertyValue The value to set the property to.
+     *
+     * @return {!BaseModel} this.
+     */
+
   }, {
     key: 'setProperty',
     value: function setProperty(propertyName, propertyValue) {
-      this._properties.set(propertyName, propertyValue);
+      _propertyMaps.get(this).set(propertyName, propertyValue);
+      return this;
     }
+
+    /**
+     * Returns the value of a property or undefined if such property does not exist.
+     *
+     * @param {!string} propertyName The name of the property to retrieve.
+     * @returns {*}
+     */
+
   }, {
     key: 'getProperty',
-    value: function getProperty(propName) {
-      return this._properties.get(propName);
+    value: function getProperty(propertyName) {
+      return _propertyMaps.get(this).get(propertyName);
     }
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      return this._properties.toJSON();
+      return _propertyMaps.get(this).toJSON();
     }
+
+    /**
+     * Retrieves the model's properties from the API.
+     *
+     * @param {object} queryParameters Query parameters to add the the HTTP request.
+     * @returns {Promise.<BaseModel>} A promise that resolves this once the properties have been set.
+     */
+
   }, {
     key: 'fetch',
     value: function fetch(queryParameters) {

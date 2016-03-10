@@ -19,7 +19,7 @@ var MessageCollection = require('../collections/MessageCollection');
 var SdkError = require('../core/Errors').SdkError;
 
 /**
- * @classdesc <p>Model for pictawall events.</p>
+ * Model for pictawall events.
  */
 
 var EventModel = function (_BaseModel) {
@@ -58,6 +58,9 @@ var EventModel = function (_BaseModel) {
 
     _this.setProperty('identifier', identifier);
     _this.setApiPath('/events/' + identifier);
+    _this.fetchParser = function (serverResponse) {
+      return serverResponse.data;
+    };
 
     _this.userCollection = new UserCollection(_this);
     _this.assetCollection = new AssetCollection(_this, assetBatchSize);
@@ -66,12 +69,17 @@ var EventModel = function (_BaseModel) {
     return _this;
   }
 
+  /**
+   * @inheritDoc
+   */
+
+
   _createClass(EventModel, [{
     key: 'fetch',
-    value: function fetch() {
+    value: function fetch(queryParameters) {
       var _this2 = this;
 
-      return Promise.all([_get(Object.getPrototypeOf(EventModel.prototype), 'fetch', this).call(this), this.userCollection.fetch(), this.assetCollection.fetch(), this.adCollection.fetch(), this.messageCollection.fetch()]).then(function () {
+      return Promise.all([_get(Object.getPrototypeOf(EventModel.prototype), 'fetch', this).call(this, queryParameters), this.userCollection.fetch(), this.assetCollection.fetch(), this.adCollection.fetch(), this.messageCollection.fetch()]).then(function () {
         //if (autoUpdate) {
         //  this.startAutoUpdate();
         //}
@@ -106,11 +114,6 @@ var EventModel = function (_BaseModel) {
     //  this._runAutoUpdate();
     //}
 
-  }, {
-    key: 'parse',
-    value: function parse(data) {
-      return data.data;
-    }
   }]);
 
   return EventModel;

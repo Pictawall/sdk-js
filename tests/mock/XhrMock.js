@@ -3,18 +3,18 @@
 const config = require('../src/singletons').sdk.config;
 const StringUtil = require('../../src/util/StringUtil');
 const FakeFetch = require('./FakeFetch');
-const BrowserShim = require('../../src/core/BrowserShim');
-const oldFetch = BrowserShim.fetch;
+const FetchShim = require('../../src/core/FetchShim');
+const oldFetch = FetchShim.fetch;
 
 function mockRequest(path, pathParams, response) {
-  const stubbedPath = new RegExp('^' + config.get('endpoint') + StringUtil.format(path, ...pathParams) + '([\\?#].*)?$');
+  const stubbedPath = new RegExp('^' + config.get('endpoint') + StringUtil.format(path, false, ...pathParams) + '([\\?#].*)?$');
 
   FakeFetch.mockRoute(stubbedPath, response);
 }
 
 module.exports = {
   init() {
-    BrowserShim.fetch = FakeFetch.fetch;
+    FetchShim.fetch = FakeFetch.fetch;
 
     const routes = ['/events/{0}', '/events/{0}/assets', '/events/{0}/users', '/events/{0}/ads', '/events/{0}/messages'];
     const defaultResponses = [this.VALID_EVENT, this.VALID_EVENT_ASSETS, this.VALID_EVENT_USERS, this.VALID_EVENT_ADS, this.VALID_EVENT_MESSAGES];
@@ -54,7 +54,7 @@ module.exports = {
   },
 
   destroy() {
-    BrowserShim.fetch = oldFetch;
+    FetchShim.fetch = oldFetch;
   },
 
   VALID_IDENTIFIER: 'VALID',

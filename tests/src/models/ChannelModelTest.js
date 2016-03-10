@@ -4,7 +4,7 @@ const EventModel = require('../../../src/models/EventModel');
 const XhrMock = require('../../mock/XhrMock');
 const AssertUtil = require('../../util/AssertUtil');
 
-describe('EventModel', () => {
+describe('ChannelModel', () => {
 
   describe('constructor', () => {
     it('rejects if the identifier is invalid', done => {

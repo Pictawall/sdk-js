@@ -6,7 +6,7 @@
 class Config {
 
   constructor() {
-    this.parameters = new Map();
+    this._parameters = new Map();
   }
 
   /**
@@ -17,8 +17,8 @@ class Config {
    * @returns {*} The value of the configuration option.
    */
   get(parameterName, defaultValue = null) {
-    if (this.parameters.has(parameterName)) {
-      return this.parameters.get(parameterName);
+    if (this._parameters.has(parameterName)) {
+      return this._parameters.get(parameterName);
     }
 
     return defaultValue;
@@ -30,7 +30,7 @@ class Config {
    * @param {*} value The value of the option.
    */
   set(parameterName, value) {
-    this.parameters.set(parameterName, value);
+    this._parameters.set(parameterName, value);
   }
 }
 

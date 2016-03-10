@@ -2,6 +2,8 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _set = function set(object, property, value, receiver) { var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === void 0) { var parent = Object.getPrototypeOf(object); if (parent !== null) { set(parent, property, value, receiver); } } else if ("value" in desc && desc.writable) { desc.value = value; } else { var setter = desc.set; if (setter !== void 0) { setter.call(receiver, value); } } return value; };
+
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === void 0) { var parent = Object.getPrototypeOf(object); if (parent === null) { return void 0; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === void 0) { return void 0; } return getter.call(receiver); } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -12,27 +14,36 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var BaseCollection = require('./BaseCollection');
 
+/**
+ * Collection able to fetch data from the API in a paged fashion.
+ */
+
 var PagedCollection = function (_BaseCollection) {
   _inherits(PagedCollection, _BaseCollection);
+
+  /**
+   * @param {!Sdk} sdk The instance of the SDK owning this collection.
+   * @param {number} [limit] How many models a fetch call should return.
+   * @param {string} [orderBy] Model sort order. Collection-specific, Please refer to the API documentation.
+   */
 
   function PagedCollection(sdk, limit, orderBy) {
     _classCallCheck(this, PagedCollection);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PagedCollection).call(this, sdk));
+    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(PagedCollection).call(this, sdk));
 
-    _this._limit = limit;
-    _this._orderBy = orderBy;
+    _this2._limit = limit;
+    _this2._orderBy = orderBy;
 
-    _this._currentPage = 0;
-    _this._pageCount = null;
-    _this._total = null;
-    _this._since = null;
-    return _this;
+    _this2._currentPage = 0;
+    _this2._pageCount = null;
+    _this2._total = null;
+    _this2._since = null;
+    return _this2;
   }
 
   /**
-   * Returns whether or not there is more to be downloaded from the server.
-   * @returns {boolean}
+   * @inheritDoc
    */
 
 
@@ -43,23 +54,24 @@ var PagedCollection = function (_BaseCollection) {
     }
 
     /**
-     * @readonly
+     * @inheritDoc
      */
 
   }, {
-    key: 'parse',
-    value: function parse(data) {
-      data = _get(Object.getPrototypeOf(PagedCollection.prototype), 'parse', this).call(this, data);
+    key: '_parse',
 
-      if (data.currentPage > this._currentPage) {
-        this._currentPage = data.currentPage;
+
+    /**
+     * @private
+     */
+    value: function _parse(serverResponse) {
+      if (serverResponse.currentPage > this._currentPage) {
+        this._currentPage = serverResponse.currentPage;
       }
 
-      this._pageCount = data.pageCount;
-      this._total = data.total;
-      this._since = data.since;
-
-      return data;
+      this._pageCount = serverResponse.pageCount;
+      this._total = serverResponse.total;
+      this._since = serverResponse.since;
     }
   }, {
     key: 'fetchOptions',
@@ -75,9 +87,31 @@ var PagedCollection = function (_BaseCollection) {
         options.order_by = this._orderBy; // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
       }
 
-      options.limit = this._limit;
+      if (this._limit) {
+        options.limit = this._limit;
+      }
 
       return options;
+    }
+  }, {
+    key: 'fetchParser',
+    set: function set(parser) {
+      _set(Object.getPrototypeOf(PagedCollection.prototype), 'fetchParser', parser, this);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    ,
+    get: function get() {
+      var originalParser = _get(Object.getPrototypeOf(PagedCollection.prototype), 'fetchParser', this);
+
+      var _this = this;
+      return function (serverResponse) {
+        _this._parse(serverResponse);
+
+        return originalParser ? originalParser(serverResponse) : serverResponse;
+      };
     }
   }]);
 

@@ -2,17 +2,20 @@
 
 const BaseModel = require('./BaseModel');
 
+/**
+ * User model.
+ */
 class UserModel extends BaseModel {
 
+  /**
+   * @param {!Sdk} sdk The instance of the SDK.
+   */
   constructor(sdk) {
     super(sdk);
   }
 
   /**
    * Call this method if the owner.avatar url points to a dead link.
-   *
-   * @memberOf UserModel
-   * @instance
    */
   markAvatarAsDead() {
     // TODO NYI

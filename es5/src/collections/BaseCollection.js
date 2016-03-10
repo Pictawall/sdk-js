@@ -10,6 +10,8 @@ var SdkError = require('../core/Errors').SdkError;
 /**
  * @mixes FetchMixin
  * @mixes FindMixin
+ *
+ * @implements Iterable
  */
 
 var BaseCollection = function () {
@@ -24,7 +26,7 @@ var BaseCollection = function () {
 
     this.sdk = sdk;
 
-    this.reset();
+    this._models = [];
   }
 
   /**
@@ -45,7 +47,8 @@ var BaseCollection = function () {
     }
 
     /**
-     * Model factory
+     * Model factory.
+     *
      * @return {!BaseModel}
      */
 
@@ -54,6 +57,12 @@ var BaseCollection = function () {
     value: function createModel() {
       throw new SdkError('CreateModel not implemented');
     }
+
+    /**
+     * Returns whether or not the is data to load from the server using {@link BaseCollection#fetch}.
+     * @returns {!boolean}
+     */
+
   }, {
     key: 'hasMore',
     value: function hasMore() {
@@ -70,9 +79,13 @@ var BaseCollection = function () {
     value: function fetch() {
       var _this2 = this;
 
+      if (!this.hasMore()) {
+        return Promise.reject(new SdkError(this, '#fetch called but #hasMore returns false'));
+      }
+
       return this.fetchRaw(this.fetchOptions).then(function (modelsData) {
         if (!Array.isArray(modelsData)) {
-          throw new SdkError(_this2, 'Invalid response from #parse(data). Should have returned array, got "' + JSON.stringify(modelsData) + '"');
+          throw new SdkError(_this2, 'Invalid response from the http API. Should have returned array, got "' + JSON.stringify(modelsData) + '"');
         }
 
         modelsData.forEach(function (data) {
@@ -105,17 +118,27 @@ var BaseCollection = function () {
       this._models.push(model);
     }
   }, {
-    key: 'reset',
-    value: function reset() {
-      this._models = [];
-    }
-  }, {
     key: 'toJSON',
     value: function toJSON() {
       return this._models;
     }
+
+    /**
+     * Returns the query parameters to add to a fetch api calls.
+     * @returns {Object}
+     */
+
   }, {
     key: 'at',
+
+
+    /**
+     * <p>Returns the model at the requested position in the collection.</p>
+     * <p>Undefined will be returned if the position is out of bounds.</p>
+     *
+     * @param {!number} pos The position of the model in the collection.
+     * @returns {BaseModel}
+     */
     value: function at(pos) {
       return this._models[pos];
     }
@@ -141,15 +164,27 @@ var BaseCollection = function () {
     get: function get() {
       return {};
     }
-  }, {
-    key: 'loaded',
-    get: function get() {
-      return this._loaded;
-    }
+
+    /**
+     * Returns the size of the collection.
+     * @returns {!Number}
+     */
+
   }, {
     key: 'length',
     get: function get() {
       return this._models.length;
+    }
+
+    /**
+     * Returns whether or not the collection has been loaded, even partly, or not.
+     * @returns {boolean}
+     */
+
+  }, {
+    key: 'loaded',
+    get: function get() {
+      return this._loaded;
     }
   }]);
 

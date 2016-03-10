@@ -50,10 +50,16 @@ function executeQuery(state) {
   return matchList;
 }
 
-class MongoCursor {
+/**
+ * <p>Implements a Mongo-like queries syntax on iterables.</p>
+ *
+ * <p>Find queries can either be a [MongoDB find query]{@link https://docs.mongodb.org/manual/reference/method/db.collection.find/} or an {@link Array#filter}-like function.</p>
+ * <p>Sort queries can either be a [MongoDB sort query]{@link https://docs.mongodb.org/manual/reference/method/cursor.sort/#cursor.sort} or an an {@link Array#sort}-like comparator function.</p>
+ */
+class MongoFinder {
 
   /**
-   * @param {!Object, function} query A {@link Array#filter}-like function or a [MongoDB find query syntax]{@link https://docs.mongodb.org/manual/reference/method/db.collection.find/}.
+   * @param {!Object|function} query A find query.
    * @param {!Iterable.<Object>} iterable An iterable returning objects having, as a minimum, the properties listed in the query.
    *
    * @example
@@ -96,7 +102,7 @@ class MongoCursor {
 
   /**
    * Specifies a sort instruction to execute before
-   * @param {!function|object} sortQuery a comparator function (like with {@link Array#sort}) or a [MongoDB sort query]{@link https://docs.mongodb.org/manual/reference/method/cursor.sort/#cursor.sort}
+   * @param {!function|object} sortQuery A sort query.
    * @example
    * // This will sort the by id in ascending order, them by source.network in descending order, then by source.id in ascending order.
    * sort({
@@ -129,7 +135,7 @@ class MongoCursor {
 
   /**
    * Returns the result of the query as an array.
-   * @returns {!Array.<any>} The list of items from the iterable matching the query.
+   * @returns {!Array} The list of items from the iterable matching the query.
    */
   toArray() {
     const state = stateMap.get(this);
@@ -143,7 +149,7 @@ class MongoCursor {
 
   /**
    * Returns the first matching item for the query or null if none matched.
-   * @returns {any}
+   * @returns {*}
    */
   first() {
     return this.toArray()[0] || null;
@@ -170,4 +176,4 @@ class MongoCursor {
   }
 }
 
-module.exports = MongoCursor;
+module.exports = MongoFinder;

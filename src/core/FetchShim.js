@@ -1,13 +1,13 @@
 // Node compatibility module
 'use strict';
 
-if(typeof require.ensure !== 'function') {
+if (typeof require.ensure !== 'function') {
   require.ensure = function(dependencies, callback) {
     callback(require);
   };
 }
 
-function downloadFetch(cb) {
+function _downloadFetch(cb) {
   if (typeof window !== 'undefined' && window.fetch) {
     cb({ fetch: window.fetch, Response: window.Response });
   } else if (typeof XMLHttpRequest !== 'function') {
@@ -24,21 +24,22 @@ function downloadFetch(cb) {
 }
 
 module.exports = {
-  global: (function () {
-    try {
-      return Function('return this')();
-    } catch (e) {
-      return window;
-    }
-  })(),
 
+  /**
+   * Loads the right fetch polyfill
+   * - node-fetch in a node env.
+   * - whatwg-fetch in a browser without fetch support.
+   * - Nothing in a browser with fetch support.
+   *
+   * @returns {Promise}
+   */
   loadFetchPolyfill() {
     if (this.fetch) {
       return Promise.resolve(this.fetch);
     }
 
     return new Promise(resolve => {
-      downloadFetch(({ fetch, Response }) => {
+      _downloadFetch(({ fetch, Response }) => {
         this.fetch = fetch;
         this.Response = Response;
         resolve(fetch);

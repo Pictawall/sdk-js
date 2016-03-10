@@ -8,8 +8,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var BaseModel = require('./BaseModel');
 
+/**
+ * Advertisement model.
+ */
+
 var AdModel = function (_BaseModel) {
   _inherits(AdModel, _BaseModel);
+
+  /**
+   * @param {!Sdk} sdk The instance of the SDK.
+   */
 
   function AdModel(sdk) {
     _classCallCheck(this, AdModel);

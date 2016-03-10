@@ -5,10 +5,13 @@ const AssetModel = require('../models/AssetModel');
 
 // TODO: updateAll
 
+/**
+ * Collection os event assets.
+ */
 class AssetCollection extends PagedCollection {
 
   /**
-   * @param {!ChannelModel} event The owning event.
+   * @param {!EventModel} event The owning event.
    * @param {object} [fetchOptions = {}] Asset fetch options.
    * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
    * @param {string} [fetchOptions.orderBy = 'date_desc'] Sort order returned by the API. See API Specifications for possible orders.
@@ -19,11 +22,13 @@ class AssetCollection extends PagedCollection {
 
     this._event = event;
     this.setApiPath(`/events/${event.getProperty('identifier')}/assets/{assetId}`);
+    this.fetchParser = (response => response.data);
 
     this._kindFilter = kind;
   }
 
   /**
+   * Returns whether or not the event has a featured asset available.
    *
    * @returns {boolean}
    */
@@ -86,7 +91,7 @@ class AssetCollection extends PagedCollection {
    * @override
    */
   parse(data) {
-    data = super.parse(data);
+    data = super._parse(data);
 
     return data.data;
   }

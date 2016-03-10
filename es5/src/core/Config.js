@@ -12,7 +12,7 @@ var Config = function () {
   function Config() {
     _classCallCheck(this, Config);
 
-    this.parameters = new Map();
+    this._parameters = new Map();
   }
 
   /**
@@ -29,8 +29,8 @@ var Config = function () {
     value: function get(parameterName) {
       var defaultValue = arguments.length <= 1 || arguments[1] === void 0 ? null : arguments[1];
 
-      if (this.parameters.has(parameterName)) {
-        return this.parameters.get(parameterName);
+      if (this._parameters.has(parameterName)) {
+        return this._parameters.get(parameterName);
       }
 
       return defaultValue;
@@ -45,7 +45,7 @@ var Config = function () {
   }, {
     key: 'set',
     value: function set(parameterName, value) {
-      this.parameters.set(parameterName, value);
+      this._parameters.set(parameterName, value);
     }
   }]);
 

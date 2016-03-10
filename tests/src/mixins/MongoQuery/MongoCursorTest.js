@@ -1,6 +1,6 @@
 'use strict';
 
-const MongoCursor = require('../../../../src/mixins/MongoQuery/MongoCursor');
+const MongoCursor = require('../../../../src/mixins/MongoQuery/MongoFinder');
 
 describe('MongoCursor', () => {
 

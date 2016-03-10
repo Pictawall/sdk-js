@@ -13,6 +13,8 @@ const ObjectUtil = require('../../util/ObjectUtil');
  *   network: -1
  *  }
  * });
+ *
+ * @private
  */
 function parseSortQuery(sortQuery) {
   return function (a, b) {
@@ -25,6 +27,8 @@ function parseSortQuery(sortQuery) {
  * @param {!Object} a An object.
  * @param {!Object} b Another object of the same type.
  * @param {!Object} sortQuery A Mongo-like sort query.
+ *
+ * @private
  */
 function sortItems(a, b, sortQuery) {
   for (let fieldName of Object.getOwnPropertyNames(sortQuery)) {
@@ -48,9 +52,11 @@ function sortItems(a, b, sortQuery) {
 }
 
 /**
- * @param {!any} fieldA
- * @param {!any} fieldB
+ * @param {!*} fieldA
+ * @param {!*} fieldB
  * @param {!number} sortOrder
+ *
+ * @private
  */
 function sortItem(fieldA, fieldB, sortOrder) {
   if (fieldA === fieldB) {

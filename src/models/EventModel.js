@@ -9,7 +9,7 @@ const MessageCollection = require('../collections/MessageCollection');
 const SdkError = require('../core/Errors').SdkError;
 
 /**
- * @classdesc <p>Model for pictawall events.</p>
+ * Model for pictawall events.
  */
 class EventModel extends BaseModel {
 
@@ -34,6 +34,9 @@ class EventModel extends BaseModel {
 
     this.setProperty('identifier', identifier);
     this.setApiPath(`/events/${identifier}`);
+    this.fetchParser = function (serverResponse) {
+      return serverResponse.data;
+    };
 
     this.userCollection = new UserCollection(this);
     this.assetCollection = new AssetCollection(this, assetBatchSize);
@@ -41,9 +44,12 @@ class EventModel extends BaseModel {
     this.messageCollection = new MessageCollection(this);
   }
 
-  fetch() {
+  /**
+   * @inheritDoc
+   */
+  fetch(queryParameters) {
     return Promise.all([
-      super.fetch(),
+      super.fetch(queryParameters),
       this.userCollection.fetch(),
       this.assetCollection.fetch(),
       this.adCollection.fetch(),
@@ -82,10 +88,6 @@ class EventModel extends BaseModel {
   //  this._autoUpdate = true;
   //  this._runAutoUpdate();
   //}
-
-  parse(data) {
-    return data.data;
-  }
 }
 
 module.exports = EventModel;

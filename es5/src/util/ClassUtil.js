@@ -4,7 +4,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var Errors = require('../core/Errors');
 
-function mergeClass(receivingClass, givingPrototype) {
+function _mergeClass(receivingClass, givingPrototype) {
   if (givingPrototype === Object.prototype) {
     return;
   }
@@ -12,7 +12,7 @@ function mergeClass(receivingClass, givingPrototype) {
   // fetch inherited properties
   var givingPrototypeProto = Object.getPrototypeOf(givingPrototype);
   if (givingPrototype != null) {
-    mergeClass(receivingClass, givingPrototypeProto);
+    _mergeClass(receivingClass, givingPrototypeProto);
   }
 
   var receivingPrototype = receivingClass.prototype;
@@ -29,11 +29,11 @@ function mergeClass(receivingClass, givingPrototype) {
         continue;
       }
 
-      if (receivingPrototype[propertyName]) {
-        throw new Errors.PictawallError(mergeClass, 'Merge error, method ' + propertyName + ' is already in the receiving prototype.');
+      if (Object.getOwnPropertyDescriptor(receivingPrototype, propertyName) !== void 0) {
+        throw new Errors.PictawallError(_mergeClass, 'Merge error, method ' + propertyName + ' is already in the receiving prototype.');
       }
 
-      receivingPrototype[propertyName] = givingPrototype[propertyName];
+      Object.defineProperty(receivingPrototype, propertyName, Object.getOwnPropertyDescriptor(givingPrototype, propertyName));
     }
   } catch (err) {
     _didIteratorError = true;
@@ -52,7 +52,9 @@ function mergeClass(receivingClass, givingPrototype) {
 }
 
 /**
- * @class ClassUtil
+ * Utility class for function-related operations.
+ *
+ * @namespace ClassUtil
  */
 var ClassUtil = {
 
@@ -106,9 +108,9 @@ var ClassUtil = {
       }
 
       if ((typeof mixin === 'undefined' ? 'undefined' : _typeof(mixin)) === 'object') {
-        mergeClass(receivingClass, mixin);
+        _mergeClass(receivingClass, mixin);
       } else if (typeof mixin === 'function') {
-        mergeClass(receivingClass, mixin.prototype);
+        _mergeClass(receivingClass, mixin.prototype);
       } else {
         throw new Errors.SdkError(this, 'Invalid type for mixin n° ' + i + ', only functions and objects are accepted as mixins.');
       }

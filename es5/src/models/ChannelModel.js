@@ -15,7 +15,7 @@ var EventModel = require('./EventModel');
 var SdkError = require('../core/Errors').SdkError;
 
 /**
- * @classdesc <p>Model for pictawall channels.</p>
+ * Model for pictawall channels.
  */
 
 var ChannelModel = function (_BaseModel) {
@@ -34,40 +34,51 @@ var ChannelModel = function (_BaseModel) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ChannelModel).call(this, sdk));
 
     if (typeof channelId !== 'string') {
-      var _ret;
-
-      return _ret = Promise.reject(new SdkError(_this, 'Channel identifier "' + channelId + '" is not valid.')), _possibleConstructorReturn(_this, _ret);
+      throw new SdkError(_this, 'Channel identifier "' + channelId + '" is not valid.');
     }
 
     _this.setApiPath('/channels/' + channelId);
+    _this.fetchParser = function (serverResponse) {
+      return serverResponse.data;
+    };
     return _this;
   }
 
   /**
-   * Loads an event from the server.
+   * @inheritDoc
    */
 
 
   _createClass(ChannelModel, [{
+    key: 'fetch',
+    value: function fetch(queryParameters) {
+      var _this2 = this;
+
+      return _get(Object.getPrototypeOf(ChannelModel.prototype), 'fetch', this).call(this, queryParameters).then(function () {
+        return _this2._event.fetch();
+      }).then(function () {
+        return _this2;
+      });
+    }
+
+    /**
+     * @inheritDoc
+     */
+
+  }, {
     key: 'setProperties',
     value: function setProperties(properties) {
       var eventProperties = properties.event;
-      this._event = new EventModel(eventProperties.identifier);
+      this._event = new EventModel(this.sdk, eventProperties.identifier);
       this._event.setProperties(eventProperties);
 
       return _get(Object.getPrototypeOf(ChannelModel.prototype), 'setProperties', this).call(this, properties);
     }
 
     /**
-     *
-     * @returns {EventModel|exports|module.exports|*}
+     * Returns
      */
 
-  }, {
-    key: 'parse',
-    value: function parse(data) {
-      return data.data;
-    }
   }, {
     key: 'event',
     get: function get() {

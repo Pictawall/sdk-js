@@ -6,6 +6,8 @@ const SdkError = require('../core/Errors').SdkError;
 /**
  * @mixes FetchMixin
  * @mixes FindMixin
+ *
+ * @implements Iterable
  */
 class BaseCollection {
 
@@ -18,7 +20,7 @@ class BaseCollection {
 
     this.sdk = sdk;
 
-    this.reset();
+    this._models = [];
   }
 
   /**
@@ -35,13 +37,18 @@ class BaseCollection {
   }
 
   /**
-   * Model factory
+   * Model factory.
+   *
    * @return {!BaseModel}
    */
   createModel() {
     throw new SdkError('CreateModel not implemented');
   }
 
+  /**
+   * Returns whether or not the is data to load from the server using {@link BaseCollection#fetch}.
+   * @returns {!boolean}
+   */
   hasMore() {
     return !this._loaded;
   }
@@ -51,10 +58,14 @@ class BaseCollection {
    * @returns {Promise.<this>}
    */
   fetch() {
+    if (!this.hasMore()) {
+      return Promise.reject(new SdkError(this, '#fetch called but #hasMore returns false'));
+    }
+
     return this.fetchRaw(this.fetchOptions)
       .then(modelsData => {
         if (!Array.isArray(modelsData)) {
-          throw new SdkError(this, `Invalid response from #parse(data). Should have returned array, got "${JSON.stringify(modelsData)}"`);
+          throw new SdkError(this, `Invalid response from the http API. Should have returned array, got "${JSON.stringify(modelsData)}"`);
         }
 
         modelsData.forEach(data => {
@@ -81,26 +92,41 @@ class BaseCollection {
     this._models.push(model);
   }
 
-  reset() {
-    this._models = [];
-  }
-
   toJSON() {
     return this._models;
   }
 
+  /**
+   * Returns the query parameters to add to a fetch api calls.
+   * @returns {Object}
+   */
   get fetchOptions() {
     return {};
   }
 
-  get loaded() {
-    return this._loaded;
-  }
-
+  /**
+   * Returns the size of the collection.
+   * @returns {!Number}
+   */
   get length() {
     return this._models.length;
   }
 
+  /**
+   * Returns whether or not the collection has been loaded, even partly, or not.
+   * @returns {boolean}
+   */
+  get loaded() {
+    return this._loaded;
+  }
+
+  /**
+   * <p>Returns the model at the requested position in the collection.</p>
+   * <p>Undefined will be returned if the position is out of bounds.</p>
+   *
+   * @param {!number} pos The position of the model in the collection.
+   * @returns {BaseModel}
+   */
   at(pos) {
     return this._models[pos];
   }

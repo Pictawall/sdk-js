@@ -5,7 +5,7 @@ const EventModel = require('./EventModel');
 const SdkError = require('../core/Errors').SdkError;
 
 /**
- * @classdesc <p>Model for pictawall channels.</p>
+ * Model for pictawall channels.
  */
 class ChannelModel extends BaseModel {
 
@@ -19,33 +19,42 @@ class ChannelModel extends BaseModel {
     super(sdk);
 
     if (typeof channelId !== 'string') {
-      return Promise.reject(new SdkError(this, `Channel identifier "${channelId}" is not valid.`));
+      throw new SdkError(this, `Channel identifier "${channelId}" is not valid.`);
     }
 
     this.setApiPath(`/channels/${channelId}`);
+    this.fetchParser = function (serverResponse) {
+      return serverResponse.data;
+    };
   }
 
   /**
-   * Loads an event from the server.
+   * @inheritDoc
+   */
+  fetch(queryParameters) {
+    return super.fetch(queryParameters)
+      .then(() => this._event.fetch())
+      .then(() => {
+        return this;
+      });
+  }
+
+  /**
+   * @inheritDoc
    */
   setProperties(properties) {
     const eventProperties = properties.event;
-    this._event = new EventModel(eventProperties.identifier);
+    this._event = new EventModel(this.sdk, eventProperties.identifier);
     this._event.setProperties(eventProperties);
 
     return super.setProperties(properties);
   }
 
   /**
-   *
-   * @returns {EventModel|exports|module.exports|*}
+   * Returns
    */
   get event() {
     return this._event;
-  }
-
-  parse(data) {
-    return data.data;
   }
 }
 

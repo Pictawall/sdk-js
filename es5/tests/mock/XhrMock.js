@@ -5,11 +5,11 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var config = require('../src/singletons').sdk.config;
 var StringUtil = require('../../src/util/StringUtil');
 var FakeFetch = require('./FakeFetch');
-var BrowserShim = require('../../src/core/BrowserShim');
-var oldFetch = BrowserShim.fetch;
+var FetchShim = require('../../src/core/FetchShim');
+var oldFetch = FetchShim.fetch;
 
 function mockRequest(path, pathParams, response) {
-  var stubbedPath = new RegExp('^' + config.get('endpoint') + StringUtil.format.apply(StringUtil, [path].concat(_toConsumableArray(pathParams))) + '([\\?#].*)?$');
+  var stubbedPath = new RegExp('^' + config.get('endpoint') + StringUtil.format.apply(StringUtil, [path, false].concat(_toConsumableArray(pathParams))) + '([\\?#].*)?$');
 
   FakeFetch.mockRoute(stubbedPath, response);
 }
@@ -18,7 +18,7 @@ module.exports = {
   init: function init() {
     var _this = this;
 
-    BrowserShim.fetch = FakeFetch.fetch;
+    FetchShim.fetch = FakeFetch.fetch;
 
     var routes = ['/events/{0}', '/events/{0}/assets', '/events/{0}/users', '/events/{0}/ads', '/events/{0}/messages'];
     var defaultResponses = [this.VALID_EVENT, this.VALID_EVENT_ASSETS, this.VALID_EVENT_USERS, this.VALID_EVENT_ADS, this.VALID_EVENT_MESSAGES];
@@ -59,7 +59,7 @@ module.exports = {
     });
   },
   destroy: function destroy() {
-    BrowserShim.fetch = oldFetch;
+    FetchShim.fetch = oldFetch;
   },
 
 

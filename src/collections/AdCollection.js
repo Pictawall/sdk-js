@@ -5,30 +5,23 @@ const AdModel = require('../models/AdModel');
 
 // TODO updateAll
 
+/**
+ * Collection of event ads.
+ */
 class AdCollection extends BaseCollection {
 
   /**
-   * @param {!ChannelModel} event The owning event.
+   * @param {!EventModel} event The owning event.
    */
   constructor(event) {
     super(event.sdk);
 
     this.setApiPath(`/events/${event.getProperty('identifier')}/ads/{adId}`);
+    this.fetchParser = (response => response.data);
   }
 
   /**
-   * Parses the response from the server and returns the data to use for model creation.
-   *
-   * @override
-   */
-  parse(data) {
-    data = super.parse(data);
-
-    return data.data;
-  }
-
-  /**
-   * Model method factory.
+   * @inheritDoc
    */
   createModel() {
     return new AdModel(this.sdk);

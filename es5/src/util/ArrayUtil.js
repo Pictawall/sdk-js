@@ -1,8 +1,22 @@
 'use strict';
 
-//http://stackoverflow.com/questions/3115982/how-to-check-if-two-arrays-are-equal-with-javascript
+/**
+ * Utility class for array-related operations.
+ *
+ * @namespace ArrayUtil
+ */
 
-module.exports = {
+var ArrayUtil = {
+
+  /**
+   * <p>Returns whether two arrays are equal or not.</p>
+   * <p>[Source](http://stackoverflow.com/questions/3115982/how-to-check-if-two-arrays-are-equal-with-javascript)</p>
+   *
+   * @param {Array} a An array.
+   * @param {Array} b Another array.
+   * @returns {boolean} Both arrays are equal.
+   */
+
   areEqual: function areEqual(a, b) {
     if (a === b) {
       return true;
@@ -25,3 +39,5 @@ module.exports = {
     return true;
   }
 };
+
+module.exports = ArrayUtil;

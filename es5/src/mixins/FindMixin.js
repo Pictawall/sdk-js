@@ -1,7 +1,7 @@
 'use strict';
 
 var Errors = require('../core/Errors');
-var MongoCursor = require('./MongoQuery/MongoCursor');
+var MongoFinder = require('./MongoQuery/MongoFinder');
 
 /**
  * <p>This mixin adds a MongoDB-like find syntax to iterables.</p>
@@ -14,8 +14,9 @@ var MongoCursor = require('./MongoQuery/MongoCursor');
 var FindMixin = {
 
   /**
-   * Returns the first model matching the [MongoDB find query syntax]{@link https://docs.mongodb.org/manual/reference/method/db.collection.find/}.
-   * @param query The MongoDB query.
+   * Returns the first model matching a query. See {@link MongoFinder} for query documentation.
+   *
+   * @param {!(function|object)} query A find query.
    * @returns {BaseModel} The matching model.
    *
    * @instance
@@ -27,15 +28,15 @@ var FindMixin = {
 
 
   /**
-   * Returns the cursor handling the query. See {@link MongoCursor} for possible operations.
+   * Returns the cursor handling the query. See {@link MongoFinder} for query documentation.
    *
-   * @param {Object} query A mongo-like query.
-   * @returns {MongoCursor}
+   * @param {!(function|object)} query A find query.
+   * @returns {MongoFinder}
    *
    * @instance
    */
   find: function find(query) {
-    return new MongoCursor(query, this);
+    return new MongoFinder(query, this);
   }
 };
 

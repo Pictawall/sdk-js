@@ -8,8 +8,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var ClassUtil = require('../util/ClassUtil');
 
+/**
+ * Error that prints the name of the class of the thrower.
+ */
+
 var PictawallError = function (_Error) {
   _inherits(PictawallError, _Error);
+
+  /**
+   * @param {*} thrower The thrower of this error.
+   * @param {!String} message A message to display.
+   * @param {string} [filename] The filename in which the error occurred.
+   * @param {number} [lineNumber] The line at which the error occurred.
+   */
 
   function PictawallError(thrower, message, filename, lineNumber) {
     _classCallCheck(this, PictawallError);
@@ -22,6 +33,11 @@ var PictawallError = function (_Error) {
 
   return PictawallError;
 }(Error);
+
+/**
+ * Error to use for internal SDK errors.
+ */
+
 
 var SdkError = function (_PictawallError) {
   _inherits(SdkError, _PictawallError);

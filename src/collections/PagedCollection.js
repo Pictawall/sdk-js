@@ -2,8 +2,16 @@
 
 const BaseCollection = require('./BaseCollection');
 
+/**
+ * Collection able to fetch data from the API in a paged fashion.
+ */
 class PagedCollection extends BaseCollection {
 
+  /**
+   * @param {!Sdk} sdk The instance of the SDK owning this collection.
+   * @param {number} [limit] How many models a fetch call should return.
+   * @param {string} [orderBy] Model sort order. Collection-specific, Please refer to the API documentation.
+   */
   constructor(sdk, limit, orderBy) {
     super(sdk);
 
@@ -17,15 +25,14 @@ class PagedCollection extends BaseCollection {
   }
 
   /**
-   * Returns whether or not there is more to be downloaded from the server.
-   * @returns {boolean}
+   * @inheritDoc
    */
   hasMore() {
     return this._currentPage === 0 || this._currentPage < this._pageCount;
   }
 
   /**
-   * @readonly
+   * @inheritDoc
    */
   get fetchOptions() {
     const options = super.fetchOptions;
@@ -39,23 +46,42 @@ class PagedCollection extends BaseCollection {
       options.order_by = this._orderBy;// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
     }
 
-    options.limit = this._limit;
+    if (this._limit) {
+      options.limit = this._limit;
+    }
 
     return options;
   }
 
-  parse(data) {
-    data = super.parse(data);
+  set fetchParser(parser) {
+    super.fetchParser = parser;
+  }
 
-    if (data.currentPage > this._currentPage) {
-      this._currentPage = data.currentPage;
+  /**
+   * @inheritDoc
+   */
+  get fetchParser() {
+    const originalParser = super.fetchParser;
+
+    const _this = this;
+    return function (serverResponse) {
+      _this._parse(serverResponse);
+
+      return originalParser ? originalParser(serverResponse) : serverResponse;
+    };
+  }
+
+  /**
+   * @private
+   */
+  _parse(serverResponse) {
+    if (serverResponse.currentPage > this._currentPage) {
+      this._currentPage = serverResponse.currentPage;
     }
 
-    this._pageCount = data.pageCount;
-    this._total = data.total;
-    this._since = data.since;
-
-    return data;
+    this._pageCount = serverResponse.pageCount;
+    this._total = serverResponse.total;
+    this._since = serverResponse.since;
   }
 }
 

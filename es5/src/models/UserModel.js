@@ -10,8 +10,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var BaseModel = require('./BaseModel');
 
+/**
+ * User model.
+ */
+
 var UserModel = function (_BaseModel) {
   _inherits(UserModel, _BaseModel);
+
+  /**
+   * @param {!Sdk} sdk The instance of the SDK.
+   */
 
   function UserModel(sdk) {
     _classCallCheck(this, UserModel);
@@ -21,9 +29,6 @@ var UserModel = function (_BaseModel) {
 
   /**
    * Call this method if the owner.avatar url points to a dead link.
-   *
-   * @memberOf UserModel
-   * @instance
    */
 
 

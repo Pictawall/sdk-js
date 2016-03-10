@@ -15,11 +15,15 @@ var AssetModel = require('../models/AssetModel');
 
 // TODO: updateAll
 
+/**
+ * Collection os event assets.
+ */
+
 var AssetCollection = function (_PagedCollection) {
   _inherits(AssetCollection, _PagedCollection);
 
   /**
-   * @param {!ChannelModel} event The owning event.
+   * @param {!EventModel} event The owning event.
    * @param {object} [fetchOptions = {}] Asset fetch options.
    * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
    * @param {string} [fetchOptions.orderBy = 'date_desc'] Sort order returned by the API. See API Specifications for possible orders.
@@ -41,12 +45,16 @@ var AssetCollection = function (_PagedCollection) {
 
     _this._event = event;
     _this.setApiPath('/events/' + event.getProperty('identifier') + '/assets/{assetId}');
+    _this.fetchParser = function (response) {
+      return response.data;
+    };
 
     _this._kindFilter = kind;
     return _this;
   }
 
   /**
+   * Returns whether or not the event has a featured asset available.
    *
    * @returns {boolean}
    */
@@ -116,7 +124,7 @@ var AssetCollection = function (_PagedCollection) {
      * @override
      */
     value: function parse(data) {
-      data = _get(Object.getPrototypeOf(AssetCollection.prototype), 'parse', this).call(this, data);
+      data = _get(Object.getPrototypeOf(AssetCollection.prototype), '_parse', this).call(this, data);
 
       return data.data;
     }

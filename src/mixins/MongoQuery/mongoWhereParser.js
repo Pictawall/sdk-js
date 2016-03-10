@@ -8,8 +8,8 @@ const SELECTOR_HANDLERS = {
   /**
    * Strict equality selector. Also compares arrays.
    * Selector: { <field>: { $eq: <value> } } or { field: <value> }
-   * @param {any} item The item to compare to the query.
-   * @param {any} selectorValue The value of $eq in the query.
+   * @param {*} item The item to compare to the query.
+   * @param {*} selectorValue The value of $eq in the query.
    */
   eq(item, selectorValue) {
     // Array special case
@@ -17,18 +17,14 @@ const SELECTOR_HANDLERS = {
       return ArrayUtil.areEqual(item, selectorValue);
     }
 
-    if (item !== item && selectorValue !== selectorValue) {
-      return true;
-    }
-
-    return item === selectorValue;
+    return (item  === 0 && selectorValue === 0) || Object.is(item, selectorValue);
   },
 
   /**
    * Greater than selector.
    * Selector: { <field>: { $gt: <value> } }
-   * @param {any} item The item to compare to the query.
-   * @param {any} selectorValue The value of $gt in the query.
+   * @param {*} item The item to compare to the query.
+   * @param {*} selectorValue The value of $gt in the query.
    */
   gt(item, selectorValue) {
     return item > selectorValue;
@@ -37,8 +33,8 @@ const SELECTOR_HANDLERS = {
   /**
    * Greater than or equal selector.
    * Selector: { <field>: { $gte: <value> } }
-   * @param {any} item The item to compare to the query.
-   * @param {any} selectorValue The value of $gte in the query.
+   * @param {*} item The item to compare to the query.
+   * @param {*} selectorValue The value of $gte in the query.
    */
   gte(item, selectorValue) {
     return item >= selectorValue;
@@ -47,8 +43,8 @@ const SELECTOR_HANDLERS = {
   /**
    * Greater than selector.
    * Selector: { <field>: { $gt: <value> } }
-   * @param {any} item The item to compare to the query.
-   * @param {any} selectorValue The value of $gt in the query.
+   * @param {*} item The item to compare to the query.
+   * @param {*} selectorValue The value of $gt in the query.
    */
   lt(item, selectorValue) {
     return item < selectorValue;

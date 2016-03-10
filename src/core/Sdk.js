@@ -4,7 +4,7 @@ const Config = require('./Config');
 const EventModel = require('../models/EventModel');
 const ChannelModel = require('../models/ChannelModel');
 
-const BrowserShim = require('./BrowserShim');
+const FetchShim = require('./FetchShim');
 
 if(typeof require.ensure !== 'function') {
   require.ensure = function(dependencies, callback) {
@@ -12,30 +12,34 @@ if(typeof require.ensure !== 'function') {
   };
 }
 
+/**
+ * Entry point to the SDK.
+ */
 class Sdk {
 
   /**
-   * @param {string} [endpoint = 'https://api.pictawall.com/v2.5'] The pictawall API endpoint.
+   * @param {string} [apiBaseUrl = 'https://api.pictawall.com/v2.5'] The pictawall API endpoint.
    */
-  constructor(endpoint = 'https://api.pictawall.com/v2.5') {
+  constructor(apiBaseUrl = 'https://api.pictawall.com/v2.5') {
 
     /**
      * The SDK instance configuration.
      * @type {!Config}
      */
     this.config = new Config();
-    this.config.set('endpoint', endpoint);
+    this.config.set('endpoint', apiBaseUrl);
   }
 
   /**
    * Loads the polyfills required to make the SDK work.
+   *
    * @returns {!Promise}
    */
   loadPolyfills() {
     try {
       const polyfillPromises = [];
 
-      polyfillPromises.push(BrowserShim.loadFetchPolyfill());
+      polyfillPromises.push(FetchShim.loadFetchPolyfill());
 
       if (!Map.prototype.toJSON) {
         polyfillPromises.push(new Promise(resolve => {
