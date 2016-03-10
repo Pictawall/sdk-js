@@ -88,6 +88,11 @@ describe('ClassUtil', function () {
           value: function instanceMethodA() {
             return 'IAMA'; // not a reddit reference.
           }
+        }, {
+          key: 'john',
+          get: function get() {
+            return 'hi';
+          }
         }], [{
           key: 'staticMethodA',
           value: function staticMethodA() {
@@ -121,6 +126,7 @@ describe('ClassUtil', function () {
         var receiver = new Receiver();
         expect(receiver.instanceMethodX()).toBe('IAMX');
         expect(receiver.instanceMethodA()).toBe('IAMA');
+        expect(receiver.john).toBe('hi');
       });
 
       it('does not add static properties', function () {
@@ -136,6 +142,12 @@ describe('ClassUtil', function () {
 
       var MixinObject = {
         constructor: function constructor() {},
+
+
+        get john() {
+          return 'hi';
+        },
+
         instanceMethodB: function instanceMethodB() {
           return 'IAMB';
         }
@@ -164,6 +176,7 @@ describe('ClassUtil', function () {
         var receiver = new Receiver();
         expect(receiver.instanceMethodZ()).toBe('IAMZ');
         expect(receiver.instanceMethodB()).toBe('IAMB');
+        expect(receiver.john).toBe('hi');
       });
 
       it('does not override the constructor', function () {

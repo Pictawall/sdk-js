@@ -54,7 +54,6 @@ describe('ClassUtil', () => {
       expect(() => ClassUtil.merge(Receiver, { sayHi() {} })).toThrow();
     });
 
-
     describe('Class merge', () => {
 
       class MixinClass {
@@ -62,6 +61,10 @@ describe('ClassUtil', () => {
 
         instanceMethodA() {
           return 'IAMA'; // not a reddit reference.
+        }
+
+        get john() {
+          return 'hi';
         }
 
         static staticMethodA() {
@@ -85,6 +88,7 @@ describe('ClassUtil', () => {
         const receiver = new Receiver();
         expect(receiver.instanceMethodX()).toBe('IAMX');
         expect(receiver.instanceMethodA()).toBe('IAMA');
+        expect(receiver.john).toBe('hi');
       });
 
       it('does not add static properties', () => {
@@ -100,6 +104,10 @@ describe('ClassUtil', () => {
 
       const MixinObject = {
         constructor() {},
+
+        get john() {
+          return 'hi';
+        },
 
         instanceMethodB() {
           return 'IAMB';
@@ -123,6 +131,7 @@ describe('ClassUtil', () => {
         const receiver = new Receiver();
         expect(receiver.instanceMethodZ()).toBe('IAMZ');
         expect(receiver.instanceMethodB()).toBe('IAMB');
+        expect(receiver.john).toBe('hi');
       });
 
       it('does not override the constructor', () => {

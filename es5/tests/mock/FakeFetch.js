@@ -47,8 +47,6 @@ module.exports = {
     var _ref$status = _ref.status;
     var status = _ref$status === void 0 ? 200 : _ref$status;
 
-    console.info('Registering route for ' + path);
-
     mockedRoutes.push({
       path: path,
       response: new FakeResponse(body, status)
