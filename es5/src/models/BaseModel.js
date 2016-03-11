@@ -129,7 +129,7 @@ var BaseModel = function () {
     /**
      * Retrieves the model's properties from the API.
      *
-     * @param {object} queryParameters Query parameters to add the the HTTP request.
+     * @param {object} [queryParameters] Query parameters to add the the HTTP request.
      * @returns {Promise.<BaseModel>} A promise that resolves this once the properties have been set.
      */
 

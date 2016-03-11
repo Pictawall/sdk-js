@@ -4,13 +4,14 @@ const AssertUtil = require('../../util/AssertUtil');
 const XhrMock = require('../../mock/XhrMock');
 
 const EventModel = require('../../../src/models/EventModel');
-const singletons = require('../singletons');
+const ClassMock = require('../../mock/ClassMock');
 
 describe('EventModel', () => {
 
   describe('fetch', () => {
+
     it('rejects if the identifier is not found', done => {
-      const fetchPromise = (new EventModel(singletons.sdk, XhrMock.INVALID_IDENTIFIER)).fetch();
+      const fetchPromise = (ClassMock.build(EventModel, XhrMock.INVALID_IDENTIFIER)).fetch();
 
       expect(fetchPromise).toEqual(jasmine.any(Promise));
 
@@ -22,7 +23,7 @@ describe('EventModel', () => {
     });
 
     it('resolves once everything is loaded', done => {
-      const eventPromise = (new EventModel(singletons.sdk, XhrMock.VALID_IDENTIFIER)).fetch();
+      const eventPromise = (ClassMock.build(EventModel, XhrMock.VALID_IDENTIFIER)).fetch();
 
       expect(eventPromise).toEqual(jasmine.any(Promise));
 
@@ -37,8 +38,6 @@ describe('EventModel', () => {
 
         // data is loaded.
         AssertUtil.assertModelLoaded(event, XhrMock.VALID_EVENT.data);
-
-        singletons.event = event;
 
         done();
       }).catch(e => {

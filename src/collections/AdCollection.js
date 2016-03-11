@@ -7,6 +7,8 @@ const AdModel = require('../models/AdModel');
 
 /**
  * Collection of event ads.
+ *
+ * @extends BaseCollection
  */
 class AdCollection extends BaseCollection {
 
@@ -16,7 +18,7 @@ class AdCollection extends BaseCollection {
   constructor(event) {
     super(event.sdk);
 
-    this.setApiPath(`/events/${event.getProperty('identifier')}/ads/{adId}`);
+    this.apiPath = `/events/${event.getProperty('identifier')}/ads/{adId}`;
     this.fetchParser = (response => response.data);
   }
 

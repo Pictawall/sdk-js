@@ -15,6 +15,8 @@ var MessageModel = require('../models/MessageModel');
 
 /**
  * Collection of event messages.
+ *
+ * @extends BaseCollection
  */
 
 var MessageCollection = function (_BaseCollection) {
@@ -29,7 +31,7 @@ var MessageCollection = function (_BaseCollection) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MessageCollection).call(this, event.sdk));
 
-    _this.setApiPath('/events/' + event.getProperty('identifier') + '/ads/{adId}');
+    _this.apiPath = '/events/' + event.getProperty('identifier') + '/ads/{adId}';
     _this.fetchParser = function (data) {
       return data.data;
     };

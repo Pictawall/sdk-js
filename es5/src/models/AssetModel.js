@@ -17,13 +17,15 @@ var SdkError = require('../core/Errors').SdkError;
 
 /**
  * Asset model.
+ *
+ * @extends BaseModel
  */
 
 var AssetModel = function (_BaseModel) {
   _inherits(AssetModel, _BaseModel);
 
   /**
-   * @param {ChannelModel} event The owning event model.
+   * @param {!EventModel} event The owning event model.
    */
 
   function AssetModel(event) {
@@ -36,9 +38,13 @@ var AssetModel = function (_BaseModel) {
     }
 
     /**
-     * @type {ChannelModel}
+     * @type {!EventModel}
+     * @private
      */
     _this._event = event;
+    _this.fetchParser = function (data) {
+      return data.data;
+    };
     return _this;
   }
 
@@ -64,13 +70,30 @@ var AssetModel = function (_BaseModel) {
         this._owner = userCollection.add(owner, false, false);
       }
 
-      this.setApiPath('/events/' + this._event.identifier + '/assets/' + properties.id);
+      this.apiPath = '/events/' + this._event.getProperty('identifier') + '/assets/' + properties.id;
 
       return _get(Object.getPrototypeOf(AssetModel.prototype), 'setProperties', this).call(this, properties);
     }
 
     /**
-     * @return {!UserModel}
+     * @inheritDoc
+     */
+
+  }, {
+    key: 'setProperty',
+    value: function setProperty(name, value) {
+      if (name === 'id') {
+        this.apiPath = '/events/' + this._event.getProperty('identifier') + '/assets/' + value;
+      }
+
+      _get(Object.getPrototypeOf(AssetModel.prototype), 'setProperty', this).call(this, name, value);
+    }
+
+    /**
+     * The model of the user who created the asset.
+     *
+     * @readonly
+     * @type {!UserModel}
      */
 
   }, {
@@ -79,30 +102,55 @@ var AssetModel = function (_BaseModel) {
 
     /**
      * Call this method if the media.default url points to a dead link.
+     *
+     * @return {!Promise.<this>}
      */
-    value: function markMediaAsDead() {}
-    // TODO NYI
-    // PATCH assets/id/check/
+    value: function markMediaAsDead() {
+      var _this2 = this;
 
+      return this.sdk.callApi(this.apiPath + '/check', { method: 'PATCH' }).then(function () {
+        return _this2;
+      });
+    }
 
     /**
-     * Report the asset for moderation.
+     * Determines whether or not this asset is considered safe.
+     *
+     * @readonly
+     * @type {!boolean}
      */
 
   }, {
     key: 'report',
+
+
+    /**
+     * Report the asset for moderation.
+     * This method will reject if the asset property "isSafe" is set to true.
+     *
+     * @returns {!Promise.<this>}
+     * @throws {SdkError} The asset is considered safe.
+     */
     value: function report() {
-      if (this.getProperty('isSafe')) {
-        return;
+      var _this3 = this;
+
+      if (this.isSafe) {
+        return Promise.resolve(this);
       }
 
-      // TODO NYI
-      // PATCH assets/id/report
+      return this.sdk.callApi(this.apiPath + '/report', { method: 'PATCH' }).then(function () {
+        return _this3;
+      });
     }
   }, {
     key: 'owner',
     get: function get() {
       return this._owner;
+    }
+  }, {
+    key: 'isSafe',
+    get: function get() {
+      return this.getProperty('isSafe');
     }
   }]);
 

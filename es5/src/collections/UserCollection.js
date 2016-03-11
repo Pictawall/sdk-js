@@ -16,6 +16,8 @@ var UserModel = require('../models/UserModel');
 
 /**
  * Collection of event users.
+ *
+ * @extends PagedCollection
  */
 
 var UserCollection = function (_PagedCollection) {
@@ -30,9 +32,10 @@ var UserCollection = function (_PagedCollection) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(UserCollection).call(this, event.sdk, 5, 'score'));
 
-    _this.setApiPath('/events/' + event.getProperty('identifier') + '/users/{userId}');
+    _this._event = event;
+    _this.apiPath = '/events/' + event.getProperty('identifier') + '/users/{userId}';
     _this.fetchParser = function (data) {
-      return data.data.users;
+      return data.data;
     };
     return _this;
   }
@@ -72,7 +75,7 @@ var UserCollection = function (_PagedCollection) {
   }, {
     key: 'createModel',
     value: function createModel() {
-      return new UserModel(this.sdk);
+      return new UserModel(this._event);
     }
   }]);
 

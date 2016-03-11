@@ -7,6 +7,8 @@ const MessageModel = require('../models/MessageModel');
 
 /**
  * Collection of event messages.
+ *
+ * @extends BaseCollection
  */
 class MessageCollection extends BaseCollection {
 
@@ -16,7 +18,7 @@ class MessageCollection extends BaseCollection {
   constructor(event) {
     super(event.sdk);
 
-    this.setApiPath(`/events/${event.getProperty('identifier')}/ads/{adId}`);
+    this.apiPath = `/events/${event.getProperty('identifier')}/ads/{adId}`;
     this.fetchParser = function (data) {
       return data.data;
     };

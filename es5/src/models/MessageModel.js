@@ -10,6 +10,8 @@ var BaseModel = require('./BaseModel');
 
 /**
  * Message model.
+ *
+ * @extends BaseModel
  */
 
 var MessageModel = function (_BaseModel) {

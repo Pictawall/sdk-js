@@ -1,18 +1,29 @@
 'use strict';
 
-require('./src/core/SdkTest');
-require('./src/core/ConfigTest');
 require('./src/mixins/MongoQuery/MongoCursorTest');
 
 describe('API', function () {
   var XhrMock = require('./mock/XhrMock');
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
 
-  beforeAll(function () {
-    return XhrMock.init();
+  beforeAll(function (done) {
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
+
+    require('./mock/ClassMock').sdk.loadPolyfills().then(function () {
+      XhrMock.init();
+      done();
+    }).catch(function (e) {
+      fail(e);
+      done();
+    });
   });
 
+  require('./src/core/SdkTest');
   require('./src/models/EventModelTest');
+  require('./src/models/ChannelModelTest');
+  require('./src/models/AssetModelTest');
+  require('./src/models/UserModelTest');
+
+  require('./src/collections/BaseCollectionTest');
   require('./src/collections/AssetCollectionTest');
 
   afterAll(function () {

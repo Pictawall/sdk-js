@@ -4,6 +4,8 @@ const BaseModel = require('./BaseModel');
 
 /**
  * Advertisement model.
+ *
+ * @extends BaseModel
  */
 class AdModel extends BaseModel {
 

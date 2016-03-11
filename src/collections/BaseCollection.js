@@ -4,9 +4,10 @@ const ClassUtil = require('../util/ClassUtil');
 const SdkError = require('../core/Errors').SdkError;
 
 /**
+ * @class BaseCollection
+ *
  * @mixes FetchMixin
  * @mixes FindMixin
- *
  * @implements Iterable
  */
 class BaseCollection {
@@ -19,7 +20,6 @@ class BaseCollection {
     }
 
     this.sdk = sdk;
-
     this._models = [];
   }
 
@@ -46,19 +46,11 @@ class BaseCollection {
   }
 
   /**
-   * Returns whether or not the is data to load from the server using {@link BaseCollection#fetch}.
-   * @returns {!boolean}
-   */
-  hasMore() {
-    return !this._loaded;
-  }
-
-  /**
    * Downloads and populates the collection.
    * @returns {Promise.<this>}
    */
   fetch() {
-    if (!this.hasMore()) {
+    if (!this.hasMore) {
       return Promise.reject(new SdkError(this, '#fetch called but #hasMore returns false'));
     }
 
@@ -69,10 +61,7 @@ class BaseCollection {
         }
 
         modelsData.forEach(data => {
-          const model = this.createModel(data);
-          model.setProperties(data);
-
-          this.add(model, true, false);
+          this.add(this.buildModel(data), true, false);
         });
 
         this._loaded = true;
@@ -113,11 +102,19 @@ class BaseCollection {
   }
 
   /**
-   * Returns whether or not the collection has been loaded, even partly, or not.
+   * Whether or not the collection has been loaded, even partly, or not.
    * @returns {boolean}
    */
   get loaded() {
     return this._loaded;
+  }
+
+  /**
+   * Whether or not the is data to load from the server using {@link BaseCollection#fetch}.
+   * @returns {!boolean}
+   */
+  get hasMore() {
+    return !this._loaded;
   }
 
   /**

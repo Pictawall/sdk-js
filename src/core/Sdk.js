@@ -1,13 +1,13 @@
 'use strict';
 
-const Config = require('./Config');
 const EventModel = require('../models/EventModel');
 const ChannelModel = require('../models/ChannelModel');
+const StringUtil = require('../util/StringUtil');
 
 const FetchShim = require('./FetchShim');
 
-if(typeof require.ensure !== 'function') {
-  require.ensure = function(dependencies, callback) {
+if (typeof require.ensure !== 'function') {
+  require.ensure = function (dependencies, callback) {
     callback(require);
   };
 }
@@ -18,16 +18,10 @@ if(typeof require.ensure !== 'function') {
 class Sdk {
 
   /**
-   * @param {string} [apiBaseUrl = 'https://api.pictawall.com/v2.5'] The pictawall API endpoint.
+   * @param {String} [apiBaseUrl = 'https://api.pictawall.com/v2.5'] The pictawall API endpoint.
    */
   constructor(apiBaseUrl = 'https://api.pictawall.com/v2.5') {
-
-    /**
-     * The SDK instance configuration.
-     * @type {!Config}
-     */
-    this.config = new Config();
-    this.config.set('endpoint', apiBaseUrl);
+    this.apiBaseUrl = apiBaseUrl;
   }
 
   /**
@@ -70,8 +64,8 @@ class Sdk {
   /**
    * Creates and populates a new event model.
    *
-   * @param {!string} identifier The identifier of the pictawall event.
-   * @param {object} [config = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+   * @param {!String} identifier The identifier of the pictawall event.
+   * @param {Object} [config = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
    * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
    */
   getEvent(identifier, config = {}) {
@@ -86,16 +80,38 @@ class Sdk {
   /**
    * Creates and populates a new channel model.
    *
-   * @param {!string} identifier The identifier of the pictawall channel.
+   * @param {!String} identifier The identifier of the pictawall channel.
    * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
    */
-  getChannel(channelProps) {
+  getChannel(identifier) {
     try {
-      const channel = new ChannelModel(this, channelProps);
+      const channel = new ChannelModel(this, identifier);
       return channel.fetch();
     } catch (e) {
       return Promise.reject(e);
     }
+  }
+
+  /**
+   * Calls an endpoint on the API and returns the response
+   *
+   * @param {!String} path - The API endpoint. e. g. "/events"
+   * @param {Object} [parameters = {}] - The options to give to {@link Global.fetch}.
+   * @param {Object} [parameters.pathParameters] - Parameters to insert in the path using {@link StringUtil#format}.
+   * @param {Object} [parameters.queryParameters] - List of key -> value parameters to add to the url as query parameters.
+   *
+   * @return {!Promise.<Response>}
+   */
+  callApi(path, parameters = {}) {
+    path = StringUtil.format(path, true, parameters.pathParameters);
+
+    if (path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+
+    path += StringUtil.buildQueryParameters(parameters.queryParameters);
+
+    return FetchShim.fetch(this.apiBaseUrl + path, parameters);
   }
 }
 

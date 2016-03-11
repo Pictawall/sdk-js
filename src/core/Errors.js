@@ -4,6 +4,8 @@ const ClassUtil = require('../util/ClassUtil');
 
 /**
  * Error that prints the name of the class of the thrower.
+ *
+ * @extends Error
  */
 class PictawallError extends Error {
 
@@ -22,6 +24,8 @@ class PictawallError extends Error {
 
 /**
  * Error to use for internal SDK errors.
+ *
+ * @extends PictawallError
  */
 class SdkError extends PictawallError {
   constructor(...args) {

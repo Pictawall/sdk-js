@@ -10,6 +10,8 @@ var ClassUtil = require('../util/ClassUtil');
 
 /**
  * Error that prints the name of the class of the thrower.
+ *
+ * @extends Error
  */
 
 var PictawallError = function (_Error) {
@@ -36,6 +38,8 @@ var PictawallError = function (_Error) {
 
 /**
  * Error to use for internal SDK errors.
+ *
+ * @extends PictawallError
  */
 
 

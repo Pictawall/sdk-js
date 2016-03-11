@@ -10,6 +10,8 @@ const SdkError = require('../core/Errors').SdkError;
 
 /**
  * Model for pictawall events.
+ *
+ * @extends BaseModel
  */
 class EventModel extends BaseModel {
 
@@ -33,7 +35,7 @@ class EventModel extends BaseModel {
     //this.autoUpdateVelocity = autoUpdateVelocity;
 
     this.setProperty('identifier', identifier);
-    this.setApiPath(`/events/${identifier}`);
+    this.apiPath = `/events/${identifier}`;
     this.fetchParser = function (serverResponse) {
       return serverResponse.data;
     };

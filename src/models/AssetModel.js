@@ -5,11 +5,13 @@ const SdkError = require('../core/Errors').SdkError;
 
 /**
  * Asset model.
+ *
+ * @extends BaseModel
  */
 class AssetModel extends BaseModel {
 
   /**
-   * @param {ChannelModel} event The owning event model.
+   * @param {!EventModel} event The owning event model.
    */
   constructor(event) {
     super(event.sdk);
@@ -19,9 +21,11 @@ class AssetModel extends BaseModel {
     }
 
     /**
-     * @type {ChannelModel}
+     * @type {!EventModel}
+     * @private
      */
     this._event = event;
+    this.fetchParser = data => data.data;
   }
 
   /**
@@ -42,13 +46,27 @@ class AssetModel extends BaseModel {
       this._owner = userCollection.add(owner, false, false);
     }
 
-    this.setApiPath(`/events/${this._event.identifier}/assets/${properties.id}`);
+    this.apiPath = `/events/${this._event.getProperty('identifier')}/assets/${properties.id}`;
 
     return super.setProperties(properties);
   }
 
   /**
-   * @return {!UserModel}
+   * @inheritDoc
+   */
+  setProperty(name, value) {
+    if (name === 'id') {
+      this.apiPath = `/events/${this._event.getProperty('identifier')}/assets/${value}`;
+    }
+
+    super.setProperty(name, value);
+  }
+
+  /**
+   * The model of the user who created the asset.
+   *
+   * @readonly
+   * @type {!UserModel}
    */
   get owner() {
     return this._owner;
@@ -56,22 +74,36 @@ class AssetModel extends BaseModel {
 
   /**
    * Call this method if the media.default url points to a dead link.
+   *
+   * @return {!Promise.<this>}
    */
   markMediaAsDead() {
-    // TODO NYI
-    // PATCH assets/id/check/
+    return this.sdk.callApi(`${this.apiPath}/check`, { method: 'PATCH' }).then(() => this);
+  }
+
+  /**
+   * Determines whether or not this asset is considered safe.
+   *
+   * @readonly
+   * @type {!boolean}
+   */
+  get isSafe() {
+    return this.getProperty('isSafe');
   }
 
   /**
    * Report the asset for moderation.
+   * This method will reject if the asset property "isSafe" is set to true.
+   *
+   * @returns {!Promise.<this>}
+   * @throws {SdkError} The asset is considered safe.
    */
   report() {
-    if (this.getProperty('isSafe')) {
-      return;
+    if (this.isSafe) {
+      return Promise.resolve(this);
     }
 
-    // TODO NYI
-    // PATCH assets/id/report
+    return this.sdk.callApi(`${this.apiPath}/report`, { method: 'PATCH' }).then(() => this);
   }
 }
 

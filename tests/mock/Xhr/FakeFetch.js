@@ -36,5 +36,7 @@ module.exports = {
       path,
       response: new FakeResponse(body, status)
     });
-  }
+  },
+
+  FakeResponse: FakeResponse
 };

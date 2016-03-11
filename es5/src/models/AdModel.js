@@ -10,6 +10,8 @@ var BaseModel = require('./BaseModel');
 
 /**
  * Advertisement model.
+ *
+ * @extends BaseModel
  */
 
 var AdModel = function (_BaseModel) {

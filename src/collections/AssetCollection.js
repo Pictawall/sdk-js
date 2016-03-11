@@ -2,11 +2,14 @@
 
 const PagedCollection = require('./PagedCollection');
 const AssetModel = require('../models/AssetModel');
+const Errors = require('../core/Errors');
 
 // TODO: updateAll
 
 /**
  * Collection os event assets.
+ *
+ * @extends PagedCollection
  */
 class AssetCollection extends PagedCollection {
 
@@ -21,7 +24,7 @@ class AssetCollection extends PagedCollection {
     super(event.sdk, limit, orderBy);
 
     this._event = event;
-    this.setApiPath(`/events/${event.getProperty('identifier')}/assets/{assetId}`);
+    this.apiPath = `/events/${event.getProperty('identifier')}/assets/{assetId}`;
     this.fetchParser = (response => response.data);
 
     this._kindFilter = kind;
@@ -30,32 +33,42 @@ class AssetCollection extends PagedCollection {
   /**
    * Returns whether or not the event has a featured asset available.
    *
+   * @throws SdkError The event hasn't been populated.
    * @returns {boolean}
    */
   hasFeaturedAsset() {
-    return this._event.getProperty('featuredAssetId') !== -1;
+    const assetId = this._event.getProperty('featuredAssetId');
+
+    if (assetId === void 0) {
+      throw new Errors.SdkError(this, 'Event.featuredAssetId is undefined, make sure the event has been populated.');
+    }
+
+    return assetId !== -1;
   }
 
   /**
-   * <p>Returns a promise containing the featured tweet if any is available. Null otherwise.</p>
+   * <p>Returns a promise containing the featured tweet if any is available.</p>
    * <p>This method fetches the asset from the server if it does not have it in its local collection.</p>
    * <p>Use {@link #hasFeaturedAsset} to check if this event has a featured asset or not.</p>
    *
-   * @returns {Promise.<UserModel>}
+   * @throws SdkError The event hasn't been populated.
+   * @returns {!Promise.<UserModel>}
    */
   getFeaturedAsset() {
-    const assetId = this._event.getProperty('featuredAssetId');
+    try {
+      if (!this.hasFeaturedAsset()) {
+        return Promise.resolve(null);
+      }
 
-    if (assetId === -1) {
-      return null;
+      const localResult = this.findOne({ featured: true });
+      if (localResult != null) {
+        return Promise.resolve(localResult);
+      }
+
+      return this.fetchById(this._event.getProperty('featuredAssetId'));
+    } catch (e) {
+      return Promise.reject(e);
     }
-
-    const localResult = this.findOne({ featured: true });
-    if (localResult != null) {
-      return Promise.resolve(localResult);
-    }
-
-    return this.fetchById(assetId);
   }
 
   /**
@@ -83,17 +96,6 @@ class AssetCollection extends PagedCollection {
     }
 
     return options;
-  }
-
-  /**
-   * Parses the response from the server and returns the data to use for model creation.
-   *
-   * @override
-   */
-  parse(data) {
-    data = super._parse(data);
-
-    return data.data;
   }
 
   /**

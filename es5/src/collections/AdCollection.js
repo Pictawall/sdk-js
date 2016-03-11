@@ -15,6 +15,8 @@ var AdModel = require('../models/AdModel');
 
 /**
  * Collection of event ads.
+ *
+ * @extends BaseCollection
  */
 
 var AdCollection = function (_BaseCollection) {
@@ -29,7 +31,7 @@ var AdCollection = function (_BaseCollection) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AdCollection).call(this, event.sdk));
 
-    _this.setApiPath('/events/' + event.getProperty('identifier') + '/ads/{adId}');
+    _this.apiPath = '/events/' + event.getProperty('identifier') + '/ads/{adId}';
     _this.fetchParser = function (response) {
       return response.data;
     };

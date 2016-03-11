@@ -8,9 +8,10 @@ var ClassUtil = require('../util/ClassUtil');
 var SdkError = require('../core/Errors').SdkError;
 
 /**
+ * @class BaseCollection
+ *
  * @mixes FetchMixin
  * @mixes FindMixin
- *
  * @implements Iterable
  */
 
@@ -25,7 +26,6 @@ var BaseCollection = function () {
     }
 
     this.sdk = sdk;
-
     this._models = [];
   }
 
@@ -59,17 +59,6 @@ var BaseCollection = function () {
     }
 
     /**
-     * Returns whether or not the is data to load from the server using {@link BaseCollection#fetch}.
-     * @returns {!boolean}
-     */
-
-  }, {
-    key: 'hasMore',
-    value: function hasMore() {
-      return !this._loaded;
-    }
-
-    /**
      * Downloads and populates the collection.
      * @returns {Promise.<this>}
      */
@@ -79,7 +68,7 @@ var BaseCollection = function () {
     value: function fetch() {
       var _this2 = this;
 
-      if (!this.hasMore()) {
+      if (!this.hasMore) {
         return Promise.reject(new SdkError(this, '#fetch called but #hasMore returns false'));
       }
 
@@ -89,10 +78,7 @@ var BaseCollection = function () {
         }
 
         modelsData.forEach(function (data) {
-          var model = _this2.createModel(data);
-          model.setProperties(data);
-
-          _this2.add(model, true, false);
+          _this2.add(_this2.buildModel(data), true, false);
         });
 
         _this2._loaded = true;
@@ -177,7 +163,7 @@ var BaseCollection = function () {
     }
 
     /**
-     * Returns whether or not the collection has been loaded, even partly, or not.
+     * Whether or not the collection has been loaded, even partly, or not.
      * @returns {boolean}
      */
 
@@ -185,6 +171,17 @@ var BaseCollection = function () {
     key: 'loaded',
     get: function get() {
       return this._loaded;
+    }
+
+    /**
+     * Whether or not the is data to load from the server using {@link BaseCollection#fetch}.
+     * @returns {!boolean}
+     */
+
+  }, {
+    key: 'hasMore',
+    get: function get() {
+      return !this._loaded;
     }
   }]);
 

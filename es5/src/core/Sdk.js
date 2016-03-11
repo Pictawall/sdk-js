@@ -4,9 +4,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Config = require('./Config');
 var EventModel = require('../models/EventModel');
 var ChannelModel = require('../models/ChannelModel');
+var StringUtil = require('../util/StringUtil');
 
 var FetchShim = require('./FetchShim');
 
@@ -23,7 +23,7 @@ if (typeof require.ensure !== 'function') {
 var Sdk = function () {
 
   /**
-   * @param {string} [apiBaseUrl = 'https://api.pictawall.com/v2.5'] The pictawall API endpoint.
+   * @param {String} [apiBaseUrl = 'https://api.pictawall.com/v2.5'] The pictawall API endpoint.
    */
 
   function Sdk() {
@@ -31,12 +31,7 @@ var Sdk = function () {
 
     _classCallCheck(this, Sdk);
 
-    /**
-     * The SDK instance configuration.
-     * @type {!Config}
-     */
-    this.config = new Config();
-    this.config.set('endpoint', apiBaseUrl);
+    this.apiBaseUrl = apiBaseUrl;
   }
 
   /**
@@ -83,8 +78,8 @@ var Sdk = function () {
     /**
      * Creates and populates a new event model.
      *
-     * @param {!string} identifier The identifier of the pictawall event.
-     * @param {object} [config = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+     * @param {!String} identifier The identifier of the pictawall event.
+     * @param {Object} [config = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
      * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
      */
 
@@ -104,19 +99,46 @@ var Sdk = function () {
     /**
      * Creates and populates a new channel model.
      *
-     * @param {!string} identifier The identifier of the pictawall channel.
+     * @param {!String} identifier The identifier of the pictawall channel.
      * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
      */
 
   }, {
     key: 'getChannel',
-    value: function getChannel(channelProps) {
+    value: function getChannel(identifier) {
       try {
-        var channel = new ChannelModel(this, channelProps);
+        var channel = new ChannelModel(this, identifier);
         return channel.fetch();
       } catch (e) {
         return Promise.reject(e);
       }
+    }
+
+    /**
+     * Calls an endpoint on the API and returns the response
+     *
+     * @param {!String} path - The API endpoint. e. g. "/events"
+     * @param {Object} [parameters = {}] - The options to give to {@link Global.fetch}.
+     * @param {Object} [parameters.pathParameters] - Parameters to insert in the path using {@link StringUtil#format}.
+     * @param {Object} [parameters.queryParameters] - List of key -> value parameters to add to the url as query parameters.
+     *
+     * @return {!Promise.<Response>}
+     */
+
+  }, {
+    key: 'callApi',
+    value: function callApi(path) {
+      var parameters = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
+
+      path = StringUtil.format(path, true, parameters.pathParameters);
+
+      if (path.endsWith('/')) {
+        path = path.slice(0, -1);
+      }
+
+      path += StringUtil.buildQueryParameters(parameters.queryParameters);
+
+      return FetchShim.fetch(this.apiBaseUrl + path, parameters);
     }
   }]);
 

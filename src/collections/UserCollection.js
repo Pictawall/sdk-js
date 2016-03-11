@@ -8,6 +8,8 @@ const UserModel = require('../models/UserModel');
 
 /**
  * Collection of event users.
+ *
+ * @extends PagedCollection
  */
 class UserCollection extends PagedCollection {
 
@@ -17,10 +19,9 @@ class UserCollection extends PagedCollection {
   constructor(event) {
     super(event.sdk, 5, 'score');
 
-    this.setApiPath(`/events/${event.getProperty('identifier')}/users/{userId}`);
-    this.fetchParser = function(data) {
-      return data.data.users;
-    };
+    this._event = event;
+    this.apiPath = `/events/${event.getProperty('identifier')}/users/{userId}`;
+    this.fetchParser = data => data.data;
   }
 
   /**
@@ -48,7 +49,7 @@ class UserCollection extends PagedCollection {
    * @inheritDoc
    */
   createModel() {
-    return new UserModel(this.sdk);
+    return new UserModel(this._event);
   }
 }
 

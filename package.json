@@ -1,5 +1,5 @@
 {
-  "name": "pictawall-sdk-javascript",
+  "name": "pictawall.sdk",
   "version": "1.0.0",
   "description": "JavaScript SDK for the Pictawall API",
   "keywords": [

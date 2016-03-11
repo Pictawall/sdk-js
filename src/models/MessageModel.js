@@ -4,6 +4,8 @@ const BaseModel = require('./BaseModel');
 
 /**
  * Message model.
+ *
+ * @extends BaseModel
  */
 class MessageModel extends BaseModel {
 

@@ -2,14 +2,14 @@
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-var config = require('../src/singletons').sdk.config;
+var sdk = require('./ClassMock').sdk;
 var StringUtil = require('../../src/util/StringUtil');
-var FakeFetch = require('./FakeFetch');
+var FakeFetch = require('./Xhr/FakeFetch');
 var FetchShim = require('../../src/core/FetchShim');
 var oldFetch = FetchShim.fetch;
 
 function mockRequest(path, pathParams, response) {
-  var stubbedPath = new RegExp('^' + config.get('endpoint') + StringUtil.format.apply(StringUtil, [path, false].concat(_toConsumableArray(pathParams))) + '([\\?#].*)?$');
+  var stubbedPath = new RegExp('^' + sdk.apiBaseUrl + StringUtil.format.apply(StringUtil, [path, false].concat(_toConsumableArray(pathParams))) + '([\\?#].*)?$');
 
   FakeFetch.mockRoute(stubbedPath, response);
 }
@@ -45,8 +45,17 @@ module.exports = {
       body: JSON.stringify(this.VALID_EVENT__FEATURED)
     });
 
+    mockRequest('/events/{0}/users/{1}', [this.VALID_IDENTIFIER_FEATURED, this.VALID_EVENT_USER.data.id], {
+      body: JSON.stringify(this.VALID_EVENT_USER)
+    });
+
+    // featured asset
     mockRequest('/events/{0}/assets/{1}', [this.VALID_IDENTIFIER_FEATURED, this.VALID_EVENT__FEATURED.data.featuredAssetId], {
       body: JSON.stringify(this.VALID_EVENT_ASSET_FEATURED)
+    });
+
+    mockRequest('/channels/{0}', [this.CHANNEL_ID], {
+      body: JSON.stringify(this.CHANNEL)
     });
 
     //1255548
@@ -63,15 +72,18 @@ module.exports = {
   },
 
 
+  CHANNEL_ID: 'f81d4fae-7dec-11d0-a765-00a0c91e6bf6',
   VALID_IDENTIFIER: 'VALID',
   VALID_IDENTIFIER_FEATURED: 'VALID_FEATURED',
   INVALID_IDENTIFIER: 'INVALID',
 
-  VALID_EVENT: require('./event.json'),
-  VALID_EVENT__FEATURED: require('./event-with-featured.json'),
-  VALID_EVENT_ASSETS: require('./event_assets.json'),
-  VALID_EVENT_ASSET_FEATURED: require('./event_asset_featured.json'),
-  VALID_EVENT_USERS: require('./event_users.json'),
-  VALID_EVENT_ADS: require('./event_ads.json'),
-  VALID_EVENT_MESSAGES: require('./event_messages.json')
+  CHANNEL: require('./Xhr/channel.json'),
+  VALID_EVENT: require('./Xhr/event.json'),
+  VALID_EVENT__FEATURED: require('./Xhr/event-with-featured.json'),
+  VALID_EVENT_ASSETS: require('./Xhr/event_assets.json'),
+  VALID_EVENT_ASSET_FEATURED: require('./Xhr/event_asset_featured.json'),
+  VALID_EVENT_USER: require('./Xhr/event_user.json'),
+  VALID_EVENT_USERS: require('./Xhr/event_users.json'),
+  VALID_EVENT_ADS: require('./Xhr/event_ads.json'),
+  VALID_EVENT_MESSAGES: require('./Xhr/event_messages.json')
 };

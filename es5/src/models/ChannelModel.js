@@ -16,6 +16,8 @@ var SdkError = require('../core/Errors').SdkError;
 
 /**
  * Model for pictawall channels.
+ *
+ * @extends BaseModel
  */
 
 var ChannelModel = function (_BaseModel) {
@@ -37,7 +39,7 @@ var ChannelModel = function (_BaseModel) {
       throw new SdkError(_this, 'Channel identifier "' + channelId + '" is not valid.');
     }
 
-    _this.setApiPath('/channels/' + channelId);
+    _this.apiPath = '/channels/' + channelId;
     _this.fetchParser = function (serverResponse) {
       return serverResponse.data;
     };
@@ -55,7 +57,8 @@ var ChannelModel = function (_BaseModel) {
       var _this2 = this;
 
       return _get(Object.getPrototypeOf(ChannelModel.prototype), 'fetch', this).call(this, queryParameters).then(function () {
-        return _this2._event.fetch();
+        var event = _this2._event;
+        return Promise.all([event.adCollection.fetch(), event.assetCollection.fetch(), event.userCollection.fetch(), event.messageCollection.fetch()]);
       }).then(function () {
         return _this2;
       });
