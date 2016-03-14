@@ -4,7 +4,8 @@
   "description": "JavaScript SDK for the Pictawall API",
   "keywords": [
     "pictawall",
-    "sdk"
+    "sdk",
+    "javascript"
   ],
   "author": "Jean-Christophe Cuvelier <jcc@pictawall.com>",
   "scripts": {
