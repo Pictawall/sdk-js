@@ -6,6 +6,8 @@ import ChannelModel from '../models/ChannelModel';
 import StringUtil from '../util/StringUtil';
 import FetchShim from './FetchShim';
 
+const QueryString = require('qs-lite');
+
 if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
     callback(require);
@@ -114,7 +116,10 @@ class Sdk {
       path = path.slice(0, -1);
     }
 
-    path += StringUtil.buildQueryParameters(parameters.queryParameters);
+    const queryString = QueryString.stringify(parameters.queryParameters);
+    if (queryString) {
+      path += '?' + queryString;
+    }
 
     return FetchShim.fetch(this.apiBaseUrl + path, parameters);
   }

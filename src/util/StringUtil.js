@@ -38,44 +38,6 @@ const StringUtil = {
         return args[fieldName];
       }
     });
-  },
-
-  /**
-   * Converts an object of key -> values to a query string with the same key -> values.
-   *
-   * @param {Object.<String, *>} [queryObject = {}] List of parameters to set in the query string.
-   * @returns {!String}
-   *
-   * @example
-   * StringUtil.buildQueryParameters({ order_by: 'date_desc', limit: 100 }); // ?order_by=date_dec&limit=100
-   */
-  buildQueryParameters(queryObject = {}) {
-    if (queryObject == null) {
-      return '';
-    }
-
-    const queryParts = Object.getOwnPropertyNames(queryObject);
-
-    if (queryParts.length === 0) {
-      return '';
-    }
-
-    const queryArray = [];
-
-    queryParts.forEach(queryPart => {
-      const partValue = queryObject[queryPart];
-
-      // TODO enhance
-      if (Array.isArray(partValue)) {
-        partValue.forEach(value => {
-          queryArray.push(encodeURIComponent(queryPart) + '[]=' + encodeURIComponent(value));
-        });
-      } else {
-        queryArray.push(encodeURIComponent(queryPart) + '=' + encodeURIComponent(partValue));
-      }
-    });
-
-    return '?' + queryArray.join('&');
   }
 };
 

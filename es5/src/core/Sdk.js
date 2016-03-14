@@ -26,6 +26,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var QueryString = require('qs-lite');
+
 if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
     callback(require);
@@ -157,7 +159,10 @@ var Sdk = function () {
         path = path.slice(0, -1);
       }
 
-      path += _StringUtil2.default.buildQueryParameters(parameters.queryParameters);
+      var queryString = QueryString.stringify(parameters.queryParameters);
+      if (queryString) {
+        path += '?' + queryString;
+      }
 
       return _FetchShim2.default.fetch(this.apiBaseUrl + path, parameters);
     }
