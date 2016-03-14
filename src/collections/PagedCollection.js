@@ -36,7 +36,7 @@ class PagedCollection extends BaseCollection {
    */
   get fetchOptions() {
     const options = super.fetchOptions;
-    options.currentPage = this._currentPage + 1;
+    options.page = this._currentPage + 1;
 
     if (this._since) {
       options.since = this._since;

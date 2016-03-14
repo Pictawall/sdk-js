@@ -15,8 +15,9 @@ var SELECTOR_HANDLERS = {
    */
 
   eq: function eq(item, selectorValue) {
+
     // Array special case
-    if (Array.isArray(item)) {
+    if (Array.isArray(item) || Array.isArray(selectorValue)) {
       return ArrayUtil.areEqual(item, selectorValue);
     }
 
@@ -59,7 +60,7 @@ var SELECTOR_HANDLERS = {
     return item <= selectorValue;
   },
   ne: function ne(item, selectorValue) {
-    return !this.eq(item, selectorValue);
+    return !SELECTOR_HANDLERS.eq(item, selectorValue);
   },
   in: function _in(item, selectorValue) {
     if (!Array.isArray(selectorValue)) {
@@ -75,7 +76,7 @@ var SELECTOR_HANDLERS = {
       for (var _iterator = selectorValue[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         var arrayEntry = _step.value;
 
-        if (this.eq(item, arrayEntry)) {
+        if (SELECTOR_HANDLERS.eq(item, arrayEntry)) {
           return true;
         }
       }
@@ -97,7 +98,7 @@ var SELECTOR_HANDLERS = {
     return false;
   },
   nin: function nin(item, selectorValue) {
-    return !this.in(item, selectorValue);
+    return !SELECTOR_HANDLERS.in(item, selectorValue);
   },
 
 
@@ -139,7 +140,7 @@ var SELECTOR_HANDLERS = {
     return false;
   },
   nor: function nor(item, selectorArray) {
-    return !this.or(item, selectorArray);
+    return !SELECTOR_HANDLERS.or(item, selectorArray);
   },
   and: function and(item, selectorArray) {
     if (!Array.isArray(selectorArray)) {
@@ -177,9 +178,6 @@ var SELECTOR_HANDLERS = {
     return true;
   },
   not: function not(item, selector) {
-    if ((typeof selector === 'undefined' ? 'undefined' : _typeof(selector)) !== 'object') {
-      throw new Error('$not requires an object, got "' + selector + '".');
-    }
     return !executeQuery(item, selector);
   }
 };
@@ -215,7 +213,9 @@ function executeQuery(item, selectors) {
         // { <item>: <query> } case
         var itemProperty = ObjectUtil.find(item, selectorName);
 
-        return executeQuery(itemProperty, selectorParameter);
+        if (!executeQuery(itemProperty, selectorParameter)) {
+          return false;
+        }
       }
     }
   } catch (err) {

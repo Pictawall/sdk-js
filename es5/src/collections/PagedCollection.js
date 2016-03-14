@@ -77,7 +77,7 @@ var PagedCollection = function (_BaseCollection) {
     key: 'fetchOptions',
     get: function get() {
       var options = _get(Object.getPrototypeOf(PagedCollection.prototype), 'fetchOptions', this);
-      options.currentPage = this._currentPage + 1;
+      options.page = this._currentPage + 1;
 
       if (this._since) {
         options.since = this._since;

@@ -37,6 +37,21 @@ var ArrayUtil = {
     }
 
     return true;
+  },
+
+
+  /**
+   * <p>Returns whether or not an object is iterable.</p>
+   * <p>http://stackoverflow.com/questions/18884249/checking-whether-something-is-iterable</p>
+   *
+   * @param {*} obj The object to check.
+   */
+  isIterable: function isIterable(obj) {
+    if (obj == null) {
+      return false;
+    }
+
+    return obj[Symbol.iterator] !== void 0;
   }
 };
 
