@@ -4,7 +4,6 @@ import PagedCollection from './PagedCollection';
 import UserModel from '../models/UserModel';
 
 // TODO updateAll
-// TODO handle scores
 
 /**
  * Collection of event users.
