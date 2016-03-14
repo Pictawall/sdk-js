@@ -4,7 +4,7 @@ const ArrayUtil = require('../../../src/util/ArrayUtil');
 
 describe('ArrayUtil', () => {
 
-  describe('areEqual', () => {
+  describe('#areEqual', () => {
 
     it('returns true if the items are the same instance', () => {
       const array = [];
@@ -32,6 +32,32 @@ describe('ArrayUtil', () => {
     it('returns false if only one of them is null', () => {
       expect(ArrayUtil.areEqual(null, [45])).toBe(false);
       expect(ArrayUtil.areEqual(['a', 'b'], null)).toBe(false);
+    });
+  });
+
+  describe('#isIterable', () => {
+
+    class DummyIterable {
+      [Symbol.iterator]() {
+        return {
+          next() {
+            return { done: true };
+          }
+        };
+      }
+    }
+
+    it('returns true for iterable parameters', () => {
+      expect(ArrayUtil.isIterable([])).toBe(true);
+      expect(ArrayUtil.isIterable('hello')).toBe(true);
+      expect(ArrayUtil.isIterable(new Map())).toBe(true);
+      expect(ArrayUtil.isIterable(new DummyIterable())).toBe(true);
+    });
+
+    it('returns false for non-iterable parameters', () => {
+      expect(ArrayUtil.isIterable(42)).toBe(false);
+      expect(ArrayUtil.isIterable(true)).toBe(false);
+      expect(ArrayUtil.isIterable(function () {})).toBe(false);
     });
   });
 });

@@ -1,6 +1,7 @@
 'use strict';
 
-require('./src/mixins/MongoQuery/MongoCursorTest');
+require('./src/mixins/MongoQuery/MongoFinderTest');
+require('./src/mixins/MongoQuery/mongoWhereParserTest');
 
 describe('API', function () {
   var XhrMock = require('./mock/XhrMock');
@@ -19,7 +20,6 @@ describe('API', function () {
 
   require('./src/core/SdkTest');
   require('./src/models/EventModelTest');
-  require('./src/models/ChannelModelTest');
   require('./src/models/AssetModelTest');
   require('./src/models/UserModelTest');
 

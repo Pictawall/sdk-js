@@ -12,8 +12,9 @@ const SELECTOR_HANDLERS = {
    * @param {*} selectorValue The value of $eq in the query.
    */
   eq(item, selectorValue) {
+
     // Array special case
-    if (Array.isArray(item)) {
+    if (Array.isArray(item) || Array.isArray(selectorValue)) {
       return ArrayUtil.areEqual(item, selectorValue);
     }
 
@@ -55,7 +56,7 @@ const SELECTOR_HANDLERS = {
   },
 
   ne(item, selectorValue) {
-    return !this.eq(item, selectorValue);
+    return !SELECTOR_HANDLERS.eq(item, selectorValue);
   },
 
   in(item, selectorValue) {
@@ -64,7 +65,7 @@ const SELECTOR_HANDLERS = {
     }
 
     for (let arrayEntry of selectorValue) {
-      if (this.eq(item, arrayEntry)) {
+      if (SELECTOR_HANDLERS.eq(item, arrayEntry)) {
         return true;
       }
     }
@@ -73,7 +74,7 @@ const SELECTOR_HANDLERS = {
   },
 
   nin(item, selectorValue) {
-    return !this.in(item, selectorValue);
+    return !SELECTOR_HANDLERS.in(item, selectorValue);
   },
 
   // BOOLEAN OPERATORS
@@ -93,7 +94,7 @@ const SELECTOR_HANDLERS = {
   },
 
   nor(item, selectorArray) {
-    return !this.or(item, selectorArray);
+    return !SELECTOR_HANDLERS.or(item, selectorArray);
   },
 
   and(item, selectorArray) {
@@ -111,9 +112,6 @@ const SELECTOR_HANDLERS = {
   },
 
   not(item, selector) {
-    if (typeof selector !== 'object') {
-      throw new Error(`$not requires an object, got "${selector}".`);
-    }
     return !executeQuery(item, selector);
   }
 };
@@ -141,7 +139,9 @@ function executeQuery(item, selectors) {
       // { <item>: <query> } case
       const itemProperty = ObjectUtil.find(item, selectorName);
 
-      return executeQuery(itemProperty, selectorParameter);
+      if (!executeQuery(itemProperty, selectorParameter)) {
+        return false;
+      }
     }
   }
 

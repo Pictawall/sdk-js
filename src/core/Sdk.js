@@ -2,8 +2,8 @@
 
 const EventModel = require('../models/EventModel');
 const ChannelModel = require('../models/ChannelModel');
-const StringUtil = require('../util/StringUtil');
 
+const StringUtil = require('../util/StringUtil');
 const FetchShim = require('./FetchShim');
 
 if (typeof require.ensure !== 'function') {
@@ -33,8 +33,10 @@ class Sdk {
     try {
       const polyfillPromises = [];
 
+      // global.fetch
       polyfillPromises.push(FetchShim.loadFetchPolyfill());
 
+      // Map.toJSON
       if (!Map.prototype.toJSON) {
         polyfillPromises.push(new Promise(resolve => {
           require.ensure(['map.prototype.tojson'], require => {
@@ -43,6 +45,7 @@ class Sdk {
         }));
       }
 
+      // Array.includes
       if (!Array.prototype.includes) {
         polyfillPromises.push(new Promise(resolve => {
           require.ensure(['array-includes'], require => {

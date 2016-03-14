@@ -1,8 +1,8 @@
 'use strict';
 
-const MongoCursor = require('../../../../src/mixins/MongoQuery/MongoFinder');
+const MongoFinder = require('../../../../src/mixins/MongoQuery/MongoFinder');
 
-describe('MongoCursor', () => {
+describe('MongoFinder', () => {
 
   const DATA = [
     { id: 3, name: 'Laetitia' },
@@ -13,7 +13,7 @@ describe('MongoCursor', () => {
   ];
 
   it('accepts MongoDB-like find queries', () => {
-    const cursor = new MongoCursor({
+    const cursor = new MongoFinder({
       id: 5
     }, DATA);
 
@@ -26,7 +26,7 @@ describe('MongoCursor', () => {
   });
 
   it('accepts MongoDB-like sort queries', () => {
-    const cursor = new MongoCursor({}, DATA);
+    const cursor = new MongoFinder({}, DATA);
 
     const result = cursor.sort({ name: -1 }).toArray();
 
@@ -37,7 +37,7 @@ describe('MongoCursor', () => {
   });
 
   it('accepts MongoDB-like limit queries', () => {
-    const cursor = new MongoCursor({}, DATA);
+    const cursor = new MongoFinder({}, DATA);
 
     const result = cursor.limit(1).toArray();
 
@@ -48,7 +48,7 @@ describe('MongoCursor', () => {
   });
 
   it('accepts MongoDB-like skip queries', () => {
-    const cursor = new MongoCursor({}, DATA);
+    const cursor = new MongoFinder({}, DATA);
 
     const result = cursor.skip(1).toArray();
 
@@ -59,7 +59,7 @@ describe('MongoCursor', () => {
   });
 
   it('does not care when the sort query is called', () => {
-    const cursor = new MongoCursor({}, DATA);
+    const cursor = new MongoFinder({}, DATA);
 
     const result = cursor.skip(2).limit(2).sort({ id: -1 }).toArray();
 
@@ -73,7 +73,7 @@ describe('MongoCursor', () => {
   it('works with forEach', () => {
     let found = false;
 
-    (new MongoCursor({
+    (new MongoFinder({
       $or: [{ id: 5 }, { id: 6 }]
     }, DATA)).limit(1).sort({ id: -1 }).forEach(item => {
       expect(item.id).toBe(6);
@@ -87,7 +87,7 @@ describe('MongoCursor', () => {
 
   it('accepts . separator in where queries', () => {
 
-    const result = (new MongoCursor({
+    const result = (new MongoFinder({
       'source.id': 1
     }, [{
       id: 1,
@@ -109,7 +109,7 @@ describe('MongoCursor', () => {
 
   it('accepts . separator in sort queries', () => {
 
-    const result = (new MongoCursor({}, [{
+    const result = (new MongoFinder({}, [{
       id: 1,
       source: {
         network: 'twitter',
@@ -133,27 +133,5 @@ describe('MongoCursor', () => {
     expect(result[0].source.id).toBe(1);
     expect(result[1].source.id).toBe(3);
     expect(result[2].source.id).toBe(7);
-  });
-
-  describe('$or selector', () => {
-    it('accepts primitive values', () => {
-      const result = (new MongoCursor({
-        id: { $or: [5, 6] }
-      }, DATA)).toArray();
-
-      expect(result.length).toBe(2);
-      expect(result[0].id).toBe(5);
-      expect(result[1].id).toBe(6);
-    });
-
-    it('accepts object values', () => {
-      const result = (new MongoCursor({
-        $or: [{ id: 5 }, { id: 4 }]
-      }, DATA)).toArray();
-
-      expect(result.length).toBe(2);
-      expect(result[0].id).toBe(4);
-      expect(result[1].id).toBe(5);
-    });
   });
 });

@@ -6,8 +6,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var EventModel = require('../models/EventModel');
 var ChannelModel = require('../models/ChannelModel');
-var StringUtil = require('../util/StringUtil');
 
+var StringUtil = require('../util/StringUtil');
 var FetchShim = require('./FetchShim');
 
 if (typeof require.ensure !== 'function') {
@@ -47,8 +47,10 @@ var Sdk = function () {
       try {
         var polyfillPromises = [];
 
+        // global.fetch
         polyfillPromises.push(FetchShim.loadFetchPolyfill());
 
+        // Map.toJSON
         if (!Map.prototype.toJSON) {
           polyfillPromises.push(new Promise(function (resolve) {
             require.ensure(['map.prototype.tojson'], function (require) {
@@ -57,6 +59,7 @@ var Sdk = function () {
           }));
         }
 
+        // Array.includes
         if (!Array.prototype.includes) {
           polyfillPromises.push(new Promise(function (resolve) {
             require.ensure(['array-includes'], function (require) {

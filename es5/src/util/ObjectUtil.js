@@ -47,6 +47,17 @@ var ObjectUtil = {
    */
   exists: function exists(container, propertyName) {
     return this.find(container, propertyName) !== void 0;
+  },
+
+
+  get global() {
+    if (typeof window !== 'undefined') {
+      return window;
+    }
+
+    if (typeof global !== 'undefined') {
+      return global;
+    }
   }
 };
 
