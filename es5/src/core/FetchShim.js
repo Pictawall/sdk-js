@@ -1,6 +1,9 @@
 // Node compatibility module
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
     callback(require);
@@ -23,7 +26,7 @@ function _downloadFetch(cb) {
   }
 }
 
-module.exports = {
+var FetchShim = {
 
   /**
    * Loads the right fetch polyfill
@@ -53,3 +56,5 @@ module.exports = {
     });
   }
 };
+
+exports.default = FetchShim;

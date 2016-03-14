@@ -1,11 +1,22 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _mongoSortParser = require('./mongoSortParser');
 
-var parseSortQuery = require('./mongoSortParser');
-var parseWhereQuery = require('./mongoWhereParser');
+var _mongoSortParser2 = _interopRequireDefault(_mongoSortParser);
+
+var _mongoWhereParser = require('./mongoWhereParser');
+
+var _mongoWhereParser2 = _interopRequireDefault(_mongoWhereParser);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var stateMap = new WeakMap();
 
@@ -22,7 +33,7 @@ function executeQuery(state) {
         array.reverse();
       }
     } else {
-      var comparator = typeof sortQuery === 'function' ? sortQuery : parseSortQuery(sortQuery);
+      var comparator = typeof sortQuery === 'function' ? sortQuery : (0, _mongoSortParser2.default)(sortQuery);
       array.sort(comparator);
     }
   }
@@ -36,7 +47,7 @@ function executeQuery(state) {
     }
   }
 
-  var matchesItem = typeof state.query === 'function' ? state.query : parseWhereQuery(state.query);
+  var matchesItem = typeof state.query === 'function' ? state.query : (0, _mongoWhereParser2.default)(state.query);
   var matchList = [];
 
   for (var i = state.startAt || 0; i < array.length; i++) {
@@ -208,4 +219,4 @@ var MongoFinder = function () {
   return MongoFinder;
 }();
 
-module.exports = MongoFinder;
+exports.default = MongoFinder;

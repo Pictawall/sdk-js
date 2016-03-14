@@ -1,6 +1,6 @@
 'use strict';
 
-const MongoFinder = require('../../../../src/mixins/MongoQuery/MongoFinder');
+import MongoFinder from '../../../../src/mixins/MongoQuery/MongoFinder';
 
 describe('MongoFinder', () => {
 

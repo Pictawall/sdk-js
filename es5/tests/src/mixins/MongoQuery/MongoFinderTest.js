@@ -1,13 +1,17 @@
 'use strict';
 
-var MongoFinder = require('../../../../src/mixins/MongoQuery/MongoFinder');
+var _MongoFinder = require('../../../../src/mixins/MongoQuery/MongoFinder');
+
+var _MongoFinder2 = _interopRequireDefault(_MongoFinder);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 describe('MongoFinder', function () {
 
   var DATA = [{ id: 3, name: 'Laetitia' }, { id: 4, name: 'Zzz' }, { id: 5, name: 'John' }, { id: 6, name: 'Fred' }, { id: 12, name: 'AAA' }];
 
   it('accepts MongoDB-like find queries', function () {
-    var cursor = new MongoFinder({
+    var cursor = new _MongoFinder2.default({
       id: 5
     }, DATA);
 
@@ -20,7 +24,7 @@ describe('MongoFinder', function () {
   });
 
   it('accepts MongoDB-like sort queries', function () {
-    var cursor = new MongoFinder({}, DATA);
+    var cursor = new _MongoFinder2.default({}, DATA);
 
     var result = cursor.sort({ name: -1 }).toArray();
 
@@ -31,7 +35,7 @@ describe('MongoFinder', function () {
   });
 
   it('accepts MongoDB-like limit queries', function () {
-    var cursor = new MongoFinder({}, DATA);
+    var cursor = new _MongoFinder2.default({}, DATA);
 
     var result = cursor.limit(1).toArray();
 
@@ -42,7 +46,7 @@ describe('MongoFinder', function () {
   });
 
   it('accepts MongoDB-like skip queries', function () {
-    var cursor = new MongoFinder({}, DATA);
+    var cursor = new _MongoFinder2.default({}, DATA);
 
     var result = cursor.skip(1).toArray();
 
@@ -53,7 +57,7 @@ describe('MongoFinder', function () {
   });
 
   it('does not care when the sort query is called', function () {
-    var cursor = new MongoFinder({}, DATA);
+    var cursor = new _MongoFinder2.default({}, DATA);
 
     var result = cursor.skip(2).limit(2).sort({ id: -1 }).toArray();
 
@@ -67,7 +71,7 @@ describe('MongoFinder', function () {
   it('works with forEach', function () {
     var found = false;
 
-    new MongoFinder({
+    new _MongoFinder2.default({
       $or: [{ id: 5 }, { id: 6 }]
     }, DATA).limit(1).sort({ id: -1 }).forEach(function (item) {
       expect(item.id).toBe(6);
@@ -81,7 +85,7 @@ describe('MongoFinder', function () {
 
   it('accepts . separator in where queries', function () {
 
-    var result = new MongoFinder({
+    var result = new _MongoFinder2.default({
       'source.id': 1
     }, [{
       id: 1,
@@ -103,7 +107,7 @@ describe('MongoFinder', function () {
 
   it('accepts . separator in sort queries', function () {
 
-    var result = new MongoFinder({}, [{
+    var result = new _MongoFinder2.default({}, [{
       id: 1,
       source: {
         network: 'twitter',

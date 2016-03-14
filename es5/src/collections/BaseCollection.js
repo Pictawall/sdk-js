@@ -1,11 +1,28 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _ClassUtil = require('../util/ClassUtil');
 
-var ClassUtil = require('../util/ClassUtil');
-var SdkError = require('../core/Errors').SdkError;
+var _ClassUtil2 = _interopRequireDefault(_ClassUtil);
+
+var _Errors = require('../core/Errors');
+
+var _FetchMixin = require('../mixins/FetchMixin');
+
+var _FetchMixin2 = _interopRequireDefault(_FetchMixin);
+
+var _FindMixin = require('../mixins/FindMixin');
+
+var _FindMixin2 = _interopRequireDefault(_FindMixin);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * @class BaseCollection
@@ -16,13 +33,18 @@ var SdkError = require('../core/Errors').SdkError;
  */
 
 var BaseCollection = function () {
+
+  /**
+   * @param {!Sdk} sdk
+   */
+
   function BaseCollection(sdk) {
     _classCallCheck(this, BaseCollection);
 
     this._loaded = false;
 
     if (sdk === void 0) {
-      throw new SdkError('This model did not receive a SDK instance.');
+      throw new _Errors.SdkError(this, 'This model did not receive a SDK instance.');
     }
 
     this.sdk = sdk;
@@ -55,7 +77,7 @@ var BaseCollection = function () {
   }, {
     key: 'createModel',
     value: function createModel() {
-      throw new SdkError('CreateModel not implemented');
+      throw new _Errors.SdkError('CreateModel not implemented');
     }
 
     /**
@@ -69,12 +91,12 @@ var BaseCollection = function () {
       var _this2 = this;
 
       if (!this.hasMore) {
-        return Promise.reject(new SdkError(this, '#fetch called but #hasMore returns false'));
+        return Promise.reject(new _Errors.SdkError(this, '#fetch called but #hasMore returns false'));
       }
 
       return this.fetchRaw(this.fetchOptions).then(function (modelsData) {
         if (!Array.isArray(modelsData)) {
-          throw new SdkError(_this2, 'Invalid response from the http API. Should have returned array, got "' + JSON.stringify(modelsData) + '"');
+          throw new _Errors.SdkError(_this2, 'Invalid response from the http API. Should have returned array, got "' + JSON.stringify(modelsData) + '"');
         }
 
         modelsData.forEach(function (data) {
@@ -188,9 +210,6 @@ var BaseCollection = function () {
   return BaseCollection;
 }();
 
-var FetchMixin = require('../mixins/FetchMixin');
-var FindMixin = require('../mixins/FindMixin');
+_ClassUtil2.default.merge(BaseCollection, _FetchMixin2.default, _FindMixin2.default);
 
-ClassUtil.merge(BaseCollection, FetchMixin, FindMixin);
-
-module.exports = BaseCollection;
+exports.default = BaseCollection;

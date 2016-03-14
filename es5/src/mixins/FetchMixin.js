@@ -1,10 +1,14 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _fetchParser, _FetchMixin, _mutatorMap;
 
-function _defineEnumerableProperties(obj, descs) { for (var key in descs) { var desc = descs[key]; desc.configurable = desc.enumerable = true; if ("value" in desc) desc.writable = true; Object.defineProperty(obj, key, desc); } return obj; }
+var _Errors = require('../core/Errors');
 
-var SdkError = require('../core/Errors').SdkError;
+function _defineEnumerableProperties(obj, descs) { for (var key in descs) { var desc = descs[key]; desc.configurable = desc.enumerable = true; if ("value" in desc) desc.writable = true; Object.defineProperty(obj, key, desc); } return obj; }
 
 var _fetchParsers = new WeakMap();
 
@@ -42,12 +46,12 @@ var FetchMixin = (_FetchMixin = {
     var _this = this;
 
     if (!this.apiPath) {
-      throw new SdkError(this, 'Property apiPath has not been set.');
+      throw new _Errors.SdkError(this, 'Property apiPath has not been set.');
     }
 
     var promise = this.sdk.callApi(this.apiPath, { queryParameters: queryParameters, pathParameters: pathParameters }).then(function (response) {
       if (!response.ok) {
-        throw new SdkError(_this, 'API responded with http code ' + response.status + ' for endpoint "' + response.url + '"');
+        throw new _Errors.SdkError(_this, 'API responded with http code ' + response.status + ' for endpoint "' + response.url + '"');
       }
 
       return response.json();
@@ -99,4 +103,4 @@ var FetchMixin = (_FetchMixin = {
   return _fetchParsers.get(this);
 }, _defineEnumerableProperties(_FetchMixin, _mutatorMap), _FetchMixin);
 
-module.exports = FetchMixin;
+exports.default = FetchMixin;

@@ -1,14 +1,26 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _FetchMixin = require('../mixins/FetchMixin');
 
-var FetchMixin = require('../mixins/FetchMixin');
-var ClassUtil = require('../util/ClassUtil');
-var SdkError = require('../core/Errors').SdkError;
+var _FetchMixin2 = _interopRequireDefault(_FetchMixin);
+
+var _ClassUtil = require('../util/ClassUtil');
+
+var _ClassUtil2 = _interopRequireDefault(_ClassUtil);
+
+var _Errors = require('../core/Errors');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /**
  * Maps containing the properties of the models.
@@ -21,6 +33,7 @@ var _propertyMaps = new WeakMap();
  * <p>Default model, can fetch from the api and store the data.</p>
  * <p>Extend to add model-specific functionality.</p>
  *
+ * @class BaseModel
  * @mixes FetchMixin
  */
 
@@ -55,7 +68,7 @@ var BaseModel = function () {
     key: 'setProperties',
     value: function setProperties(newProperties) {
       if ((typeof newProperties === 'undefined' ? 'undefined' : _typeof(newProperties)) !== 'object') {
-        throw new SdkError(this, 'Invalid newProperties value "' + newProperties + '". This might be due to the server returning an invalid value, you can modify it using a fetch parser.');
+        throw new _Errors.SdkError(this, 'Invalid newProperties value "' + newProperties + '". This might be due to the server returning an invalid value, you can modify it using a fetch parser.');
       }
 
       var propertyMap = _propertyMaps.get(this);
@@ -148,6 +161,6 @@ var BaseModel = function () {
   return BaseModel;
 }();
 
-ClassUtil.merge(BaseModel, FetchMixin);
+_ClassUtil2.default.merge(BaseModel, _FetchMixin2.default);
 
-module.exports = BaseModel;
+exports.default = BaseModel;

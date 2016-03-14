@@ -2,10 +2,13 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+var _ClassUtil = require('../../../src/util/ClassUtil');
 
-var ClassUtil = require('../../../src/util/ClassUtil');
-var Errors = require('../../../src/core/Errors.js');
+var _ClassUtil2 = _interopRequireDefault(_ClassUtil);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 describe('ClassUtil', function () {
 
@@ -14,31 +17,31 @@ describe('ClassUtil', function () {
     function JohnFunction() {}
 
     it('returns the name of the primitive if the parameter is a primitive value', function () {
-      expect(ClassUtil.getName(null)).toBe('null');
-      expect(ClassUtil.getName(void 0)).toBe('undefined');
-      expect(ClassUtil.getName(true)).toBe('Boolean');
-      expect(ClassUtil.getName(1)).toBe('Number');
-      expect(ClassUtil.getName('hello')).toBe('String');
-      expect(ClassUtil.getName({})).toBe('Object');
-      expect(ClassUtil.getName([])).toBe('Array');
+      expect(_ClassUtil2.default.getName(null)).toBe('null');
+      expect(_ClassUtil2.default.getName(void 0)).toBe('undefined');
+      expect(_ClassUtil2.default.getName(true)).toBe('Boolean');
+      expect(_ClassUtil2.default.getName(1)).toBe('Number');
+      expect(_ClassUtil2.default.getName('hello')).toBe('String');
+      expect(_ClassUtil2.default.getName({})).toBe('Object');
+      expect(_ClassUtil2.default.getName([])).toBe('Array');
     });
 
     it('returns the name of the function if the parameter is a function', function () {
-      expect(ClassUtil.getName(JohnFunction)).toBe('JohnFunction');
+      expect(_ClassUtil2.default.getName(JohnFunction)).toBe('JohnFunction');
     });
 
     it('returns the name of the class if the parameter is an instance', function () {
       var instance = new JohnFunction();
 
-      expect(ClassUtil.getName(instance)).toBe('JohnFunction');
+      expect(_ClassUtil2.default.getName(instance)).toBe('JohnFunction');
     });
 
     it('returns "' + anonymousResponse + '" if the function isn\'t named', function () {
-      expect(ClassUtil.getName(function () {})).toBe(anonymousResponse);
+      expect(_ClassUtil2.default.getName(function () {})).toBe(anonymousResponse);
     });
 
     it('returns "' + anonymousResponse + '" if the instance is of a nameless function', function () {
-      expect(ClassUtil.getName(new function () {}())).toBe(anonymousResponse);
+      expect(_ClassUtil2.default.getName(new function () {}())).toBe(anonymousResponse);
     });
   });
 
@@ -46,13 +49,13 @@ describe('ClassUtil', function () {
 
     it('throws if the arguments are invalid', function () {
       expect(function () {
-        return ClassUtil.merge(null, {});
+        return _ClassUtil2.default.merge(null, {});
       }).toThrow();
       expect(function () {
-        return ClassUtil.merge(function () {}, null);
+        return _ClassUtil2.default.merge(function () {}, null);
       }).toThrow();
       expect(function () {
-        return ClassUtil.merge(function () {}, 124);
+        return _ClassUtil2.default.merge(function () {}, 124);
       }).toThrow();
     });
 
@@ -71,7 +74,7 @@ describe('ClassUtil', function () {
       }();
 
       expect(function () {
-        return ClassUtil.merge(Receiver, {
+        return _ClassUtil2.default.merge(Receiver, {
           sayHi: function sayHi() {}
         });
       }).toThrow();
@@ -121,7 +124,7 @@ describe('ClassUtil', function () {
       var receiverOriginalConstructor = Receiver.prototype.constructor;
 
       it('mixes in class prototypes', function () {
-        ClassUtil.merge(Receiver, MixinClass);
+        _ClassUtil2.default.merge(Receiver, MixinClass);
 
         var receiver = new Receiver();
         expect(receiver.instanceMethodX()).toBe('IAMX');
@@ -171,7 +174,7 @@ describe('ClassUtil', function () {
       var receiverOriginalConstructor = Receiver.prototype.constructor;
 
       it('mixes objects in the receiving prototype', function () {
-        ClassUtil.merge(Receiver, MixinObject);
+        _ClassUtil2.default.merge(Receiver, MixinObject);
 
         var receiver = new Receiver();
         expect(receiver.instanceMethodZ()).toBe('IAMZ');

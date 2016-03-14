@@ -1,28 +1,22 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var ObjectUtil = require('../../util/ObjectUtil');
-
-/**
- * Converts a sort query into a comparator function.
- * @param {!Object} sortQuery
- * @example
- * parseSortQuery({
- *  id: 1,
- *  source: {
- *   id: 1,
- *   network: -1
- *  }
- * });
- *
- * @private
- */
-function parseSortQuery(sortQuery) {
+exports.default = function (sortQuery) {
   return function (a, b) {
     return sortItems(a, b, sortQuery);
   };
-}
+};
+
+var _ObjectUtil = require('../../util/ObjectUtil');
+
+var _ObjectUtil2 = _interopRequireDefault(_ObjectUtil);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * Computes which of a or b should be first in the sorted list based on a sort query.
@@ -44,8 +38,8 @@ function sortItems(a, b, sortQuery) {
 
       var sortOrder = sortQuery[fieldName];
 
-      var fieldA = ObjectUtil.find(a, fieldName);
-      var fieldB = ObjectUtil.find(b, fieldName);
+      var fieldA = _ObjectUtil2.default.find(a, fieldName);
+      var fieldB = _ObjectUtil2.default.find(b, fieldName);
 
       var result = void 0;
       if ((typeof sortOrder === 'undefined' ? 'undefined' : _typeof(sortOrder)) === 'object') {
@@ -94,4 +88,17 @@ function sortItem(fieldA, fieldB, sortOrder) {
   return -sortOrder;
 }
 
-module.exports = parseSortQuery;
+/**
+ * Converts a sort query into a comparator function.
+ * @param {!Object} sortQuery
+ * @example
+ * parseSortQuery({
+ *  id: 1,
+ *  source: {
+ *   id: 1,
+ *   network: -1
+ *  }
+ * });
+ *
+ * @private
+ */

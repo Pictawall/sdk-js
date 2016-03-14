@@ -1,8 +1,36 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === void 0) { var parent = Object.getPrototypeOf(object); if (parent === null) { return void 0; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === void 0) { return void 0; } return getter.call(receiver); } };
+
+var _BaseModel2 = require('./BaseModel');
+
+var _BaseModel3 = _interopRequireDefault(_BaseModel2);
+
+var _AssetCollection = require('../collections/AssetCollection');
+
+var _AssetCollection2 = _interopRequireDefault(_AssetCollection);
+
+var _UserCollection = require('../collections/UserCollection');
+
+var _UserCollection2 = _interopRequireDefault(_UserCollection);
+
+var _AdCollection = require('../collections/AdCollection');
+
+var _AdCollection2 = _interopRequireDefault(_AdCollection);
+
+var _MessageCollection = require('../collections/MessageCollection');
+
+var _MessageCollection2 = _interopRequireDefault(_MessageCollection);
+
+var _Errors = require('../core/Errors');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -10,17 +38,10 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var BaseModel = require('./BaseModel');
-var AssetCollection = require('../collections/AssetCollection');
-var UserCollection = require('../collections/UserCollection');
-var AdCollection = require('../collections/AdCollection');
-var MessageCollection = require('../collections/MessageCollection');
-
-var SdkError = require('../core/Errors').SdkError;
-
 /**
  * Model for pictawall events.
  *
+ * @class EventModel
  * @extends BaseModel
  */
 
@@ -53,7 +74,7 @@ var EventModel = function (_BaseModel) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventModel).call(this, sdk));
 
     if (typeof identifier !== 'string') {
-      throw new SdkError(_this, 'Event identifier "' + identifier + '" is not valid.');
+      throw new _Errors.SdkError(_this, 'Event identifier "' + identifier + '" is not valid.');
     }
 
     //this.autoUpdateVelocity = autoUpdateVelocity;
@@ -64,10 +85,10 @@ var EventModel = function (_BaseModel) {
       return serverResponse.data;
     };
 
-    _this.userCollection = new UserCollection(_this);
-    _this.assetCollection = new AssetCollection(_this, assetBatchSize);
-    _this.adCollection = new AdCollection(_this);
-    _this.messageCollection = new MessageCollection(_this);
+    _this.userCollection = new _UserCollection2.default(_this);
+    _this.assetCollection = new _AssetCollection2.default(_this, assetBatchSize);
+    _this.adCollection = new _AdCollection2.default(_this);
+    _this.messageCollection = new _MessageCollection2.default(_this);
     return _this;
   }
 
@@ -119,6 +140,6 @@ var EventModel = function (_BaseModel) {
   }]);
 
   return EventModel;
-}(BaseModel);
+}(_BaseModel3.default);
 
-module.exports = EventModel;
+exports.default = EventModel;

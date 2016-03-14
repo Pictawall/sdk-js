@@ -6,6 +6,9 @@
  * @namespace ObjectUtil
  */
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var ObjectUtil = {
 
   /**
@@ -61,4 +64,4 @@ var ObjectUtil = {
   }
 };
 
-module.exports = ObjectUtil;
+exports.default = ObjectUtil;

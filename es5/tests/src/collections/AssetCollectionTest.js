@@ -1,22 +1,25 @@
 'use strict';
 
-var AssetCollection = require('../../../src/collections/AssetCollection');
+var _AssetCollection = require('../../../src/collections/AssetCollection');
+
+var _AssetCollection2 = _interopRequireDefault(_AssetCollection);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var XhrMock = require('../../mock/XhrMock');
 var ClassMock = require('../../mock/ClassMock');
-
-var ASSET_SOURCE = XhrMock.VALID_EVENT_ASSETS;
 
 describe('AssetCollection', function () {
 
   /**
    * @type AssetCollection
    */
-  var collectionWithoutFeatured = ClassMock.build(AssetCollection, XhrMock.VALID_IDENTIFIER);
+  var collectionWithoutFeatured = ClassMock.build(_AssetCollection2.default, XhrMock.VALID_IDENTIFIER);
 
   /**
    * @type AssetCollection
    */
-  var collectionWithFeatured = ClassMock.build(AssetCollection, XhrMock.VALID_IDENTIFIER_FEATURED);
+  var collectionWithFeatured = ClassMock.build(_AssetCollection2.default, XhrMock.VALID_IDENTIFIER_FEATURED);
 
   beforeAll(function (done) {
     Promise.all([collectionWithoutFeatured.fetch(), collectionWithFeatured.fetch()]).then(function () {

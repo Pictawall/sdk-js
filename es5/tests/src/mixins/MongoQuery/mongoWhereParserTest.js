@@ -1,6 +1,10 @@
 'use strict';
 
-var parseQuery = require('../../../../src/mixins/MongoQuery/mongoWhereParser');
+var _mongoWhereParser = require('../../../../src/mixins/MongoQuery/mongoWhereParser');
+
+var _mongoWhereParser2 = _interopRequireDefault(_mongoWhereParser);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 describe('Finder selector', function () {
 
@@ -12,7 +16,7 @@ describe('Finder selector', function () {
       toMatchItem: function toMatchItem() {
         return {
           compare: function compare(query, item) {
-            var match = parseQuery(query);
+            var match = (0, _mongoWhereParser2.default)(query);
             var pass = match(item);
 
             var message = 'Expected query ' + JSON.stringify(query) + ' to ' + (pass ? 'NOT ' : '') + 'match item ' + JSON.stringify(item);
@@ -113,7 +117,7 @@ describe('Finder selector', function () {
     // TODO convert toBe to toMatchItem
 
     it('works with objects', function () {
-      var match = parseQuery({ network: { source: { id: { $ne: 45 } } } });
+      var match = (0, _mongoWhereParser2.default)({ network: { source: { id: { $ne: 45 } } } });
 
       expect(match({ network: { source: { id: 45 } } })).toBe(false);
       expect(match({ network: { source: { id: 42 } } })).toBe(true);
@@ -122,7 +126,7 @@ describe('Finder selector', function () {
 
   describe('$in', function () {
     it('returns true if the item is part of the array selector value', function () {
-      var match = parseQuery({ data: { $in: [1, 2, 4] } });
+      var match = (0, _mongoWhereParser2.default)({ data: { $in: [1, 2, 4] } });
 
       expect(match({ data: 1 })).toBe(true);
       expect(match({ data: 2 })).toBe(true);
@@ -132,7 +136,7 @@ describe('Finder selector', function () {
     });
 
     it('works with arrays', function () {
-      var match = parseQuery({ data: { $in: [[1, 2, 3], [1], [2]] } });
+      var match = (0, _mongoWhereParser2.default)({ data: { $in: [[1, 2, 3], [1], [2]] } });
 
       expect(match({ data: [1, 2, 3] })).toBe(true);
       expect(match({ data: [1] })).toBe(true);
@@ -144,7 +148,7 @@ describe('Finder selector', function () {
 
   describe('$nin', function () {
     it('returns false if the item is part of the array selector value', function () {
-      var match = parseQuery({ data: { $nin: [1, 2, 4] } });
+      var match = (0, _mongoWhereParser2.default)({ data: { $nin: [1, 2, 4] } });
 
       expect(match({ data: 1 })).toBe(false);
       expect(match({ data: 2 })).toBe(false);
@@ -154,7 +158,7 @@ describe('Finder selector', function () {
     });
 
     it('works with arrays', function () {
-      var match = parseQuery({ data: { $nin: [[1, 2, 3], [1], [2]] } });
+      var match = (0, _mongoWhereParser2.default)({ data: { $nin: [[1, 2, 3], [1], [2]] } });
 
       expect(match({ data: [1, 2, 3] })).toBe(false);
       expect(match({ data: [1] })).toBe(false);
@@ -166,7 +170,7 @@ describe('Finder selector', function () {
 
   describe('$or', function () {
     it('accepts an array of primitives', function () {
-      var match = parseQuery({ id: { $or: [5, 6] } });
+      var match = (0, _mongoWhereParser2.default)({ id: { $or: [5, 6] } });
 
       expect(match({ id: 6, dummyData: 'blah' })).toBe(true);
       expect(match({ id: 5, dummyData: 'blah' })).toBe(true);
@@ -175,7 +179,7 @@ describe('Finder selector', function () {
     });
 
     it('accepts an array of objects', function () {
-      var match = parseQuery({ $or: [{ id: 2 }, { id: 42 }] });
+      var match = (0, _mongoWhereParser2.default)({ $or: [{ id: 2 }, { id: 42 }] });
 
       expect(match({ id: 2, dummyData: 'blah' })).toBe(true);
       expect(match({ id: 42, dummyData: 'blah' })).toBe(true);
@@ -184,7 +188,7 @@ describe('Finder selector', function () {
     });
 
     it('denies non-arrays', function () {
-      var match = parseQuery({ id: { $or: 2 } });
+      var match = (0, _mongoWhereParser2.default)({ id: { $or: 2 } });
 
       try {
         match({ id: 2, dummyData: 'blah' });
@@ -195,7 +199,7 @@ describe('Finder selector', function () {
 
   describe('$nor', function () {
     it('accepts an array of primitives', function () {
-      var match = parseQuery({ id: { $nor: [5, 6] } });
+      var match = (0, _mongoWhereParser2.default)({ id: { $nor: [5, 6] } });
 
       expect(match({ id: 6, dummyData: 'blah' })).toBe(false);
       expect(match({ id: 5, dummyData: 'blah' })).toBe(false);
@@ -204,7 +208,7 @@ describe('Finder selector', function () {
     });
 
     it('accepts an array of objects', function () {
-      var match = parseQuery({ $nor: [{ id: 2 }, { id: 42 }] });
+      var match = (0, _mongoWhereParser2.default)({ $nor: [{ id: 2 }, { id: 42 }] });
 
       expect(match({ id: 2, dummyData: 'blah' })).toBe(false);
       expect(match({ id: 42, dummyData: 'blah' })).toBe(false);
@@ -213,7 +217,7 @@ describe('Finder selector', function () {
     });
 
     it('denies non-arrays', function () {
-      var match = parseQuery({ id: { $nor: 2 } });
+      var match = (0, _mongoWhereParser2.default)({ id: { $nor: 2 } });
 
       try {
         match({ id: 2, dummyData: 'blah' });
@@ -224,7 +228,7 @@ describe('Finder selector', function () {
 
   describe('$and', function () {
     it('accepts an array of objects', function () {
-      var match = parseQuery({ $and: [{ id: 2 }, { dummyData: 'blah' }] });
+      var match = (0, _mongoWhereParser2.default)({ $and: [{ id: 2 }, { dummyData: 'blah' }] });
 
       expect(match({ id: 2, dummyData: 'blah' })).toBe(true);
       expect(match({ id: 42, dummyData: 'blah' })).toBe(false);
@@ -240,7 +244,7 @@ describe('Finder selector', function () {
     });
 
     it('denies non-arrays', function () {
-      var match = parseQuery({ id: { $and: 2 } });
+      var match = (0, _mongoWhereParser2.default)({ id: { $and: 2 } });
 
       try {
         match({ id: 2, dummyData: 'blah' });
@@ -252,7 +256,7 @@ describe('Finder selector', function () {
   describe('$not', function () {
 
     it('inverts the results of its parameter', function () {
-      var match = parseQuery({ id: { $not: 2 } });
+      var match = (0, _mongoWhereParser2.default)({ id: { $not: 2 } });
 
       expect(match({ id: 2, dummyData: 'blah' })).toBe(false);
       expect(match({ id: 42, dummyData: 'blah' })).toBe(true);
@@ -260,7 +264,7 @@ describe('Finder selector', function () {
     });
 
     it('can be top level', function () {
-      var match = parseQuery({ $not: { id: 2 } });
+      var match = (0, _mongoWhereParser2.default)({ $not: { id: 2 } });
 
       expect(match({ id: 2, dummyData: 'blah' })).toBe(false);
       expect(match({ id: 42, dummyData: 'blah' })).toBe(true);
@@ -268,7 +272,7 @@ describe('Finder selector', function () {
     });
 
     it('accepts any query', function () {
-      var match = parseQuery({ $not: { $and: [{ id: 2 }, { dummyData: 'blah' }] } });
+      var match = (0, _mongoWhereParser2.default)({ $not: { $and: [{ id: 2 }, { dummyData: 'blah' }] } });
 
       expect(match({ id: 2, dummyData: 'blah' })).toBe(false);
       expect(match({ id: 42, dummyData: 'blah' })).toBe(true);
@@ -278,7 +282,7 @@ describe('Finder selector', function () {
 
   describe('unknown', function () {
     it('throws', function () {
-      var match = parseQuery({ data: { $unknown: [1, 2, 4] } });
+      var match = (0, _mongoWhereParser2.default)({ data: { $unknown: [1, 2, 4] } });
 
       try {
         match({ data: 1 });

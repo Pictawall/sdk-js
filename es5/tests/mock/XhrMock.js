@@ -1,15 +1,23 @@
 'use strict';
 
+var _StringUtil = require('../../src/util/StringUtil');
+
+var _StringUtil2 = _interopRequireDefault(_StringUtil);
+
+var _FetchShim = require('../../src/core/FetchShim');
+
+var _FetchShim2 = _interopRequireDefault(_FetchShim);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var sdk = require('./ClassMock').sdk;
-var StringUtil = require('../../src/util/StringUtil');
 var FakeFetch = require('./Xhr/FakeFetch');
-var FetchShim = require('../../src/core/FetchShim');
-var oldFetch = FetchShim.fetch;
+var oldFetch = _FetchShim2.default.fetch;
 
 function mockRequest(path, pathParams, response) {
-  var stubbedPath = new RegExp('^' + sdk.apiBaseUrl + StringUtil.format.apply(StringUtil, [path, false].concat(_toConsumableArray(pathParams))) + '([\\?#].*)?$');
+  var stubbedPath = new RegExp('^' + sdk.apiBaseUrl + _StringUtil2.default.format.apply(_StringUtil2.default, [path, false].concat(_toConsumableArray(pathParams))) + '([\\?#].*)?$');
 
   FakeFetch.mockRoute(stubbedPath, response);
 }
@@ -18,7 +26,7 @@ module.exports = {
   init: function init() {
     var _this = this;
 
-    FetchShim.fetch = FakeFetch.fetch;
+    _FetchShim2.default.fetch = FakeFetch.fetch;
 
     var routes = ['/events/{0}', '/events/{0}/assets', '/events/{0}/users', '/events/{0}/ads', '/events/{0}/messages'];
     var defaultResponses = [this.VALID_EVENT, this.VALID_EVENT_ASSETS, this.VALID_EVENT_USERS, this.VALID_EVENT_ADS, this.VALID_EVENT_MESSAGES];
@@ -68,7 +76,7 @@ module.exports = {
     });
   },
   destroy: function destroy() {
-    FetchShim.fetch = oldFetch;
+    _FetchShim2.default.fetch = oldFetch;
   },
 
 

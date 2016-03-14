@@ -6,6 +6,9 @@
  * @namespace ArrayUtil
  */
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 var ArrayUtil = {
 
   /**
@@ -55,4 +58,4 @@ var ArrayUtil = {
   }
 };
 
-module.exports = ArrayUtil;
+exports.default = ArrayUtil;

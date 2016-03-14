@@ -1,7 +1,14 @@
 'use strict';
 
-var Errors = require('../core/Errors');
-var MongoFinder = require('./MongoQuery/MongoFinder');
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _MongoFinder = require('./MongoQuery/MongoFinder');
+
+var _MongoFinder2 = _interopRequireDefault(_MongoFinder);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
  * <p>This mixin adds a MongoDB-like find syntax to iterables.</p>
@@ -36,8 +43,8 @@ var FindMixin = {
    * @instance
    */
   find: function find(query) {
-    return new MongoFinder(query, this);
+    return new _MongoFinder2.default(query, this);
   }
 };
 
-module.exports = FindMixin;
+exports.default = FindMixin;

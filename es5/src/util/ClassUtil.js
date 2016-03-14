@@ -1,8 +1,12 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var Errors = require('../core/Errors');
+var _Errors = require('../core/Errors');
 
 function _mergeClass(receivingClass, givingPrototype) {
   if (givingPrototype === Object.prototype) {
@@ -30,7 +34,7 @@ function _mergeClass(receivingClass, givingPrototype) {
       }
 
       if (Object.getOwnPropertyDescriptor(receivingPrototype, propertyName) !== void 0) {
-        throw new Errors.PictawallError(_mergeClass, 'Merge error, method ' + propertyName + ' is already in the receiving prototype.');
+        throw new _Errors.PictawallError(ClassUtil, 'Merge error, method ' + propertyName + ' is already in the receiving prototype.');
       }
 
       Object.defineProperty(receivingPrototype, propertyName, Object.getOwnPropertyDescriptor(givingPrototype, propertyName));
@@ -122,4 +126,4 @@ var ClassUtil = {
 
 Object.freeze(ClassUtil);
 
-module.exports = ClassUtil;
+exports.default = ClassUtil;
