@@ -1,6 +1,6 @@
 'use strict';
 
-const ArrayUtil = require('../../../src/util/ArrayUtil');
+import ArrayUtil from '../../../src/util/ArrayUtil';
 
 describe('ArrayUtil', () => {
 

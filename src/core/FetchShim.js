@@ -23,7 +23,7 @@ function _downloadFetch(cb) {
   }
 }
 
-module.exports = {
+const FetchShim = {
 
   /**
    * Loads the right fetch polyfill
@@ -47,3 +47,5 @@ module.exports = {
     });
   }
 };
+
+export default FetchShim;

@@ -1,11 +1,11 @@
 'use strict';
 
+import EventModel from '../../../src/models/EventModel';
+import ChannelModel from '../../../src/models/ChannelModel';
+
 const ClassMock = require('../../mock/ClassMock');
 const FetchShim = require('../../../src/core/FetchShim');
 const XhrMock = require('../../mock/XhrMock');
-
-const EventModel = require('../../../src/models/EventModel');
-const ChannelModel = require('../../../src/models/ChannelModel');
 
 describe('SDK', () => {
 

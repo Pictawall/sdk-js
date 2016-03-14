@@ -1,10 +1,10 @@
 'use strict';
 
-const Sdk = require('../../src/core/Sdk');
-const EventModel = require('../../src/models/EventModel');
-const AssetModel = require('../../src/models/AssetModel');
-const UserModel = require('../../src/models/UserModel');
-const AssetCollection = require('../../src/collections/AssetCollection');
+import Sdk from '../../src/core/Sdk';
+import EventModel from '../../src/models/EventModel';
+import AssetModel from '../../src/models/AssetModel';
+import UserModel from '../../src/models/UserModel';
+import AssetCollection from '../../src/collections/AssetCollection';
 
 const ClassMock = {
   /**

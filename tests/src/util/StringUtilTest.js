@@ -1,6 +1,6 @@
 'use strict';
 
-const StringUtil = require('../../../src/util/StringUtil');
+import StringUtil from '../../../src/util/StringUtil';
 
 describe('StringUtil', () => {
 

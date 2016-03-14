@@ -1,7 +1,7 @@
 'use strict';
 
-const parseSortQuery = require('./mongoSortParser');
-const parseWhereQuery = require('./mongoWhereParser');
+import parseSortQuery from './mongoSortParser';
+import parseWhereQuery from './mongoWhereParser';
 
 const stateMap = new WeakMap();
 
@@ -176,4 +176,4 @@ class MongoFinder {
   }
 }
 
-module.exports = MongoFinder;
+export default MongoFinder;

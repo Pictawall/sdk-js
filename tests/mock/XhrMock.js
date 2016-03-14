@@ -1,9 +1,10 @@
 'use strict';
 
+import StringUtil from '../../src/util/StringUtil';
+import FetchShim from '../../src/core/FetchShim';
+
 const sdk = require('./ClassMock').sdk;
-const StringUtil = require('../../src/util/StringUtil');
 const FakeFetch = require('./Xhr/FakeFetch');
-const FetchShim = require('../../src/core/FetchShim');
 const oldFetch = FetchShim.fetch;
 
 function mockRequest(path, pathParams, response) {

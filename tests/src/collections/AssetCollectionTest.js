@@ -1,10 +1,9 @@
 'use strict';
 
-const AssetCollection = require('../../../src/collections/AssetCollection');
+import AssetCollection from '../../../src/collections/AssetCollection';
+
 const XhrMock = require('../../mock/XhrMock');
 const ClassMock = require('../../mock/ClassMock');
-
-const ASSET_SOURCE = XhrMock.VALID_EVENT_ASSETS;
 
 describe('AssetCollection', () => {
 

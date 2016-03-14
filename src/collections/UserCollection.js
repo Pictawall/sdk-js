@@ -1,7 +1,7 @@
 'use strict';
 
-const PagedCollection = require('./PagedCollection');
-const UserModel = require('../models/UserModel');
+import PagedCollection from './PagedCollection';
+import UserModel from '../models/UserModel';
 
 // TODO updateAll
 // TODO handle scores
@@ -9,6 +9,7 @@ const UserModel = require('../models/UserModel');
 /**
  * Collection of event users.
  *
+ * @class UserCollection
  * @extends PagedCollection
  */
 class UserCollection extends PagedCollection {
@@ -53,4 +54,4 @@ class UserCollection extends PagedCollection {
   }
 }
 
-module.exports = UserCollection;
+export default UserCollection;

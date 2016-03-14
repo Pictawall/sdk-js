@@ -1,13 +1,14 @@
 'use strict';
 
-const BaseCollection = require('../collections/BaseCollection');
-const MessageModel = require('../models/MessageModel');
+import BaseCollection from '../collections/BaseCollection';
+import MessageModel from '../models/MessageModel';
 
 // TODO updateAll
 
 /**
  * Collection of event messages.
  *
+ * @class MessageCollection
  * @extends BaseCollection
  */
 class MessageCollection extends BaseCollection {
@@ -32,5 +33,5 @@ class MessageCollection extends BaseCollection {
   }
 }
 
-module.exports = MessageCollection;
+export default MessageCollection;
 

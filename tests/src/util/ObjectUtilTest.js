@@ -1,6 +1,6 @@
 'use strict';
 
-const ObjectUtil = require('../../../src/util/ObjectUtil');
+import ObjectUtil from '../../../src/util/ObjectUtil';
 
 describe('ObjectUtil', () => {
 

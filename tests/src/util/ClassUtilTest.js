@@ -1,7 +1,6 @@
 'use strict';
 
-const ClassUtil = require('../../../src/util/ClassUtil');
-const Errors = require('../../../src/core/Errors.js');
+import ClassUtil from '../../../src/util/ClassUtil';
 
 describe('ClassUtil', () => {
 

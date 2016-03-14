@@ -1,13 +1,14 @@
 'use strict';
 
-const ClassUtil = require('../util/ClassUtil');
+import ClassUtil from '../util/ClassUtil';
 
 /**
  * Error that prints the name of the class of the thrower.
  *
+ * @class PictawallError
  * @extends Error
  */
-class PictawallError extends Error {
+export class PictawallError extends Error {
 
   /**
    * @param {*} thrower The thrower of this error.
@@ -25,12 +26,11 @@ class PictawallError extends Error {
 /**
  * Error to use for internal SDK errors.
  *
+ * @class SdkError
  * @extends PictawallError
  */
-class SdkError extends PictawallError {
+export class SdkError extends PictawallError {
   constructor(...args) {
     super(...args);
   }
 }
-
-module.exports = { PictawallError, SdkError };

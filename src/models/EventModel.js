@@ -1,16 +1,17 @@
 'use strict';
 
-const BaseModel = require('./BaseModel');
-const AssetCollection = require('../collections/AssetCollection');
-const UserCollection = require('../collections/UserCollection');
-const AdCollection = require('../collections/AdCollection');
-const MessageCollection = require('../collections/MessageCollection');
+import BaseModel from './BaseModel';
+import AssetCollection from '../collections/AssetCollection';
+import UserCollection from '../collections/UserCollection';
+import AdCollection from '../collections/AdCollection';
+import MessageCollection from '../collections/MessageCollection';
 
-const SdkError = require('../core/Errors').SdkError;
+import { SdkError } from '../core/Errors';
 
 /**
  * Model for pictawall events.
  *
+ * @class EventModel
  * @extends BaseModel
  */
 class EventModel extends BaseModel {
@@ -92,4 +93,4 @@ class EventModel extends BaseModel {
   //}
 }
 
-module.exports = EventModel;
+export default EventModel;

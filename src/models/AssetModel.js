@@ -1,11 +1,12 @@
 'use strict';
 
-const BaseModel = require('./BaseModel');
-const SdkError = require('../core/Errors').SdkError;
+import BaseModel from './BaseModel';
+import { SdkError } from '../core/Errors';
 
 /**
  * Asset model.
  *
+ * @class AssetModel
  * @extends BaseModel
  */
 class AssetModel extends BaseModel {
@@ -107,4 +108,4 @@ class AssetModel extends BaseModel {
   }
 }
 
-module.exports = AssetModel;
+export default AssetModel;

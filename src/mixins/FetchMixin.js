@@ -1,6 +1,6 @@
 'use strict';
 
-const SdkError = require('../core/Errors').SdkError;
+import { SdkError } from '../core/Errors';
 
 const _fetchParsers = new WeakMap();
 
@@ -93,4 +93,4 @@ const FetchMixin = {
   }
 };
 
-module.exports = FetchMixin;
+export default FetchMixin;

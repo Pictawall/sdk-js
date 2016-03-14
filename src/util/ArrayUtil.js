@@ -52,4 +52,4 @@ const ArrayUtil = {
   }
 };
 
-module.exports = ArrayUtil;
+export default ArrayUtil;

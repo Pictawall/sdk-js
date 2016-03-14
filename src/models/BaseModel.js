@@ -1,8 +1,8 @@
 'use strict';
 
-const FetchMixin = require('../mixins/FetchMixin');
-const ClassUtil = require('../util/ClassUtil');
-const SdkError = require('../core/Errors').SdkError;
+import FetchMixin from '../mixins/FetchMixin';
+import ClassUtil from '../util/ClassUtil';
+import { SdkError } from '../core/Errors';
 
 /**
  * Maps containing the properties of the models.
@@ -15,6 +15,7 @@ const _propertyMaps = new WeakMap();
  * <p>Default model, can fetch from the api and store the data.</p>
  * <p>Extend to add model-specific functionality.</p>
  *
+ * @class BaseModel
  * @mixes FetchMixin
  */
 class BaseModel {
@@ -100,4 +101,4 @@ class BaseModel {
 
 ClassUtil.merge(BaseModel, FetchMixin);
 
-module.exports = BaseModel;
+export default BaseModel;

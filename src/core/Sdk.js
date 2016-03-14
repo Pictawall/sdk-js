@@ -1,10 +1,10 @@
 'use strict';
 
-const EventModel = require('../models/EventModel');
-const ChannelModel = require('../models/ChannelModel');
+import EventModel from '../models/EventModel';
+import ChannelModel from '../models/ChannelModel';
 
-const StringUtil = require('../util/StringUtil');
-const FetchShim = require('./FetchShim');
+import StringUtil from '../util/StringUtil';
+import FetchShim from './FetchShim';
 
 if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
@@ -14,6 +14,8 @@ if (typeof require.ensure !== 'function') {
 
 /**
  * Entry point to the SDK.
+ *
+ * @class Sdk
  */
 class Sdk {
 
@@ -118,4 +120,4 @@ class Sdk {
   }
 }
 
-module.exports = Sdk;
+export default Sdk;

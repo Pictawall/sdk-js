@@ -1,12 +1,13 @@
 'use strict';
 
-const BaseModel = require('./BaseModel');
-const EventModel = require('./EventModel');
-const SdkError = require('../core/Errors').SdkError;
+import BaseModel from './BaseModel';
+import EventModel from './EventModel';
+import { SdkError } from '../core/Errors';
 
 /**
  * Model for pictawall channels.
  *
+ * @class ChannelModel
  * @extends BaseModel
  */
 class ChannelModel extends BaseModel {
@@ -68,4 +69,4 @@ class ChannelModel extends BaseModel {
   }
 }
 
-module.exports = ChannelModel;
+export default ChannelModel;

@@ -57,4 +57,4 @@ const ObjectUtil = {
   }
 };
 
-module.exports = ObjectUtil;
+export default ObjectUtil;

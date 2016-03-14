@@ -1,7 +1,8 @@
 'use strict';
 
-const BaseModel = require('../../../src/models/BaseModel');
-const BaseCollection = require('../../../src/collections/BaseCollection');
+import BaseModel from '../../../src/models/BaseModel';
+import BaseCollection from '../../../src/collections/BaseCollection';
+
 const ClassMock = require('../../mock/ClassMock');
 const XhrMock = require('../../mock/XhrMock');
 

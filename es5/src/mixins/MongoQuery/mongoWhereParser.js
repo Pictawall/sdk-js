@@ -1,9 +1,30 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
-var ArrayUtil = require('../../util/ArrayUtil');
-var ObjectUtil = require('../../util/ObjectUtil');
+exports.default = function (query) {
+  return function (item) {
+    if (item.toJSON) {
+      item = item.toJSON();
+    }
+
+    return executeQuery(item, query);
+  };
+};
+
+var _ArrayUtil = require('../../util/ArrayUtil');
+
+var _ArrayUtil2 = _interopRequireDefault(_ArrayUtil);
+
+var _ObjectUtil = require('../../util/ObjectUtil');
+
+var _ObjectUtil2 = _interopRequireDefault(_ObjectUtil);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var SELECTOR_HANDLERS = {
 
@@ -18,7 +39,7 @@ var SELECTOR_HANDLERS = {
 
     // Array special case
     if (Array.isArray(item) || Array.isArray(selectorValue)) {
-      return ArrayUtil.areEqual(item, selectorValue);
+      return _ArrayUtil2.default.areEqual(item, selectorValue);
     }
 
     return item === 0 && selectorValue === 0 || Object.is(item, selectorValue);
@@ -211,7 +232,7 @@ function executeQuery(item, selectors) {
         }
       } else {
         // { <item>: <query> } case
-        var itemProperty = ObjectUtil.find(item, selectorName);
+        var itemProperty = _ObjectUtil2.default.find(item, selectorName);
 
         if (!executeQuery(itemProperty, selectorParameter)) {
           return false;
@@ -236,12 +257,4 @@ function executeQuery(item, selectors) {
   return true;
 }
 
-module.exports = function (query) {
-  return function (item) {
-    if (item.toJSON) {
-      item = item.toJSON();
-    }
-
-    return executeQuery(item, query);
-  };
-};
+;

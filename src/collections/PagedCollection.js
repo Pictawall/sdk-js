@@ -1,9 +1,11 @@
 'use strict';
 
-const BaseCollection = require('./BaseCollection');
+import BaseCollection from './BaseCollection';
 
 /**
  * Collection able to fetch data from the API in a paged fashion.
+ *
+ * @class PagedCollection
  */
 class PagedCollection extends BaseCollection {
 
@@ -85,4 +87,4 @@ class PagedCollection extends BaseCollection {
   }
 }
 
-module.exports = PagedCollection;
+export default PagedCollection;

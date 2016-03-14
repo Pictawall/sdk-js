@@ -1,6 +1,6 @@
 'use strict';
 
-const parseQuery = require('../../../../src/mixins/MongoQuery/mongoWhereParser');
+import parseQuery from '../../../../src/mixins/MongoQuery/mongoWhereParser';
 
 describe('Finder selector', () => {
 

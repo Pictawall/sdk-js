@@ -1,26 +1,6 @@
 'use strict';
 
-const ObjectUtil = require('../../util/ObjectUtil');
-
-/**
- * Converts a sort query into a comparator function.
- * @param {!Object} sortQuery
- * @example
- * parseSortQuery({
- *  id: 1,
- *  source: {
- *   id: 1,
- *   network: -1
- *  }
- * });
- *
- * @private
- */
-function parseSortQuery(sortQuery) {
-  return function (a, b) {
-    return sortItems(a, b, sortQuery);
-  };
-}
+import ObjectUtil from '../../util/ObjectUtil';
 
 /**
  * Computes which of a or b should be first in the sorted list based on a sort query.
@@ -70,4 +50,22 @@ function sortItem(fieldA, fieldB, sortOrder) {
   return -sortOrder;
 }
 
-module.exports = parseSortQuery;
+/**
+ * Converts a sort query into a comparator function.
+ * @param {!Object} sortQuery
+ * @example
+ * parseSortQuery({
+ *  id: 1,
+ *  source: {
+ *   id: 1,
+ *   network: -1
+ *  }
+ * });
+ *
+ * @private
+ */
+export default function (sortQuery) {
+  return function (a, b) {
+    return sortItems(a, b, sortQuery);
+  };
+}

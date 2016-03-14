@@ -1,7 +1,6 @@
 'use strict';
 
-const Errors = require('../core/Errors');
-const MongoFinder = require('./MongoQuery/MongoFinder');
+import MongoFinder from './MongoQuery/MongoFinder';
 
 /**
  * <p>This mixin adds a MongoDB-like find syntax to iterables.</p>
@@ -38,4 +37,4 @@ const FindMixin = {
   }
 };
 
-module.exports = FindMixin;
+export default FindMixin;

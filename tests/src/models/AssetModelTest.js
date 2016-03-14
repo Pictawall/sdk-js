@@ -1,11 +1,11 @@
 'use strict';
 
-const AssetModel = require('../../../src/models/AssetModel');
-const UserModel = require('../../../src/models/UserModel');
+import AssetModel from '../../../src/models/AssetModel';
+import UserModel from '../../../src/models/UserModel';
+import FetchShim from '../../../src/core/FetchShim';
 
 const ClassMock = require('../../mock/ClassMock');
 const XhrMock = require('../../mock/XhrMock');
-const FetchShim = require('../../../src/core/FetchShim');
 const FakeFetch = require('../../mock/Xhr/FakeFetch');
 
 describe('AssetModel', () => {

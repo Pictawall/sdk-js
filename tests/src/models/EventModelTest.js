@@ -1,9 +1,9 @@
 'use strict';
 
+import EventModel from '../../../src/models/EventModel';
+
 const AssertUtil = require('../../util/AssertUtil');
 const XhrMock = require('../../mock/XhrMock');
-
-const EventModel = require('../../../src/models/EventModel');
 const ClassMock = require('../../mock/ClassMock');
 
 describe('EventModel', () => {

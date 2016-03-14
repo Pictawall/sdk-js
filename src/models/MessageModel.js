@@ -1,10 +1,11 @@
 'use strict';
 
-const BaseModel = require('./BaseModel');
+import BaseModel from './BaseModel';
 
 /**
  * Message model.
  *
+ * @class MessageModel
  * @extends BaseModel
  */
 class MessageModel extends BaseModel {
@@ -17,4 +18,4 @@ class MessageModel extends BaseModel {
   }
 }
 
-module.exports = MessageModel;
+export default MessageModel;

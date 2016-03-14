@@ -1,7 +1,9 @@
 'use strict';
 
-const ClassUtil = require('../util/ClassUtil');
-const SdkError = require('../core/Errors').SdkError;
+import ClassUtil from '../util/ClassUtil';
+import { SdkError } from '../core/Errors';
+import FetchMixin from '../mixins/FetchMixin';
+import FindMixin from '../mixins/FindMixin';
 
 /**
  * @class BaseCollection
@@ -12,11 +14,14 @@ const SdkError = require('../core/Errors').SdkError;
  */
 class BaseCollection {
 
+  /**
+   * @param {!Sdk} sdk
+   */
   constructor(sdk) {
     this._loaded = false;
 
     if (sdk === void 0) {
-      throw new SdkError('This model did not receive a SDK instance.');
+      throw new SdkError(this, 'This model did not receive a SDK instance.');
     }
 
     this.sdk = sdk;
@@ -145,9 +150,6 @@ class BaseCollection {
   }
 }
 
-const FetchMixin = require('../mixins/FetchMixin');
-const FindMixin = require('../mixins/FindMixin');
-
 ClassUtil.merge(BaseCollection, FetchMixin, FindMixin);
 
-module.exports = BaseCollection;
+export default BaseCollection;

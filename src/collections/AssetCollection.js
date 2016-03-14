@@ -1,14 +1,15 @@
 'use strict';
 
-const PagedCollection = require('./PagedCollection');
-const AssetModel = require('../models/AssetModel');
-const Errors = require('../core/Errors');
+import PagedCollection from './PagedCollection';
+import AssetModel from '../models/AssetModel';
+import { SdkError } from '../core/Errors';
 
 // TODO: updateAll
 
 /**
  * Collection os event assets.
  *
+ * @class AssetCollection
  * @extends PagedCollection
  */
 class AssetCollection extends PagedCollection {
@@ -40,7 +41,7 @@ class AssetCollection extends PagedCollection {
     const assetId = this._event.getProperty('featuredAssetId');
 
     if (assetId === void 0) {
-      throw new Errors.SdkError(this, 'Event.featuredAssetId is undefined, make sure the event has been populated.');
+      throw new SdkError(this, 'Event.featuredAssetId is undefined, make sure the event has been populated.');
     }
 
     return assetId !== -1;
@@ -99,11 +100,11 @@ class AssetCollection extends PagedCollection {
   }
 
   /**
-   * Creates a model and sets its properties.
+   * @inheritDoc
    */
   createModel() {
     return new AssetModel(this._event);
   }
 }
 
-module.exports = AssetCollection;
+export default AssetCollection;

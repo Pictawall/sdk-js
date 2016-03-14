@@ -1,7 +1,7 @@
 'use strict';
 
-const ArrayUtil = require('../../util/ArrayUtil');
-const ObjectUtil = require('../../util/ObjectUtil');
+import ArrayUtil from '../../util/ArrayUtil';
+import ObjectUtil from '../../util/ObjectUtil';
 
 const SELECTOR_HANDLERS = {
 
@@ -148,7 +148,7 @@ function executeQuery(item, selectors) {
   return true;
 }
 
-module.exports = function (query) {
+export default function (query) {
   return function (item) {
     if (item.toJSON) {
       item = item.toJSON();

@@ -1,13 +1,14 @@
 'use strict';
 
-const BaseCollection = require('../collections/BaseCollection');
-const AdModel = require('../models/AdModel');
+import BaseCollection from '../collections/BaseCollection';
+import AdModel from '../models/AdModel';
 
 // TODO updateAll
 
 /**
  * Collection of event ads.
  *
+ * @class AdCollection
  * @extends BaseCollection
  */
 class AdCollection extends BaseCollection {
@@ -30,5 +31,5 @@ class AdCollection extends BaseCollection {
   }
 }
 
-module.exports = AdCollection;
+export default AdCollection;
 

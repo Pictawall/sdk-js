@@ -1,6 +1,6 @@
 'use strict';
 
-const Errors = require('../core/Errors');
+import { PictawallError } from '../core/Errors';
 
 function _mergeClass(receivingClass, givingPrototype) {
   if (givingPrototype === Object.prototype) {
@@ -20,7 +20,7 @@ function _mergeClass(receivingClass, givingPrototype) {
     }
 
     if (Object.getOwnPropertyDescriptor(receivingPrototype, propertyName) !== void 0) {
-      throw new Errors.PictawallError(_mergeClass, `Merge error, method ${propertyName} is already in the receiving prototype.`);
+      throw new PictawallError(ClassUtil, `Merge error, method ${propertyName} is already in the receiving prototype.`);
     }
 
     Object.defineProperty(receivingPrototype, propertyName, Object.getOwnPropertyDescriptor(givingPrototype, propertyName));
@@ -92,4 +92,4 @@ const ClassUtil = {
 
 Object.freeze(ClassUtil);
 
-module.exports = ClassUtil;
+export default ClassUtil;

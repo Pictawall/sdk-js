@@ -1,8 +1,8 @@
 'use strict';
 
-(function () {
-  const Sdk = require('./core/Sdk');
+import Sdk from './core/Sdk';
 
+(function () {
   if (module && module.exports) {
     module.exports = Sdk;
   } else {

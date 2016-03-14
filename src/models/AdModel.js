@@ -1,10 +1,11 @@
 'use strict';
 
-const BaseModel = require('./BaseModel');
+import BaseModel from './BaseModel';
 
 /**
  * Advertisement model.
  *
+ * @class AdModel
  * @extends BaseModel
  */
 class AdModel extends BaseModel {
@@ -17,4 +18,4 @@ class AdModel extends BaseModel {
   }
 }
 
-module.exports = AdModel;
+export default AdModel;
