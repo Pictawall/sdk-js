@@ -23,10 +23,10 @@ describe('SDK', function () {
 
       expect(event).toEqual(jasmine.any(_EventModel2.default));
       expect(event.getProperty('id')).toBe(44759);
-      expect(event.assetCollection.loaded).toBe(true);
-      expect(event.messageCollection.loaded).toBe(true);
-      expect(event.userCollection.loaded).toBe(true);
-      expect(event.adCollection.loaded).toBe(true);
+      expect(event.getCollection('assets').loaded).toBe(true);
+      expect(event.getCollection('users').loaded).toBe(true);
+      expect(event.getCollection('ads').loaded).toBe(true);
+      expect(event.getCollection('messages').loaded).toBe(true);
 
       done();
     }).catch(function (e) {
@@ -43,10 +43,6 @@ describe('SDK', function () {
       var event = channel.event;
       expect(event).toEqual(jasmine.any(_EventModel2.default));
       expect(event.getProperty('id')).toBe(44759);
-      expect(event.assetCollection.loaded).toBe(true);
-      expect(event.messageCollection.loaded).toBe(true);
-      expect(event.userCollection.loaded).toBe(true);
-      expect(event.adCollection.loaded).toBe(true);
 
       done();
     }).catch(function (e) {

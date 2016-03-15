@@ -16,10 +16,10 @@ describe('SDK', () => {
 
       expect(event).toEqual(jasmine.any(EventModel));
       expect(event.getProperty('id')).toBe(44759);
-      expect(event.assetCollection.loaded).toBe(true);
-      expect(event.messageCollection.loaded).toBe(true);
-      expect(event.userCollection.loaded).toBe(true);
-      expect(event.adCollection.loaded).toBe(true);
+      expect(event.getCollection('assets').loaded).toBe(true);
+      expect(event.getCollection('users').loaded).toBe(true);
+      expect(event.getCollection('ads').loaded).toBe(true);
+      expect(event.getCollection('messages').loaded).toBe(true);
 
       done();
     }).catch(e => {
@@ -36,10 +36,6 @@ describe('SDK', () => {
       const event = channel.event;
       expect(event).toEqual(jasmine.any(EventModel));
       expect(event.getProperty('id')).toBe(44759);
-      expect(event.assetCollection.loaded).toBe(true);
-      expect(event.messageCollection.loaded).toBe(true);
-      expect(event.userCollection.loaded).toBe(true);
-      expect(event.adCollection.loaded).toBe(true);
 
       done();
     }).catch(e => {

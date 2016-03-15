@@ -14,6 +14,22 @@ var _ChannelModel = require('../models/ChannelModel');
 
 var _ChannelModel2 = _interopRequireDefault(_ChannelModel);
 
+var _AssetCollection = require('../collections/AssetCollection');
+
+var _AssetCollection2 = _interopRequireDefault(_AssetCollection);
+
+var _UserCollection = require('../collections/UserCollection');
+
+var _UserCollection2 = _interopRequireDefault(_UserCollection);
+
+var _AdCollection = require('../collections/AdCollection');
+
+var _AdCollection2 = _interopRequireDefault(_AdCollection);
+
+var _MessageCollection = require('../collections/MessageCollection');
+
+var _MessageCollection2 = _interopRequireDefault(_MessageCollection);
+
 var _StringUtil = require('../util/StringUtil');
 
 var _StringUtil2 = _interopRequireDefault(_StringUtil);
@@ -32,6 +48,44 @@ if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
     callback(require);
   };
+}
+
+/**
+ * @private
+ */
+function _insertCollections(event, collections) {
+  if (collections === void 0) {
+    event.addCollection('users', new _UserCollection2.default(event));
+    event.addCollection('assets', new _AssetCollection2.default(event));
+    event.addCollection('ads', new _AdCollection2.default(event));
+    event.addCollection('messages', new _MessageCollection2.default(event));
+  } else {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+
+    var _iteratorError = void 0;
+
+    try {
+      for (var _iterator = Object.getOwnPropertyNames(collections)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var collectionName = _step.value;
+
+        event.addCollection(collectionName, collections[collectionName](event));
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -102,17 +156,27 @@ var Sdk = function () {
      * Creates and populates a new event model.
      *
      * @param {!String} identifier The identifier of the pictawall event.
-     * @param {Object} [config = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+     * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+     * @param {Object.<String, Function>} [collections] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
      * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
+     *
+     * @example
+     * sdk.getEvent('undiscovered-london', {}, {
+     *  textAssets: event => new AssetCollection(event, { kind: 'text' })
+     * });
      */
 
   }, {
     key: 'getEvent',
     value: function getEvent(identifier) {
-      var config = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
+      var eventConfig = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
+      var collections = arguments[2];
 
       try {
-        var event = new _EventModel2.default(this, identifier, config);
+        var event = new _EventModel2.default(this, identifier, eventConfig);
+
+        _insertCollections(event, collections);
+
         return event.fetch();
       } catch (e) {
         return Promise.reject(e);
@@ -120,7 +184,8 @@ var Sdk = function () {
     }
 
     /**
-     * Creates and populates a new channel model.
+     * <p>Creates and populates a new channel model.</p>
+     * <p>The event configuration will be fetched from the API. If you need to have local control over it, you should use {@link Sdk#getEvent} instead.</p>
      *
      * @param {!String} identifier The identifier of the pictawall channel.
      * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.

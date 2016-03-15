@@ -12,22 +12,6 @@ var _BaseModel2 = require('./BaseModel');
 
 var _BaseModel3 = _interopRequireDefault(_BaseModel2);
 
-var _AssetCollection = require('../collections/AssetCollection');
-
-var _AssetCollection2 = _interopRequireDefault(_AssetCollection);
-
-var _UserCollection = require('../collections/UserCollection');
-
-var _UserCollection2 = _interopRequireDefault(_UserCollection);
-
-var _AdCollection = require('../collections/AdCollection');
-
-var _AdCollection2 = _interopRequireDefault(_AdCollection);
-
-var _MessageCollection = require('../collections/MessageCollection');
-
-var _MessageCollection2 = _interopRequireDefault(_MessageCollection);
-
 var _Errors = require('../core/Errors');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -37,6 +21,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * @type {WeakMap.<EventModel, Map.<String, BaseCollection>>}
+ */
+var collectionLists = new WeakMap();
 
 /**
  * Model for pictawall events.
@@ -49,14 +38,14 @@ var EventModel = function (_BaseModel) {
   _inherits(EventModel, _BaseModel);
 
   /**
-   * <p>Creates a new Event model and its associated collections.</p>
+   * <p>Creates a new Event model.</p>
    * <p>You can fill it with server data by calling {@link #fetch}</p>
    *
    * @param {!Sdk} sdk - The SDK in which this model is running.
    * @param {!String} identifier - The pictawall event identifier.
-   * @param {!Object} config - The constructor parameters.
-   * @param {!boolean} [config.autoUpdate = false] - Should the collections periodically fetch their contents ?
-   * @param {!number} [config.autoUpdateVelocity = 10000] - Time in ms between each auto-update.
+   * @param {Object} config - The constructor parameters.
+   * @param {boolean} [config.autoUpdate = false] - Should the collections periodically fetch their contents ?
+   * @param {number} [config.autoUpdateVelocity = 10000] - Time in ms between each auto-update.
    */
 
   function EventModel(sdk, identifier) {
@@ -66,8 +55,6 @@ var EventModel = function (_BaseModel) {
     var /* config = */autoUpdate = _ref$autoUpdate === void 0 ? false : _ref$autoUpdate;
     var _ref$autoUpdateVeloci = _ref.autoUpdateVelocity;
     var autoUpdateVelocity = _ref$autoUpdateVeloci === void 0 ? 10000 : _ref$autoUpdateVeloci;
-    var _ref$assetBatchSize = _ref.assetBatchSize;
-    var assetBatchSize = _ref$assetBatchSize === void 0 ? 100 : _ref$assetBatchSize;
 
     _classCallCheck(this, EventModel);
 
@@ -85,15 +72,12 @@ var EventModel = function (_BaseModel) {
       return serverResponse.data;
     };
 
-    _this.userCollection = new _UserCollection2.default(_this);
-    _this.assetCollection = new _AssetCollection2.default(_this, assetBatchSize);
-    _this.adCollection = new _AdCollection2.default(_this);
-    _this.messageCollection = new _MessageCollection2.default(_this);
+    collectionLists.set(_this, new Map());
     return _this;
   }
 
   /**
-   * @inheritDoc
+   * Populates this model and its collections.
    */
 
 
@@ -102,13 +86,59 @@ var EventModel = function (_BaseModel) {
     value: function fetch(queryParameters) {
       var _this2 = this;
 
-      return Promise.all([_get(Object.getPrototypeOf(EventModel.prototype), 'fetch', this).call(this, queryParameters), this.userCollection.fetch(), this.assetCollection.fetch(), this.adCollection.fetch(), this.messageCollection.fetch()]).then(function () {
+      return Promise.all([this.fetchCollections(), _get(Object.getPrototypeOf(EventModel.prototype), 'fetch', this).call(this, queryParameters)]).then(function () {
         //if (autoUpdate) {
         //  this.startAutoUpdate();
         //}
 
         return _this2;
       });
+    }
+  }, {
+    key: 'fetchCollections',
+    value: function fetchCollections() {
+      var promises = [];
+
+      collectionLists.get(this).forEach(function (collection) {
+        promises.push(collection.fetch());
+      });
+
+      return Promise.all(promises);
+    }
+
+    /**
+     * <p>Adds a collection to this model.</p>
+     * <p>Collections aren't automatically added to give you more control on the collections themselves.</p>
+     *
+     * @param {!String} collectionName
+     * @param {!BaseCollection} collection
+     * @return {!this}
+     *
+     * @example
+     * // split media and text assets in two different collections
+     * event.addCollection('assetTextCollection', new AssetCollection(event, { limit: 100, orderBy: 'date_desc', kind: 'text' }))
+     * event.addCollection('assetMediaCollection', new AssetCollection(event, { limit: 100, orderBy: 'date_desc', kind: 'text' }))
+     */
+
+  }, {
+    key: 'addCollection',
+    value: function addCollection(collectionName, collection) {
+      var collectionList = collectionLists.get(this);
+
+      if (collectionList.has(collectionName)) {
+        throw new _Errors.SdkError(this, 'Collection ' + collectionName + ' already registered for this event');
+      }
+
+      collectionList.set(collectionName, collection);
+
+      return this;
+    }
+  }, {
+    key: 'getCollection',
+    value: function getCollection(collectionName) {
+      var collectionList = collectionLists.get(this);
+
+      return collectionList.get(collectionName);
     }
 
     //_runAutoUpdate() {

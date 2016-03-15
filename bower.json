@@ -16,8 +16,6 @@
   "homepage": "https://github.com/pictawall/sdk-js#readme",
   "private": false,
   "ignore": [
-    "es5",
-    "src",
     "tests",
     ".babelrc",
     ".gitignore",

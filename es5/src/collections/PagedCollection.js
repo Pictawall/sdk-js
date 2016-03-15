@@ -26,6 +26,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * Collection able to fetch data from the API in a paged fashion.
  *
  * @class PagedCollection
+ * @extends BaseCollection
  */
 
 var PagedCollection = function (_BaseCollection) {

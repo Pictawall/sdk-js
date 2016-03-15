@@ -1,6 +1,8 @@
 'use strict';
 
 import BaseModel from './BaseModel';
+import UserModel from './UserModel';
+
 import { SdkError } from '../core/Errors';
 
 /**
@@ -38,13 +40,18 @@ class AssetModel extends BaseModel {
       properties.source.additionalData = {};
     }
 
-    const userCollection = this._event.userCollection;
-    this._owner = userCollection.findOne({ id: properties.owner.id });
+    const userCollection = this._event.getCollection('users');
+    this._owner = userCollection != null ? userCollection.findOne({ id: properties.owner.id }) : null;
+
     if (this._owner === null) {
-      const owner = userCollection.createModel(properties.owner);
+      const owner = new UserModel(this._event);
       owner.setProperties(properties.owner);
 
-      this._owner = userCollection.add(owner, false, false);
+      if (userCollection != null) {
+        this._owner = userCollection.add(owner, false, false);
+      } else {
+        this._owner = owner;
+      }
     }
 
     this.apiPath = `/events/${this._event.getProperty('identifier')}/assets/${properties.id}`;

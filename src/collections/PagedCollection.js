@@ -6,6 +6,7 @@ import BaseCollection from './BaseCollection';
  * Collection able to fetch data from the API in a paged fashion.
  *
  * @class PagedCollection
+ * @extends BaseCollection
  */
 class PagedCollection extends BaseCollection {
 

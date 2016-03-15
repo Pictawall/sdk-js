@@ -29,7 +29,7 @@ module.exports = function (config) {
     webpack: (function () {
       let webpackConfig = require('./webpack.config');
       delete webpackConfig.entry;
-
+      delete webpackConfig.output.libraryTarget;
       webpackConfig.module.preLoaders.push({
         test: /\.js$/,
         include: path.resolve('src/'),

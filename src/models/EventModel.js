@@ -1,12 +1,13 @@
 'use strict';
 
 import BaseModel from './BaseModel';
-import AssetCollection from '../collections/AssetCollection';
-import UserCollection from '../collections/UserCollection';
-import AdCollection from '../collections/AdCollection';
-import MessageCollection from '../collections/MessageCollection';
 
 import { SdkError } from '../core/Errors';
+
+/**
+ * @type {WeakMap.<EventModel, Map.<String, BaseCollection>>}
+ */
+const collectionLists = new WeakMap();
 
 /**
  * Model for pictawall events.
@@ -17,16 +18,16 @@ import { SdkError } from '../core/Errors';
 class EventModel extends BaseModel {
 
   /**
-   * <p>Creates a new Event model and its associated collections.</p>
+   * <p>Creates a new Event model.</p>
    * <p>You can fill it with server data by calling {@link #fetch}</p>
    *
    * @param {!Sdk} sdk - The SDK in which this model is running.
    * @param {!String} identifier - The pictawall event identifier.
-   * @param {!Object} config - The constructor parameters.
-   * @param {!boolean} [config.autoUpdate = false] - Should the collections periodically fetch their contents ?
-   * @param {!number} [config.autoUpdateVelocity = 10000] - Time in ms between each auto-update.
+   * @param {Object} config - The constructor parameters.
+   * @param {boolean} [config.autoUpdate = false] - Should the collections periodically fetch their contents ?
+   * @param {number} [config.autoUpdateVelocity = 10000] - Time in ms between each auto-update.
    */
-  constructor(sdk, identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 10000, assetBatchSize = 100 } = {}) {
+  constructor(sdk, identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 10000 } = {}) {
     super(sdk);
 
     if (typeof identifier !== 'string') {
@@ -41,22 +42,16 @@ class EventModel extends BaseModel {
       return serverResponse.data;
     };
 
-    this.userCollection = new UserCollection(this);
-    this.assetCollection = new AssetCollection(this, assetBatchSize);
-    this.adCollection = new AdCollection(this);
-    this.messageCollection = new MessageCollection(this);
+    collectionLists.set(this, new Map());
   }
 
   /**
-   * @inheritDoc
+   * Populates this model and its collections.
    */
   fetch(queryParameters) {
     return Promise.all([
-      super.fetch(queryParameters),
-      this.userCollection.fetch(),
-      this.assetCollection.fetch(),
-      this.adCollection.fetch(),
-      this.messageCollection.fetch()
+      this.fetchCollections(),
+      super.fetch(queryParameters)
     ]).then(() => {
       //if (autoUpdate) {
       //  this.startAutoUpdate();
@@ -64,6 +59,47 @@ class EventModel extends BaseModel {
 
       return this;
     });
+  }
+
+  fetchCollections() {
+    const promises = [];
+
+    collectionLists.get(this).forEach(collection => {
+      promises.push(collection.fetch());
+    });
+
+    return Promise.all(promises);
+  }
+
+  /**
+   * <p>Adds a collection to this model.</p>
+   * <p>Collections aren't automatically added to give you more control on the collections themselves.</p>
+   *
+   * @param {!String} collectionName
+   * @param {!BaseCollection} collection
+   * @return {!this}
+   *
+   * @example
+   * // split media and text assets in two different collections
+   * event.addCollection('assetTextCollection', new AssetCollection(event, { limit: 100, orderBy: 'date_desc', kind: 'text' }))
+   * event.addCollection('assetMediaCollection', new AssetCollection(event, { limit: 100, orderBy: 'date_desc', kind: 'text' }))
+   */
+  addCollection(collectionName, collection) {
+    const collectionList = collectionLists.get(this);
+
+    if (collectionList.has(collectionName)) {
+      throw new SdkError(this, `Collection ${collectionName} already registered for this event`);
+    }
+
+    collectionList.set(collectionName, collection);
+
+    return this;
+  }
+
+  getCollection(collectionName) {
+    const collectionList = collectionLists.get(this);
+
+    return collectionList.get(collectionName);
   }
 
   //_runAutoUpdate() {

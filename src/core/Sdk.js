@@ -3,6 +3,11 @@
 import EventModel from '../models/EventModel';
 import ChannelModel from '../models/ChannelModel';
 
+import AssetCollection from '../collections/AssetCollection';
+import UserCollection from '../collections/UserCollection';
+import AdCollection from '../collections/AdCollection';
+import MessageCollection from '../collections/MessageCollection';
+
 import StringUtil from '../util/StringUtil';
 import FetchShim from './FetchShim';
 
@@ -12,6 +17,22 @@ if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
     callback(require);
   };
+}
+
+/**
+ * @private
+ */
+function _insertCollections(event, collections) {
+  if (collections === void 0) {
+    event.addCollection('users', new UserCollection(event));
+    event.addCollection('assets', new AssetCollection(event));
+    event.addCollection('ads', new AdCollection(event));
+    event.addCollection('messages', new MessageCollection(event));
+  } else {
+    for (let collectionName of Object.getOwnPropertyNames(collections)) {
+      event.addCollection(collectionName, collections[collectionName](event));
+    }
+  }
 }
 
 /**
@@ -72,12 +93,21 @@ class Sdk {
    * Creates and populates a new event model.
    *
    * @param {!String} identifier The identifier of the pictawall event.
-   * @param {Object} [config = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+   * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+   * @param {Object.<String, Function>} [collections] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
    * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
+   *
+   * @example
+   * sdk.getEvent('undiscovered-london', {}, {
+   *  textAssets: event => new AssetCollection(event, { kind: 'text' })
+   * });
    */
-  getEvent(identifier, config = {}) {
+  getEvent(identifier, eventConfig = {}, collections) {
     try {
-      const event = new EventModel(this, identifier, config);
+      const event = new EventModel(this, identifier, eventConfig);
+
+      _insertCollections(event, collections);
+
       return event.fetch();
     } catch (e) {
       return Promise.reject(e);
@@ -85,7 +115,8 @@ class Sdk {
   }
 
   /**
-   * Creates and populates a new channel model.
+   * <p>Creates and populates a new channel model.</p>
+   * <p>The event configuration will be fetched from the API. If you need to have local control over it, you should use {@link Sdk#getEvent} instead.</p>
    *
    * @param {!String} identifier The identifier of the pictawall channel.
    * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.

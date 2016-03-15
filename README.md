@@ -11,13 +11,14 @@ The SDK isn't available in bower's nor npm's registry yet. You can however insta
 
 ## Usage
 
-The easiest way to access the SDK is to import it using the CommonJS syntax, `require('pictawall.sdk')`. Although you also can also import it as a standalone script by adding `<script src="{path_to_sdk}/dist/pictawall.sdk.min.js">` to your web page. Doing that will expose the function `pictawall.Sdk` to the global object.
+The recommanded way to access the SDK is to import it using the CommonJS syntax, `require('pictawall.sdk')`. Doing that will return the `Sdk` class.  
+Alternatively you can require or include the file `dist/pictawall.sdk.min.js` but that is not recommanded. This method will expose the `Sdk` class as `window.pictawall.Sdk` and the available models and collections as `window.pictawall.Sdk.models` and `window.pictawall.Sdk.collections` respectively. It will also expose `window.pictawall.Sdk.version` which is the version string as it appears in `package.json` and `bower.json`.
 
 Once you have your hands on the SDK, you'll need to instantiate it.
 
 ```
 #!javascript
-const Sdk = require('pictawall.sdk'); // or window.pictawall.Sdk depending on how you decided to import it.
+const Sdk = require('pictawall.sdk');
 const sdk = new Sdk();
 ```
 
@@ -44,6 +45,11 @@ sdk.getEvent(eventIdentifier, configuration).then(event => { /* EventModel ready
 const channelIdentifier = 'f81d4fae-7dec-11d0-a765-00a0c91e6bf6';
 sdk.getChannel(channelIdentifier).then(channel => { /* ChannelModel ready and populated */ });
 ```
+
+## Going further
+
+If required, you can access parts of the SDK that are not directly exposed by `pictawall.sdk`.  
+For instance, you can access the Asset Collection class by requiring `pictawall.sdk/collections/AssetCollection`.
 
 ## Documentation
 

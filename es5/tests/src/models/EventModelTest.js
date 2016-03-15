@@ -34,12 +34,6 @@ describe('EventModel', function () {
       eventPromise.then(function (event) {
         expect(event).toEqual(jasmine.any(_EventModel2.default));
 
-        // Collections have loaded.
-        expect(event.assetCollection.loaded).toBe(true);
-        expect(event.userCollection.loaded).toBe(true);
-        expect(event.adCollection.loaded).toBe(true);
-        expect(event.messageCollection.loaded).toBe(true);
-
         // data is loaded.
         AssertUtil.assertModelLoaded(event, XhrMock.VALID_EVENT.data);
 

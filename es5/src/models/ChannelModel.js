@@ -70,8 +70,7 @@ var ChannelModel = function (_BaseModel) {
       var _this2 = this;
 
       return _get(Object.getPrototypeOf(ChannelModel.prototype), 'fetch', this).call(this, queryParameters).then(function () {
-        var event = _this2._event;
-        return Promise.all([event.adCollection.fetch(), event.assetCollection.fetch(), event.userCollection.fetch(), event.messageCollection.fetch()]);
+        return _this2._event.fetchCollections();
       }).then(function () {
         return _this2;
       });

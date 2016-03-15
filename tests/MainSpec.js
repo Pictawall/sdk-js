@@ -1,5 +1,7 @@
 'use strict';
 
+import Sdk from '../src/app_server';
+
 require('./src/mixins/MongoQuery/MongoFinderTest');
 require('./src/mixins/MongoQuery/mongoWhereParserTest');
 

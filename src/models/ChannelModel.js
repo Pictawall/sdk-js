@@ -36,18 +36,8 @@ class ChannelModel extends BaseModel {
    */
   fetch(queryParameters) {
     return super.fetch(queryParameters)
-      .then(() => {
-        const event = this._event;
-        return Promise.all([
-          event.adCollection.fetch(),
-          event.assetCollection.fetch(),
-          event.userCollection.fetch(),
-          event.messageCollection.fetch()
-        ]);
-      })
-      .then(() => {
-        return this;
-      });
+      .then(() => this._event.fetchCollections())
+      .then(() => this);
   }
 
   /**

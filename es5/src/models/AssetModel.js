@@ -14,6 +14,10 @@ var _BaseModel2 = require('./BaseModel');
 
 var _BaseModel3 = _interopRequireDefault(_BaseModel2);
 
+var _UserModel = require('./UserModel');
+
+var _UserModel2 = _interopRequireDefault(_UserModel);
+
 var _Errors = require('../core/Errors');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -71,13 +75,18 @@ var AssetModel = function (_BaseModel) {
         properties.source.additionalData = {};
       }
 
-      var userCollection = this._event.userCollection;
-      this._owner = userCollection.findOne({ id: properties.owner.id });
+      var userCollection = this._event.getCollection('users');
+      this._owner = userCollection != null ? userCollection.findOne({ id: properties.owner.id }) : null;
+
       if (this._owner === null) {
-        var owner = userCollection.createModel(properties.owner);
+        var owner = new _UserModel2.default(this._event);
         owner.setProperties(properties.owner);
 
-        this._owner = userCollection.add(owner, false, false);
+        if (userCollection != null) {
+          this._owner = userCollection.add(owner, false, false);
+        } else {
+          this._owner = owner;
+        }
       }
 
       this.apiPath = '/events/' + this._event.getProperty('identifier') + '/assets/' + properties.id;

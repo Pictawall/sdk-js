@@ -10,11 +10,12 @@ const babelConfig = JSON.parse(file);
 
 module.exports = {
   entry: {
-    app: './src/app.js'
+    app: './src/app_webpack.js'
   },
   output: {
     path: './dist/dev',
-    filename: 'pictawall.sdk.js'
+    filename: 'pictawall.sdk.js',
+    libraryTarget: 'commonjs2'
   },
   devtool: 'inline-source-map',
   module: {
