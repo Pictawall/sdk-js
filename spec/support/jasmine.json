@@ -1,5 +1,5 @@
 {
-  "spec_dir": "es5/tests",
+  "spec_dir": "es5/test",
   "spec_files": [
     "MainSpec.js"
   ],
