@@ -50,9 +50,9 @@
     "strip-loader": "^0.1.2",
     "webpack": "^1.12.13"
   },
-  "main": "src_es5/app_server.js",
+  "main": "es5/src/app_server.js",
   "browser": {
-    "./src_es5/app_server": "src_es5/app_client.js",
+    "./es5/src/app_server": "es5/src/app_client.js",
     "./src/app_server": "src/app_client.js"
   },
   "license": "MIT",
