@@ -51,10 +51,7 @@
     "webpack": "^1.12.13"
   },
   "main": "es5/src/app_server.js",
-  "browser": {
-    "./es5/src/app_server": "es5/src/app_client.js",
-    "./src/app_server": "src/app_client.js"
-  },
+  "browser": "es5/src/app_client.js",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/pictawall/sdk-js/issues"
