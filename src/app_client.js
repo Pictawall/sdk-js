@@ -11,7 +11,7 @@ import FetchShim from './core/FetchShim';
 
 FetchShim.fetchDownloader = function (cb) {
   function done() {
-    cb({ fetch: window.fetch, Response: window.Response });
+    cb({ fetch: window.fetch.bind(window), Response: window.Response });
   }
 
   if (window.fetch) {
