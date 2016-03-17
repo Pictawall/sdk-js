@@ -28,8 +28,8 @@ var FetchShim = {
         var fetch = _ref.fetch;
         var Response = _ref.Response;
 
-        this.fetch = fetch;
-        this.Response = Response;
+        _this.fetch = fetch;
+        _this.Response = Response;
 
         resolve(fetch);
       });

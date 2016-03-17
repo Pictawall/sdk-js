@@ -18,7 +18,7 @@ const FetchShim = {
     }
 
     return new Promise(resolve => {
-      this.fetchDownloader(function ({ fetch, Response }) {
+      this.fetchDownloader(({ fetch, Response }) => {
         this.fetch = fetch;
         this.Response = Response;
 
