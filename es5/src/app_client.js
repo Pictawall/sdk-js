@@ -22,7 +22,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 _FetchShim2.default.fetchDownloader = function (cb) {
   function done() {
-    cb({ fetch: window.fetch, Response: window.Response });
+    cb({ fetch: window.fetch.bind(window), Response: window.Response });
   }
 
   if (window.fetch) {
