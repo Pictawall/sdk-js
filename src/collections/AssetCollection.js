@@ -18,10 +18,10 @@ class AssetCollection extends PagedCollection {
    * @param {!EventModel} event The owning event.
    * @param {object} [fetchOptions = {}] Asset fetch options.
    * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
-   * @param {string} [fetchOptions.orderBy = 'date_desc'] Sort order returned by the API. See API Specifications for possible orders.
+   * @param {string} [fetchOptions.orderBy = 'date DESC'] Sort order returned by the API. See API Specifications for possible orders.
    * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
    */
-  constructor(event, { limit = 100, orderBy = 'date_desc', kind } = {}) {
+  constructor(event, { limit = 100, orderBy = 'date DESC', kind } = {}) {
     super(event.sdk, limit, orderBy);
 
     this._event = event;
@@ -29,6 +29,7 @@ class AssetCollection extends PagedCollection {
     this.fetchParser = (response => response.data);
 
     this._kindFilter = kind;
+    this._orderBy = orderBy;
   }
 
   /**
@@ -94,6 +95,10 @@ class AssetCollection extends PagedCollection {
 
     if (this._kindFilter) {
       options.kind = this._kindFilter;
+    }
+
+    if (this._orderBy) {
+      options.order_by = this._orderBy;// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
     }
 
     return options;

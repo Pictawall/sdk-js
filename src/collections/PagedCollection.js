@@ -13,13 +13,11 @@ class PagedCollection extends BaseCollection {
   /**
    * @param {!Sdk} sdk The instance of the SDK owning this collection.
    * @param {number} [limit] How many models a fetch call should return.
-   * @param {string} [orderBy] Model sort order. Collection-specific, Please refer to the API documentation.
    */
-  constructor(sdk, limit, orderBy) {
+  constructor(sdk, limit) {
     super(sdk);
 
     this._limit = limit;
-    this._orderBy = orderBy;
 
     this._currentPage = 0;
     this._pageCount = null;
@@ -43,10 +41,6 @@ class PagedCollection extends BaseCollection {
 
     if (this._since) {
       options.since = this._since;
-    }
-
-    if (this._orderBy) {
-      options.order_by = this._orderBy;// jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
     }
 
     if (this._limit) {
@@ -85,6 +79,14 @@ class PagedCollection extends BaseCollection {
     this._pageCount = serverResponse.pageCount;
     this._total = serverResponse.total;
     this._since = serverResponse.since;
+  }
+
+  /**
+   * Total count of assets available in the database.
+   * @type {!number}
+   */
+  get total() {
+    return this._total;
   }
 }
 

@@ -42,7 +42,7 @@ var AssetCollection = function (_PagedCollection) {
    * @param {!EventModel} event The owning event.
    * @param {object} [fetchOptions = {}] Asset fetch options.
    * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
-   * @param {string} [fetchOptions.orderBy = 'date_desc'] Sort order returned by the API. See API Specifications for possible orders.
+   * @param {string} [fetchOptions.orderBy = 'date DESC'] Sort order returned by the API. See API Specifications for possible orders.
    * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
    */
 
@@ -52,7 +52,7 @@ var AssetCollection = function (_PagedCollection) {
     var _ref$limit = _ref.limit;
     var limit = _ref$limit === void 0 ? 100 : _ref$limit;
     var _ref$orderBy = _ref.orderBy;
-    var orderBy = _ref$orderBy === void 0 ? 'date_desc' : _ref$orderBy;
+    var orderBy = _ref$orderBy === void 0 ? 'date DESC' : _ref$orderBy;
     var kind = _ref.kind;
 
     _classCallCheck(this, AssetCollection);
@@ -66,6 +66,7 @@ var AssetCollection = function (_PagedCollection) {
     };
 
     _this._kindFilter = kind;
+    _this._orderBy = orderBy;
     return _this;
   }
 
@@ -157,6 +158,10 @@ var AssetCollection = function (_PagedCollection) {
 
       if (this._kindFilter) {
         options.kind = this._kindFilter;
+      }
+
+      if (this._orderBy) {
+        options.order_by = this._orderBy; // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
       }
 
       return options;

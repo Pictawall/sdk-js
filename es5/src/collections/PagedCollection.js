@@ -35,16 +35,14 @@ var PagedCollection = function (_BaseCollection) {
   /**
    * @param {!Sdk} sdk The instance of the SDK owning this collection.
    * @param {number} [limit] How many models a fetch call should return.
-   * @param {string} [orderBy] Model sort order. Collection-specific, Please refer to the API documentation.
    */
 
-  function PagedCollection(sdk, limit, orderBy) {
+  function PagedCollection(sdk, limit) {
     _classCallCheck(this, PagedCollection);
 
     var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(PagedCollection).call(this, sdk));
 
     _this2._limit = limit;
-    _this2._orderBy = orderBy;
 
     _this2._currentPage = 0;
     _this2._pageCount = null;
@@ -84,6 +82,12 @@ var PagedCollection = function (_BaseCollection) {
       this._total = serverResponse.total;
       this._since = serverResponse.since;
     }
+
+    /**
+     * Total count of assets available in the database.
+     * @type {!number}
+     */
+
   }, {
     key: 'fetchOptions',
     get: function get() {
@@ -92,10 +96,6 @@ var PagedCollection = function (_BaseCollection) {
 
       if (this._since) {
         options.since = this._since;
-      }
-
-      if (this._orderBy) {
-        options.order_by = this._orderBy; // jscs:ignore requireCamelCaseOrUpperCaseIdentifiers
       }
 
       if (this._limit) {
@@ -123,6 +123,11 @@ var PagedCollection = function (_BaseCollection) {
 
         return originalParser ? originalParser(serverResponse) : serverResponse;
       };
+    }
+  }, {
+    key: 'total',
+    get: function get() {
+      return this._total;
     }
   }]);
 
