@@ -20,14 +20,16 @@ class AssetCollection extends PagedCollection {
    * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
    * @param {string} [fetchOptions.orderBy = 'date DESC'] Sort order returned by the API. See API Specifications for possible orders.
    * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
+   * @param {number} [fetchOptions.since] Filters out assets created before the timestamp this number represents.
    */
-  constructor(event, { limit = 100, orderBy = 'date DESC', kind } = {}) {
+  constructor(event, { limit = 100, orderBy = 'date DESC', since, kind } = {}) {
     super(event.sdk, limit, orderBy);
 
     this._event = event;
     this.apiPath = `/events/${event.getProperty('identifier')}/assets/{assetId}`;
     this.fetchParser = (response => response.data);
 
+    this._sinceFilter = since;
     this._kindFilter = kind;
     this._orderBy = orderBy;
   }
@@ -92,6 +94,10 @@ class AssetCollection extends PagedCollection {
    */
   get fetchOptions() {
     const options = super.fetchOptions;
+
+    if (this._sinceFilter) {
+      options.since = this._sinceFilter;
+    }
 
     if (this._kindFilter) {
       options.kind = this._kindFilter;

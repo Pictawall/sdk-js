@@ -47,7 +47,6 @@ var PagedCollection = function (_BaseCollection) {
     _this2._currentPage = 0;
     _this2._pageCount = null;
     _this2._total = null;
-    _this2._since = null;
     return _this2;
   }
 
@@ -80,7 +79,6 @@ var PagedCollection = function (_BaseCollection) {
 
       this._pageCount = serverResponse.pageCount;
       this._total = serverResponse.total;
-      this._since = serverResponse.since;
     }
 
     /**
@@ -93,10 +91,6 @@ var PagedCollection = function (_BaseCollection) {
     get: function get() {
       var options = _get(Object.getPrototypeOf(PagedCollection.prototype), 'fetchOptions', this);
       options.page = this._currentPage + 1;
-
-      if (this._since) {
-        options.since = this._since;
-      }
 
       if (this._limit) {
         options.limit = this._limit;

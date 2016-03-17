@@ -22,7 +22,6 @@ class PagedCollection extends BaseCollection {
     this._currentPage = 0;
     this._pageCount = null;
     this._total = null;
-    this._since = null;
   }
 
   /**
@@ -38,10 +37,6 @@ class PagedCollection extends BaseCollection {
   get fetchOptions() {
     const options = super.fetchOptions;
     options.page = this._currentPage + 1;
-
-    if (this._since) {
-      options.since = this._since;
-    }
 
     if (this._limit) {
       options.limit = this._limit;
@@ -78,7 +73,6 @@ class PagedCollection extends BaseCollection {
 
     this._pageCount = serverResponse.pageCount;
     this._total = serverResponse.total;
-    this._since = serverResponse.since;
   }
 
   /**

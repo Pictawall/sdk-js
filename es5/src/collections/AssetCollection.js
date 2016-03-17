@@ -44,6 +44,7 @@ var AssetCollection = function (_PagedCollection) {
    * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
    * @param {string} [fetchOptions.orderBy = 'date DESC'] Sort order returned by the API. See API Specifications for possible orders.
    * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
+   * @param {number} [fetchOptions.since] Filters out assets created before the timestamp this number represents.
    */
 
   function AssetCollection(event) {
@@ -53,6 +54,7 @@ var AssetCollection = function (_PagedCollection) {
     var limit = _ref$limit === void 0 ? 100 : _ref$limit;
     var _ref$orderBy = _ref.orderBy;
     var orderBy = _ref$orderBy === void 0 ? 'date DESC' : _ref$orderBy;
+    var since = _ref.since;
     var kind = _ref.kind;
 
     _classCallCheck(this, AssetCollection);
@@ -65,6 +67,7 @@ var AssetCollection = function (_PagedCollection) {
       return response.data;
     };
 
+    _this._sinceFilter = since;
     _this._kindFilter = kind;
     _this._orderBy = orderBy;
     return _this;
@@ -155,6 +158,10 @@ var AssetCollection = function (_PagedCollection) {
     key: 'fetchOptions',
     get: function get() {
       var options = _get(Object.getPrototypeOf(AssetCollection.prototype), 'fetchOptions', this);
+
+      if (this._sinceFilter) {
+        options.since = this._sinceFilter;
+      }
 
       if (this._kindFilter) {
         options.kind = this._kindFilter;
