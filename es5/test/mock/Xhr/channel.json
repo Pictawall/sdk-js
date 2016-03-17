@@ -1,0 +1,22 @@
+{
+  "data": {
+    "id": "f81d4fae-7dec-11d0-a765-00a0c91e6bf6",
+    "event": {
+      "id": 44759,
+      "identifier": "VALID",
+      "name": "Undiscovered London",
+      "ratio": 7,
+      "showTopUsers": false,
+      "featuredAssetId": -1
+    },
+    "properties": {
+      "container": "main",
+      "options": {
+        "defaultDesign": true
+      }
+    },
+    "name": "Undiscovered London Social Hub.",
+    "value": "dieowhuofg47755",
+    "kind": "socialhub"
+  }
+}

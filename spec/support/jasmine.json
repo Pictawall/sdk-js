@@ -1,0 +1,10 @@
+{
+  "spec_dir": "es5/test",
+  "spec_files": [
+    "MainSpec.js"
+  ],
+  "helpers": [
+  ],
+  "stopSpecOnExpectationFailure": false,
+  "random": false
+}

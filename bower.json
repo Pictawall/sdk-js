@@ -1,0 +1,30 @@
+{
+  "name": "pictawall.sdk",
+  "version": "1.0.0",
+  "authors": [
+    "Jean-Christophe Cuvelier <jcc@pictawall.com>",
+    "Guylian Cox <guylian.cox@pictawall.com>"
+  ],
+  "description": "JavaScript SDK for the Pictawall API",
+  "main": "dist/pictawall.sdk.min.js",
+  "keywords": [
+    "pictawall",
+    "sdk",
+    "javascript"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/pictawall/sdk-js#readme",
+  "private": false,
+  "ignore": [
+    "tests",
+    ".babelrc",
+    ".gitignore",
+    ".jshintignore",
+    ".npmignore",
+    "config.jscs.json",
+    "gulpfile.js",
+    "karma.conf.js",
+    "package.json",
+    "webpack.config.js"
+  ]
+}
