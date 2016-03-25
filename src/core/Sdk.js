@@ -70,6 +70,14 @@ class Sdk {
         }));
       }
 
+      if (typeof Symbol === 'undefined') {
+        polyfillPromises.push(new Promise(resolve => {
+          require.ensure(['symbol-polyfill'], require => {
+            resolve(require('es6-symbol/implement'));
+          });
+        }));
+      }
+
       // Array.includes
       if (!Array.prototype.includes) {
         polyfillPromises.push(new Promise(resolve => {

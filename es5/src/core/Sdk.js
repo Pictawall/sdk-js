@@ -133,6 +133,14 @@ var Sdk = function () {
           }));
         }
 
+        if (typeof Symbol === 'undefined') {
+          polyfillPromises.push(new Promise(function (resolve) {
+            require.ensure(['symbol-polyfill'], function (require) {
+              resolve(require('es6-symbol/implement'));
+            });
+          }));
+        }
+
         // Array.includes
         if (!Array.prototype.includes) {
           polyfillPromises.push(new Promise(function (resolve) {
