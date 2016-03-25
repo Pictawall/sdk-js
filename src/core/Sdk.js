@@ -1,17 +1,9 @@
 'use strict';
 
-import EventModel from '../models/EventModel';
-import ChannelModel from '../models/ChannelModel';
-
-import AssetCollection from '../collections/AssetCollection';
-import UserCollection from '../collections/UserCollection';
-import AdCollection from '../collections/AdCollection';
-import MessageCollection from '../collections/MessageCollection';
-
 import StringUtil from '../util/StringUtil';
 import FetchShim from './FetchShim';
 
-const QueryString = require('qs-lite');
+import QueryString from 'qs-lite';
 
 if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
@@ -23,6 +15,12 @@ if (typeof require.ensure !== 'function') {
  * @private
  */
 function _insertCollections(event, collections) {
+  // load everything at the last minute so polyfills have time to load.
+  const AssetCollection = require('../collections/AssetCollection').default;
+  const UserCollection = require('../collections/UserCollection').default;
+  const AdCollection = require('../collections/AdCollection').default;
+  const MessageCollection = require('../collections/MessageCollection').default;
+
   if (collections === void 0) {
     event.addCollection('users', new UserCollection(event));
     event.addCollection('assets', new AssetCollection(event));
@@ -111,7 +109,9 @@ class Sdk {
    * });
    */
   getEvent(identifier, eventConfig = {}, collections) {
+
     try {
+      const EventModel = require('../models/EventModel').default;
       const event = new EventModel(this, identifier, eventConfig);
 
       _insertCollections(event, collections);
@@ -131,6 +131,7 @@ class Sdk {
    */
   getChannel(identifier) {
     try {
+      const ChannelModel = require('../models/ChannelModel').default;
       const channel = new ChannelModel(this, identifier);
       return channel.fetch();
     } catch (e) {
