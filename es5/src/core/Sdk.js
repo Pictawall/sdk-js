@@ -119,9 +119,9 @@ var Sdk = function () {
 
         if (typeof Symbol === 'undefined') {
           polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['symbol-polyfill'], function (require) {
+            require.ensure(['es6-symbol/implement'], function (require) {
               resolve(require('es6-symbol/implement'));
-            });
+            }, 'symbol-polyfill');
           }));
         }
 
