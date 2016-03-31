@@ -89,6 +89,15 @@ function _loadPolyfills() {
       }));
     }
 
+    // Array.from
+    if (!Array.from) {
+      polyfillPromises.push(new Promise(resolve => {
+        require.ensure(['es5-ext/array/from/implement'], require => {
+          resolve(require('es5-ext/array/from/implement'));
+        }, 'Array.from-polyfill');
+      }));
+    }
+
     // String.endsWith
     if (!String.prototype.endsWith) {
       polyfillPromises.push(new Promise(resolve => {
