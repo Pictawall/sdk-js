@@ -70,8 +70,8 @@ class Sdk {
 
       if (typeof Symbol === 'undefined') {
         polyfillPromises.push(new Promise(resolve => {
-          require.ensure(['es6-symbol/implement'], require => {
-            resolve(require('es6-symbol/implement'));
+          require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], require => {
+            resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
           }, 'symbol-polyfill');
         }));
       }
