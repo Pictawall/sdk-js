@@ -71,9 +71,7 @@ function _loadPolyfills() {
     if (!Array.prototype.includes) {
       polyfillPromises.push(new Promise(resolve => {
         require.ensure(['array-includes'], require => {
-          const includes = require('array-includes');
-
-          includes.shim();
+          require('array-includes').shim();
 
           resolve();
         }, 'Array.includes-polyfill');
@@ -103,6 +101,17 @@ function _loadPolyfills() {
       polyfillPromises.push(new Promise(resolve => {
         require.ensure(['es5-ext/string/#/ends-with/implement'], require => {
           resolve(require('es5-ext/string/#/ends-with/implement'));
+        }, 'String.endsWith-polyfill');
+      }));
+    }
+
+    // Object.is
+    if (!Object.is) {
+      polyfillPromises.push(new Promise(resolve => {
+        require.ensure(['object-is'], require => {
+          Object.is = require('object-is');
+
+          resolve();
         }, 'String.endsWith-polyfill');
       }));
     }
