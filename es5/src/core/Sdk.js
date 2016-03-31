@@ -116,24 +116,22 @@ var Sdk = function () {
           }));
         }
 
+        if (!require('es6-map/is-implemented')()) {
+          polyfillPromises.push(new Promise(function (resolve) {
+            require.ensure(['es6-map/implement'], function (require) {
+              resolve(require('es6-map/implement'));
+            }, 'Map-polyfill');
+          }));
+        }
+
         // Map.toJSON
         if (!Map.prototype.toJSON) {
-          (function () {
-            var mapToJsonPromise = new Promise(function (resolve) {
-              require.ensure(['map.prototype.tojson'], function (require) {
-                resolve(require('map.prototype.tojson'));
-              }, 'Map.toJson-polyfill');
-            });
-
-            // map.prototype.tojson relies on Symbol
-            if (polyfillPromises.length === 2) {
-              polyfillPromises[1] = polyfillPromises[1].then(function () {
-                return mapToJsonPromise;
-              });
-            } else {
-              polyfillPromises.push(mapToJsonPromise);
-            }
-          })();
+          // TODO replace with https://github.com/ljharb/map-tojson/blob/master/index.js
+          polyfillPromises.push(new Promise(function (resolve) {
+            require.ensure(['map.prototype.tojson'], function (require) {
+              resolve(require('map.prototype.tojson'));
+            }, 'Map.toJson-polyfill');
+          }));
         }
 
         // Array.includes

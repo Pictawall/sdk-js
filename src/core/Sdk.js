@@ -67,20 +67,21 @@ class Sdk {
         }));
       }
 
+      if (!require('es6-map/is-implemented')()) {
+        polyfillPromises.push(new Promise(resolve => {
+          require.ensure(['es6-map/implement'], require => {
+            resolve(require('es6-map/implement'));
+          }, 'Map-polyfill');
+        }));
+      }
+
       // Map.toJSON
-      if (!Map.prototype.toJSON) {
-        const mapToJsonPromise = new Promise(resolve => {
+      if (!Map.prototype.toJSON) { // TODO replace with https://github.com/ljharb/map-tojson/blob/master/index.js
+        polyfillPromises.push(new Promise(resolve => {
           require.ensure(['map.prototype.tojson'], require => {
             resolve(require('map.prototype.tojson'));
           }, 'Map.toJson-polyfill');
-        });
-
-        // map.prototype.tojson relies on Symbol
-        if (polyfillPromises.length === 2) {
-          polyfillPromises[1] = polyfillPromises[1].then(() => mapToJsonPromise);
-        } else {
-          polyfillPromises.push(mapToJsonPromise);
-        }
+        }));
       }
 
       // Array.includes
