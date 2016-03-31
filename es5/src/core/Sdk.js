@@ -108,21 +108,32 @@ var Sdk = function () {
         // global.fetch
         polyfillPromises.push(_FetchShim2.default.loadFetchPolyfill());
 
-        // Map.toJSON
-        if (!Map.prototype.toJSON) {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['map.prototype.tojson'], function (require) {
-              resolve(require('map.prototype.tojson'));
-            }, 'Map.toJson-polyfill');
-          }));
-        }
-
         if (typeof Symbol === 'undefined') {
           polyfillPromises.push(new Promise(function (resolve) {
             require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
               resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
             }, 'Symbol-polyfill');
           }));
+        }
+
+        // Map.toJSON
+        if (!Map.prototype.toJSON) {
+          (function () {
+            var mapToJsonPromise = new Promise(function (resolve) {
+              require.ensure(['map.prototype.tojson'], function (require) {
+                resolve(require('map.prototype.tojson'));
+              }, 'Map.toJson-polyfill');
+            });
+
+            // map.prototype.tojson relies on Symbol
+            if (polyfillPromises.length === 2) {
+              polyfillPromises[1] = polyfillPromises[1].then(function () {
+                return mapToJsonPromise;
+              });
+            } else {
+              polyfillPromises.push(mapToJsonPromise);
+            }
+          })();
         }
 
         // Array.includes

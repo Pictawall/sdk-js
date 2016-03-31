@@ -59,21 +59,28 @@ class Sdk {
       // global.fetch
       polyfillPromises.push(FetchShim.loadFetchPolyfill());
 
-      // Map.toJSON
-      if (!Map.prototype.toJSON) {
-        polyfillPromises.push(new Promise(resolve => {
-          require.ensure(['map.prototype.tojson'], require => {
-            resolve(require('map.prototype.tojson'));
-          }, 'Map.toJson-polyfill');
-        }));
-      }
-
       if (typeof Symbol === 'undefined') {
         polyfillPromises.push(new Promise(resolve => {
           require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], require => {
             resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
           }, 'Symbol-polyfill');
         }));
+      }
+
+      // Map.toJSON
+      if (!Map.prototype.toJSON) {
+        const mapToJsonPromise = new Promise(resolve => {
+          require.ensure(['map.prototype.tojson'], require => {
+            resolve(require('map.prototype.tojson'));
+          }, 'Map.toJson-polyfill');
+        });
+
+        // map.prototype.tojson relies on Symbol
+        if (polyfillPromises.length === 2) {
+          polyfillPromises[1] = polyfillPromises[1].then(() => mapToJsonPromise);
+        } else {
+          polyfillPromises.push(mapToJsonPromise);
+        }
       }
 
       // Array.includes
