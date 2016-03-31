@@ -121,7 +121,7 @@ var Sdk = function () {
           polyfillPromises.push(new Promise(function (resolve) {
             require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
               resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
-            }, 'symbol-polyfill');
+            }, 'Symbol-polyfill');
           }));
         }
 
@@ -135,6 +135,15 @@ var Sdk = function () {
 
               resolve();
             }, 'Array.includes-polyfill');
+          }));
+        }
+
+        // String.endsWith
+        if (!String.prototype.endsWith) {
+          polyfillPromises.push(new Promise(function (resolve) {
+            require.ensure(['es5-ext/string/#/ends-with/implement'], function (require) {
+              resolve(require('es5-ext/string/#/ends-with/implement'));
+            }, 'String.endsWith-polyfill');
           }));
         }
 
