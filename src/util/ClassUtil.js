@@ -14,9 +14,9 @@ function _mergeClass(receivingClass, givingPrototype) {
   }
 
   const receivingPrototype = receivingClass.prototype;
-  for (let propertyName of Object.getOwnPropertyNames(givingPrototype)) {
+  Object.getOwnPropertyNames(givingPrototype).forEach(propertyName => {
     if (propertyName === 'constructor') {
-      continue;
+      return;
     }
 
     if (Object.getOwnPropertyDescriptor(receivingPrototype, propertyName) !== void 0) {
@@ -24,7 +24,7 @@ function _mergeClass(receivingClass, givingPrototype) {
     }
 
     Object.defineProperty(receivingPrototype, propertyName, Object.getOwnPropertyDescriptor(givingPrototype, propertyName));
-  }
+  });
 }
 
 /**

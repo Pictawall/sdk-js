@@ -20,39 +20,17 @@ function _mergeClass(receivingClass, givingPrototype) {
   }
 
   var receivingPrototype = receivingClass.prototype;
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-
-  var _iteratorError = void 0;
-
-  try {
-    for (var _iterator = Object.getOwnPropertyNames(givingPrototype)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var propertyName = _step.value;
-
-      if (propertyName === 'constructor') {
-        continue;
-      }
-
-      if (Object.getOwnPropertyDescriptor(receivingPrototype, propertyName) !== void 0) {
-        throw new _Errors.PictawallError(ClassUtil, 'Merge error, method ' + propertyName + ' is already in the receiving prototype.');
-      }
-
-      Object.defineProperty(receivingPrototype, propertyName, Object.getOwnPropertyDescriptor(givingPrototype, propertyName));
+  Object.getOwnPropertyNames(givingPrototype).forEach(function (propertyName) {
+    if (propertyName === 'constructor') {
+      return;
     }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
+
+    if (Object.getOwnPropertyDescriptor(receivingPrototype, propertyName) !== void 0) {
+      throw new _Errors.PictawallError(ClassUtil, 'Merge error, method ' + propertyName + ' is already in the receiving prototype.');
     }
-  }
+
+    Object.defineProperty(receivingPrototype, propertyName, Object.getOwnPropertyDescriptor(givingPrototype, propertyName));
+  });
 }
 
 /**

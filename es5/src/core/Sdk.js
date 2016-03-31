@@ -6,30 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _EventModel = require('../models/EventModel');
-
-var _EventModel2 = _interopRequireDefault(_EventModel);
-
-var _ChannelModel = require('../models/ChannelModel');
-
-var _ChannelModel2 = _interopRequireDefault(_ChannelModel);
-
-var _AssetCollection = require('../collections/AssetCollection');
-
-var _AssetCollection2 = _interopRequireDefault(_AssetCollection);
-
-var _UserCollection = require('../collections/UserCollection');
-
-var _UserCollection2 = _interopRequireDefault(_UserCollection);
-
-var _AdCollection = require('../collections/AdCollection');
-
-var _AdCollection2 = _interopRequireDefault(_AdCollection);
-
-var _MessageCollection = require('../collections/MessageCollection');
-
-var _MessageCollection2 = _interopRequireDefault(_MessageCollection);
-
 var _StringUtil = require('../util/StringUtil');
 
 var _StringUtil2 = _interopRequireDefault(_StringUtil);
@@ -38,11 +14,13 @@ var _FetchShim = require('./FetchShim');
 
 var _FetchShim2 = _interopRequireDefault(_FetchShim);
 
+var _qsLite = require('qs-lite');
+
+var _qsLite2 = _interopRequireDefault(_qsLite);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var QueryString = require('qs-lite');
 
 if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
@@ -54,11 +32,17 @@ if (typeof require.ensure !== 'function') {
  * @private
  */
 function _insertCollections(event, collections) {
+  // load everything at the last minute so polyfills have time to load.
+  var AssetCollection = require('../collections/AssetCollection').default;
+  var UserCollection = require('../collections/UserCollection').default;
+  var AdCollection = require('../collections/AdCollection').default;
+  var MessageCollection = require('../collections/MessageCollection').default;
+
   if (collections === void 0) {
-    event.addCollection('users', new _UserCollection2.default(event));
-    event.addCollection('assets', new _AssetCollection2.default(event));
-    event.addCollection('ads', new _AdCollection2.default(event));
-    event.addCollection('messages', new _MessageCollection2.default(event));
+    event.addCollection('users', new UserCollection(event));
+    event.addCollection('assets', new AssetCollection(event));
+    event.addCollection('ads', new AdCollection(event));
+    event.addCollection('messages', new MessageCollection(event));
   } else {
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
@@ -124,8 +108,25 @@ var Sdk = function () {
         // global.fetch
         polyfillPromises.push(_FetchShim2.default.loadFetchPolyfill());
 
+        if (typeof Symbol === 'undefined') {
+          polyfillPromises.push(new Promise(function (resolve) {
+            require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
+              resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
+            }, 'Symbol-polyfill');
+          }));
+        }
+
+        if (!require('es6-map/is-implemented')()) {
+          polyfillPromises.push(new Promise(function (resolve) {
+            require.ensure(['es6-map/implement'], function (require) {
+              resolve(require('es6-map/implement'));
+            }, 'Map-polyfill');
+          }));
+        }
+
         // Map.toJSON
         if (!Map.prototype.toJSON) {
+          // TODO replace with https://github.com/ljharb/map-tojson/blob/master/index.js
           polyfillPromises.push(new Promise(function (resolve) {
             require.ensure(['map.prototype.tojson'], function (require) {
               resolve(require('map.prototype.tojson'));
@@ -143,6 +144,15 @@ var Sdk = function () {
 
               resolve();
             }, 'Array.includes-polyfill');
+          }));
+        }
+
+        // String.endsWith
+        if (!String.prototype.endsWith) {
+          polyfillPromises.push(new Promise(function (resolve) {
+            require.ensure(['es5-ext/string/#/ends-with/implement'], function (require) {
+              resolve(require('es5-ext/string/#/ends-with/implement'));
+            }, 'String.endsWith-polyfill');
           }));
         }
 
@@ -172,8 +182,10 @@ var Sdk = function () {
       var eventConfig = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
       var collections = arguments[2];
 
+
       try {
-        var event = new _EventModel2.default(this, identifier, eventConfig);
+        var EventModel = require('../models/EventModel').default;
+        var event = new EventModel(this, identifier, eventConfig);
 
         _insertCollections(event, collections);
 
@@ -195,7 +207,8 @@ var Sdk = function () {
     key: 'getChannel',
     value: function getChannel(identifier) {
       try {
-        var channel = new _ChannelModel2.default(this, identifier);
+        var ChannelModel = require('../models/ChannelModel').default;
+        var channel = new ChannelModel(this, identifier);
         return channel.fetch();
       } catch (e) {
         return Promise.reject(e);
@@ -224,7 +237,7 @@ var Sdk = function () {
         path = path.slice(0, -1);
       }
 
-      var queryString = QueryString.stringify(parameters.queryParameters);
+      var queryString = _qsLite2.default.stringify(parameters.queryParameters);
       if (queryString) {
         path += '?' + queryString;
       }
