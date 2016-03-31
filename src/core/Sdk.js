@@ -40,6 +40,7 @@ function _loadPolyfills() {
     // global.fetch
     polyfillPromises.push(FetchShim.loadFetchPolyfill());
 
+    // Symbol
     if (typeof Symbol === 'undefined') {
       polyfillPromises.push(new Promise(resolve => {
         require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], require => {
@@ -48,6 +49,7 @@ function _loadPolyfills() {
       }));
     }
 
+    // Map
     if (!require('es6-map/is-implemented')()) {
       polyfillPromises.push(new Promise(resolve => {
         require.ensure(['es6-map/implement'], require => {
@@ -75,6 +77,15 @@ function _loadPolyfills() {
 
           resolve();
         }, 'Array.includes-polyfill');
+      }));
+    }
+
+    // Array.findIndex
+    if (!Array.prototype.findIndex) {
+      polyfillPromises.push(new Promise(resolve => {
+        require.ensure(['es5-ext/array/#/find-index/implement'], require => {
+          resolve(require('es5-ext/array/#/find-index/implement'));
+        }, 'Array.prototype.findIndex-polyfill');
       }));
     }
 
