@@ -11,7 +11,7 @@ describe('API', () => {
   beforeAll(done => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
 
-    require('./mock/ClassMock').sdk.loadPolyfills().then(() => {
+    require('./mock/ClassMock').sdk.polyfillPromise.then(() => {
       XhrMock.init();
       done();
     }).catch(e => {

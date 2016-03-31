@@ -19,12 +19,12 @@ gulp.task('dist', function (callback) {
 
 gulp.task('es5-copy-nonjs', function () {
   return gulp
-    .src(['src/**/*', 'tests/**/*', '!**/*.js'], { base: '.' })
+    .src(['src/**/*', 'test/**/*', '!**/*.js'], { base: '.' })
     .pipe(gulp.dest('./es5'));
 });
 
 gulp.task('es5', ['es5-copy-nonjs'], function () {
-  return gulp.src(['src/**/*.js', 'tests/**/*.js'], { base: '.' })
+  return gulp.src(['src/**/*.js', 'test/**/*.js'], { base: '.' })
     .pipe(babel())
     .pipe(gulp.dest('./es5'));
 });

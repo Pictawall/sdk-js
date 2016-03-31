@@ -72,6 +72,66 @@ function _insertCollections(event, collections) {
   }
 }
 
+function _loadPolyfills() {
+  try {
+    var polyfillPromises = [];
+
+    // global.fetch
+    polyfillPromises.push(_FetchShim2.default.loadFetchPolyfill());
+
+    if (typeof Symbol === 'undefined') {
+      polyfillPromises.push(new Promise(function (resolve) {
+        require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
+          resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
+        }, 'Symbol-polyfill');
+      }));
+    }
+
+    if (!require('es6-map/is-implemented')()) {
+      polyfillPromises.push(new Promise(function (resolve) {
+        require.ensure(['es6-map/implement'], function (require) {
+          resolve(require('es6-map/implement'));
+        }, 'Map-polyfill');
+      }));
+    }
+
+    // Map.toJSON
+    if (!Map.prototype.toJSON) {
+      polyfillPromises.push(new Promise(function (resolve) {
+        require.ensure(['map.prototype.tojson'], function (require) {
+          resolve(require('map.prototype.tojson'));
+        }, 'Map.toJson-polyfill');
+      }));
+    }
+
+    // Array.includes
+    if (!Array.prototype.includes) {
+      polyfillPromises.push(new Promise(function (resolve) {
+        require.ensure(['array-includes'], function (require) {
+          var includes = require('array-includes');
+
+          includes.shim();
+
+          resolve();
+        }, 'Array.includes-polyfill');
+      }));
+    }
+
+    // String.endsWith
+    if (!String.prototype.endsWith) {
+      polyfillPromises.push(new Promise(function (resolve) {
+        require.ensure(['es5-ext/string/#/ends-with/implement'], function (require) {
+          resolve(require('es5-ext/string/#/ends-with/implement'));
+        }, 'String.endsWith-polyfill');
+      }));
+    }
+
+    return Promise.all(polyfillPromises);
+  } catch (e) {
+    return Promise.reject(e);
+  }
+}
+
 /**
  * Entry point to the SDK.
  *
@@ -90,106 +150,43 @@ var Sdk = function () {
     _classCallCheck(this, Sdk);
 
     this.apiBaseUrl = apiBaseUrl;
+
+    this.polyfillPromise = _loadPolyfills();
   }
 
   /**
-   * Loads the polyfills required to make the SDK work.
+   * Creates and populates a new event model.
    *
-   * @returns {!Promise}
+   * @param {!String} identifier The identifier of the pictawall event.
+   * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+   * @param {Object.<String, Function>} [collections] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
+   * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
+   *
+   * @example
+   * sdk.getEvent('undiscovered-london', {}, {
+   *  textAssets: event => new AssetCollection(event, { kind: 'text' })
+   * });
    */
 
 
   _createClass(Sdk, [{
-    key: 'loadPolyfills',
-    value: function loadPolyfills() {
-      try {
-        var polyfillPromises = [];
-
-        // global.fetch
-        polyfillPromises.push(_FetchShim2.default.loadFetchPolyfill());
-
-        if (typeof Symbol === 'undefined') {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
-              resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
-            }, 'Symbol-polyfill');
-          }));
-        }
-
-        if (!require('es6-map/is-implemented')()) {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['es6-map/implement'], function (require) {
-              resolve(require('es6-map/implement'));
-            }, 'Map-polyfill');
-          }));
-        }
-
-        // Map.toJSON
-        if (!Map.prototype.toJSON) {
-          // TODO replace with https://github.com/ljharb/map-tojson/blob/master/index.js
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['map.prototype.tojson'], function (require) {
-              resolve(require('map.prototype.tojson'));
-            }, 'Map.toJson-polyfill');
-          }));
-        }
-
-        // Array.includes
-        if (!Array.prototype.includes) {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['array-includes'], function (require) {
-              var includes = require('array-includes');
-
-              includes.shim();
-
-              resolve();
-            }, 'Array.includes-polyfill');
-          }));
-        }
-
-        // String.endsWith
-        if (!String.prototype.endsWith) {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['es5-ext/string/#/ends-with/implement'], function (require) {
-              resolve(require('es5-ext/string/#/ends-with/implement'));
-            }, 'String.endsWith-polyfill');
-          }));
-        }
-
-        return Promise.all(polyfillPromises);
-      } catch (e) {
-        return Promise.reject(e);
-      }
-    }
-
-    /**
-     * Creates and populates a new event model.
-     *
-     * @param {!String} identifier The identifier of the pictawall event.
-     * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
-     * @param {Object.<String, Function>} [collections] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
-     * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
-     *
-     * @example
-     * sdk.getEvent('undiscovered-london', {}, {
-     *  textAssets: event => new AssetCollection(event, { kind: 'text' })
-     * });
-     */
-
-  }, {
     key: 'getEvent',
     value: function getEvent(identifier) {
+      var _this = this;
+
       var eventConfig = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
       var collections = arguments[2];
 
 
       try {
-        var EventModel = require('../models/EventModel').default;
-        var event = new EventModel(this, identifier, eventConfig);
+        return this.polyfillPromise.then(function () {
+          var EventModel = require('../models/EventModel').default;
+          var event = new EventModel(_this, identifier, eventConfig);
 
-        _insertCollections(event, collections);
+          _insertCollections(event, collections);
 
-        return event.fetch();
+          return event.fetch();
+        });
       } catch (e) {
         return Promise.reject(e);
       }
@@ -206,10 +203,14 @@ var Sdk = function () {
   }, {
     key: 'getChannel',
     value: function getChannel(identifier) {
+      var _this2 = this;
+
       try {
-        var ChannelModel = require('../models/ChannelModel').default;
-        var channel = new ChannelModel(this, identifier);
-        return channel.fetch();
+        return this.polyfillPromise.then(function () {
+          var ChannelModel = require('../models/ChannelModel').default;
+          var channel = new ChannelModel(_this2, identifier);
+          return channel.fetch();
+        });
       } catch (e) {
         return Promise.reject(e);
       }
