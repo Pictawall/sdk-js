@@ -89,22 +89,31 @@ function _loadPolyfills() {
     }
 
     // Map
-    if (!require('es6-map/is-implemented')()) {
-      polyfillPromises.push(new Promise(function (resolve) {
-        require.ensure(['es6-map/implement'], function (require) {
-          resolve(require('es6-map/implement'));
-        }, 'Map-polyfill');
-      }));
-    }
+    var mapPromise = new Promise(function (resolve) {
+      if (require('es6-map/is-implemented')()) {
+        return resolve();
+      }
+
+      require.ensure(['es6-map/implement'], function (require) {
+        require('es6-map/implement');
+        resolve();
+      }, 'Map-polyfill');
+    });
+
+    polyfillPromises.push(mapPromise);
 
     // Map.toJSON
-    if (!Map.prototype.toJSON) {
-      polyfillPromises.push(new Promise(function (resolve) {
+    polyfillPromises.push(mapPromise.then(function () {
+      return new Promise(function (resolve) {
+        if (Map.prototype.toJSON) {
+          return resolve();
+        }
+
         require.ensure(['map.prototype.tojson'], function (require) {
           resolve(require('map.prototype.tojson'));
         }, 'Map.toJson-polyfill');
-      }));
-    }
+      });
+    }));
 
     // Array.includes
     if (!Array.prototype.includes) {

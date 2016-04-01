@@ -50,22 +50,29 @@ function _loadPolyfills() {
     }
 
     // Map
-    if (!require('es6-map/is-implemented')()) {
-      polyfillPromises.push(new Promise(resolve => {
-        require.ensure(['es6-map/implement'], require => {
-          resolve(require('es6-map/implement'));
-        }, 'Map-polyfill');
-      }));
-    }
+    const mapPromise = new Promise(resolve => {
+      if (require('es6-map/is-implemented')()) {
+        return resolve();
+      }
+
+      require.ensure(['es6-map/implement'], require => {
+        require('es6-map/implement');
+        resolve();
+      }, 'Map-polyfill');
+    });
+
+    polyfillPromises.push(mapPromise);
 
     // Map.toJSON
-    if (!Map.prototype.toJSON) {
-      polyfillPromises.push(new Promise(resolve => {
-        require.ensure(['map.prototype.tojson'], require => {
-          resolve(require('map.prototype.tojson'));
-        }, 'Map.toJson-polyfill');
-      }));
-    }
+    polyfillPromises.push(mapPromise.then(() => new Promise(resolve => {
+      if (Map.prototype.toJSON) {
+        return resolve();
+      }
+
+      require.ensure(['map.prototype.tojson'], require => {
+        resolve(require('map.prototype.tojson'));
+      }, 'Map.toJson-polyfill');
+    })));
 
     // Array.includes
     if (!Array.prototype.includes) {
