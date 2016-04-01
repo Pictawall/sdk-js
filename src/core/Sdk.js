@@ -123,6 +123,17 @@ function _loadPolyfills() {
       }));
     }
 
+    // WeakMap
+    if (typeof WeakMap !== 'function') {
+      polyfillPromises.push(new Promise(resolve => {
+        require.ensure(['es6-weak-map/implement'], require => {
+          require('es6-weak-map/implement');
+
+          resolve();
+        }, 'WeakMap-polyfill');
+      }));
+    }
+
     return Promise.all(polyfillPromises);
   } catch (e) {
     return Promise.reject(e);
