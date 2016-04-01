@@ -177,8 +177,10 @@ class Sdk {
         const event = new EventModel(this, identifier, eventConfig);
 
         _insertCollections(event, collections);
-
-        return event.fetch();
+        return Promise.all([
+          event.fetch(),
+          event.fetchCollections()
+        ]).then(() => event);
       });
     } catch (e) {
       return Promise.reject(e);

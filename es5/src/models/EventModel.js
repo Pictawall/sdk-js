@@ -6,8 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === void 0) { var parent = Object.getPrototypeOf(object); if (parent === null) { return void 0; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === void 0) { return void 0; } return getter.call(receiver); } };
-
 var _BaseModel2 = require('./BaseModel');
 
 var _BaseModel3 = _interopRequireDefault(_BaseModel2);
@@ -76,25 +74,7 @@ var EventModel = function (_BaseModel) {
     return _this;
   }
 
-  /**
-   * Populates this model and its collections.
-   */
-
-
   _createClass(EventModel, [{
-    key: 'fetch',
-    value: function fetch(queryParameters) {
-      var _this2 = this;
-
-      return Promise.all([this.fetchCollections(), _get(Object.getPrototypeOf(EventModel.prototype), 'fetch', this).call(this, queryParameters)]).then(function () {
-        //if (autoUpdate) {
-        //  this.startAutoUpdate();
-        //}
-
-        return _this2;
-      });
-    }
-  }, {
     key: 'fetchCollections',
     value: function fetchCollections() {
       var promises = [];

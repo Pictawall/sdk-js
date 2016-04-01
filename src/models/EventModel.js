@@ -45,22 +45,6 @@ class EventModel extends BaseModel {
     collectionLists.set(this, new Map());
   }
 
-  /**
-   * Populates this model and its collections.
-   */
-  fetch(queryParameters) {
-    return Promise.all([
-      this.fetchCollections(),
-      super.fetch(queryParameters)
-    ]).then(() => {
-      //if (autoUpdate) {
-      //  this.startAutoUpdate();
-      //}
-
-      return this;
-    });
-  }
-
   fetchCollections() {
     const promises = [];
 

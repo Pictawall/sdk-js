@@ -41,6 +41,10 @@ class ChannelModel extends BaseModel {
     this._event = new EventModel(this.sdk, eventProperties.identifier, this._eventConfig);
     this._event.setProperties(eventProperties);
 
+    if (Array.isArray(properties.properties)) {
+      properties.properties = {};
+    }
+
     return super.setProperties(properties);
   }
 

@@ -229,8 +229,9 @@ var Sdk = function () {
           var event = new EventModel(_this, identifier, eventConfig);
 
           _insertCollections(event, collections);
-
-          return event.fetch();
+          return Promise.all([event.fetch(), event.fetchCollections()]).then(function () {
+            return event;
+          });
         });
       } catch (e) {
         return Promise.reject(e);

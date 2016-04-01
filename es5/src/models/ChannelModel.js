@@ -73,6 +73,10 @@ var ChannelModel = function (_BaseModel) {
       this._event = new _EventModel2.default(this.sdk, eventProperties.identifier, this._eventConfig);
       this._event.setProperties(eventProperties);
 
+      if (Array.isArray(properties.properties)) {
+        properties.properties = {};
+      }
+
       return _get(Object.getPrototypeOf(ChannelModel.prototype), 'setProperties', this).call(this, properties);
     }
 
