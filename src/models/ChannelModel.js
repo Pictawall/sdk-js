@@ -16,15 +16,17 @@ class ChannelModel extends BaseModel {
    * <p>Creates a new Channel Model, you can fill it with server data by calling {@link #fetch}</p>
    *
    * @param {!Sdk} sdk The SDK in which this model is running.
-   * @param {!String} channelId - The pictawall channel identifier.
+   * @param {!String} channelId The pictawall channel identifier.
+   * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
    */
-  constructor(sdk, channelId) {
+  constructor(sdk, channelId, eventConfig) {
     super(sdk);
 
     if (typeof channelId !== 'string') {
       throw new SdkError(this, `Channel identifier "${channelId}" is not valid.`);
     }
 
+    this._eventConfig = eventConfig;
     this.apiPath = `/channels/${channelId}`;
     this.fetchParser = function (serverResponse) {
       return serverResponse.data;
@@ -34,18 +36,9 @@ class ChannelModel extends BaseModel {
   /**
    * @inheritDoc
    */
-  fetch(queryParameters) {
-    return super.fetch(queryParameters)
-      .then(() => this._event.fetchCollections())
-      .then(() => this);
-  }
-
-  /**
-   * @inheritDoc
-   */
   setProperties(properties) {
     const eventProperties = properties.event;
-    this._event = new EventModel(this.sdk, eventProperties.identifier);
+    this._event = new EventModel(this.sdk, eventProperties.identifier, this._eventConfig);
     this._event.setProperties(eventProperties);
 
     return super.setProperties(properties);

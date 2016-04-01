@@ -143,7 +143,7 @@ class Sdk {
    *
    * @param {!String} identifier The identifier of the pictawall event.
    * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
-   * @param {Object.<String, Function>} [collections] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
+   * @param {Object.<String, Function>} [collections = ] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
    * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
    *
    * @example
@@ -151,7 +151,7 @@ class Sdk {
    *  textAssets: event => new AssetCollection(event, { kind: 'text' })
    * });
    */
-  getEvent(identifier, eventConfig = {}, collections) {
+  getEvent(identifier, eventConfig, collections) {
 
     try {
       return this.polyfillPromise.then(() => {
@@ -172,14 +172,22 @@ class Sdk {
    * <p>The event configuration will be fetched from the API. If you need to have local control over it, you should use {@link Sdk#getEvent} instead.</p>
    *
    * @param {!String} identifier The identifier of the pictawall channel.
+   * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+   * @param {Object.<String, Function>} [collections = ] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
    * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
    */
-  getChannel(identifier) {
+  getChannel(identifier, eventConfig, collections) {
     try {
       return this.polyfillPromise.then(() => {
         const ChannelModel = require('../models/ChannelModel').default;
-        const channel = new ChannelModel(this, identifier);
-        return channel.fetch();
+        const channel = new ChannelModel(this, identifier, eventConfig);
+
+        return channel.fetch()
+          .then(channel => {
+            _insertCollections(channel.event, collections);
+            return channel.event.fetchCollections();
+          })
+          .then(() => channel);
       });
     } catch (e) {
       return Promise.reject(e);

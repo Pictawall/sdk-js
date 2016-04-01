@@ -188,7 +188,7 @@ var Sdk = function () {
    *
    * @param {!String} identifier The identifier of the pictawall event.
    * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
-   * @param {Object.<String, Function>} [collections] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
+   * @param {Object.<String, Function>} [collections = ] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
    * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
    *
    * @example
@@ -200,12 +200,8 @@ var Sdk = function () {
 
   _createClass(Sdk, [{
     key: 'getEvent',
-    value: function getEvent(identifier) {
+    value: function getEvent(identifier, eventConfig, collections) {
       var _this = this;
-
-      var eventConfig = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
-      var collections = arguments[2];
-
 
       try {
         return this.polyfillPromise.then(function () {
@@ -226,19 +222,27 @@ var Sdk = function () {
      * <p>The event configuration will be fetched from the API. If you need to have local control over it, you should use {@link Sdk#getEvent} instead.</p>
      *
      * @param {!String} identifier The identifier of the pictawall channel.
+     * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+     * @param {Object.<String, Function>} [collections = ] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
      * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
      */
 
   }, {
     key: 'getChannel',
-    value: function getChannel(identifier) {
+    value: function getChannel(identifier, eventConfig, collections) {
       var _this2 = this;
 
       try {
         return this.polyfillPromise.then(function () {
           var ChannelModel = require('../models/ChannelModel').default;
-          var channel = new ChannelModel(_this2, identifier);
-          return channel.fetch();
+          var channel = new ChannelModel(_this2, identifier, eventConfig);
+
+          return channel.fetch().then(function (channel) {
+            _insertCollections(channel.event, collections);
+            return channel.event.fetchCollections();
+          }).then(function () {
+            return channel;
+          });
         });
       } catch (e) {
         return Promise.reject(e);
