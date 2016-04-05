@@ -156,6 +156,18 @@ var BaseModel = function () {
         return _this;
       });
     }
+
+    /**
+     * Returns the type of model as a string.
+     *
+     * @returns {!String}
+     */
+
+  }, {
+    key: 'type',
+    get: function get() {
+      throw new _Errors.SdkError(this, 'get type() not implemented');
+    }
   }]);
 
   return BaseModel;

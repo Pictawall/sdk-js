@@ -113,6 +113,13 @@ class AssetModel extends BaseModel {
 
     return this.sdk.callApi(`${this.apiPath}/report`, { method: 'PATCH' }).then(() => this);
   }
+
+  /**
+   * @inheritDoc
+   */
+  get type() {
+    return 'asset';
+  }
 }
 
 export default AssetModel;

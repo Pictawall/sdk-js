@@ -111,6 +111,13 @@ class EventModel extends BaseModel {
   //  this._autoUpdate = true;
   //  this._runAutoUpdate();
   //}
+
+  /**
+   * @inheritDoc
+   */
+  get type() {
+    return 'event';
+  }
 }
 
 export default EventModel;

@@ -16,6 +16,13 @@ class AdModel extends BaseModel {
   constructor(sdk) {
     super(sdk);
   }
+
+  /**
+   * @inheritDoc
+   */
+  get type() {
+    return 'ad';
+  }
 }
 
 export default AdModel;

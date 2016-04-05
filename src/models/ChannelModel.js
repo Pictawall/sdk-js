@@ -54,6 +54,13 @@ class ChannelModel extends BaseModel {
   get event() {
     return this._event;
   }
+
+  /**
+   * @inheritDoc
+   */
+  get type() {
+    return 'channel';
+  }
 }
 
 export default ChannelModel;

@@ -147,6 +147,15 @@ var EventModel = function (_BaseModel) {
     //  this._runAutoUpdate();
     //}
 
+    /**
+     * @inheritDoc
+     */
+
+  }, {
+    key: 'type',
+    get: function get() {
+      return 'event';
+    }
   }]);
 
   return EventModel;

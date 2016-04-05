@@ -89,6 +89,16 @@ var ChannelModel = function (_BaseModel) {
     get: function get() {
       return this._event;
     }
+
+    /**
+     * @inheritDoc
+     */
+
+  }, {
+    key: 'type',
+    get: function get() {
+      return 'channel';
+    }
   }]);
 
   return ChannelModel;
