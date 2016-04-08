@@ -245,7 +245,7 @@ var Sdk = function () {
      * @param {!String} identifier The identifier of the pictawall channel.
      * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
      * @param {Object.<String, Function>} [collections = ] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
-     * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
+     * @returns {Promise.<ChannelModel>} A promise which resolves when the model has been populated.
      */
 
   }, {
