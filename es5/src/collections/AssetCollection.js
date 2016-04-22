@@ -29,7 +29,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 // TODO: updateAll
 
 /**
- * Collection os event assets.
+ * Collection of event assets.
  *
  * @class AssetCollection
  * @extends PagedCollection

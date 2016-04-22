@@ -7,7 +7,7 @@ import { SdkError } from '../core/Errors';
 // TODO: updateAll
 
 /**
- * Collection os event assets.
+ * Collection of event assets.
  *
  * @class AssetCollection
  * @extends PagedCollection
