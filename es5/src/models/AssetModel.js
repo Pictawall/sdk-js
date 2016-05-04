@@ -161,6 +161,11 @@ var AssetModel = function (_BaseModel) {
         return _this3;
       });
     }
+
+    /**
+     * @inheritDoc
+     */
+
   }, {
     key: 'owner',
     get: function get() {
@@ -170,6 +175,11 @@ var AssetModel = function (_BaseModel) {
     key: 'isSafe',
     get: function get() {
       return this.getProperty('isSafe');
+    }
+  }, {
+    key: 'type',
+    get: function get() {
+      return 'asset';
     }
   }]);
 

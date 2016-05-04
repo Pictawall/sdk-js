@@ -16,6 +16,13 @@ class MessageModel extends BaseModel {
   constructor(sdk) {
     super(sdk);
   }
+
+  /**
+   * @inheritDoc
+   */
+  get type() {
+    return 'message';
+  }
 }
 
 export default MessageModel;

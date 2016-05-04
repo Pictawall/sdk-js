@@ -97,6 +97,15 @@ class BaseModel {
         return this;
       });
   }
+
+  /**
+   * Returns the type of model as a string.
+   *
+   * @returns {!String}
+   */
+  get type() {
+    throw new SdkError(this, 'get type() not implemented');
+  }
 }
 
 ClassUtil.merge(BaseModel, FetchMixin);

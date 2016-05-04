@@ -48,6 +48,13 @@ class UserModel extends BaseModel {
   markAvatarAsDead() {
     return this.sdk.callApi(`${this.apiPath}/check`, { method: 'PATCH' }).then(() => this);
   }
+
+  /**
+   * @inheritDoc
+   */
+  get type() {
+    return 'user';
+  }
 }
 
 export default UserModel;

@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _BaseModel2 = require('./BaseModel');
 
 var _BaseModel3 = _interopRequireDefault(_BaseModel2);
@@ -35,6 +37,18 @@ var AdModel = function (_BaseModel) {
 
     return _possibleConstructorReturn(this, Object.getPrototypeOf(AdModel).call(this, sdk));
   }
+
+  /**
+   * @inheritDoc
+   */
+
+
+  _createClass(AdModel, [{
+    key: 'type',
+    get: function get() {
+      return 'ad';
+    }
+  }]);
 
   return AdModel;
 }(_BaseModel3.default);

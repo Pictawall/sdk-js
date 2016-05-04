@@ -30,7 +30,7 @@ class EventModel extends BaseModel {
   constructor(sdk, identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 10000 } = {}) {
     super(sdk);
 
-    if (typeof identifier !== 'string') {
+    if (typeof identifier !== 'string' || !/^[a-z0-9\-_]+$/i.test(identifier)) {
       throw new SdkError(this, `Event identifier "${identifier}" is not valid.`);
     }
 
@@ -43,22 +43,6 @@ class EventModel extends BaseModel {
     };
 
     collectionLists.set(this, new Map());
-  }
-
-  /**
-   * Populates this model and its collections.
-   */
-  fetch(queryParameters) {
-    return Promise.all([
-      this.fetchCollections(),
-      super.fetch(queryParameters)
-    ]).then(() => {
-      //if (autoUpdate) {
-      //  this.startAutoUpdate();
-      //}
-
-      return this;
-    });
   }
 
   fetchCollections() {
@@ -127,6 +111,13 @@ class EventModel extends BaseModel {
   //  this._autoUpdate = true;
   //  this._runAutoUpdate();
   //}
+
+  /**
+   * @inheritDoc
+   */
+  get type() {
+    return 'event';
+  }
 }
 
 export default EventModel;

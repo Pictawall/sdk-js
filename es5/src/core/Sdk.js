@@ -14,6 +14,10 @@ var _FetchShim = require('./FetchShim');
 
 var _FetchShim2 = _interopRequireDefault(_FetchShim);
 
+var _polyfills = require('./polyfills');
+
+var _polyfills2 = _interopRequireDefault(_polyfills);
+
 var _qsLite = require('qs-lite');
 
 var _qsLite2 = _interopRequireDefault(_qsLite);
@@ -21,12 +25,6 @@ var _qsLite2 = _interopRequireDefault(_qsLite);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-if (typeof require.ensure !== 'function') {
-  require.ensure = function (dependencies, callback) {
-    callback(require);
-  };
-}
 
 /**
  * @private
@@ -90,106 +88,40 @@ var Sdk = function () {
     _classCallCheck(this, Sdk);
 
     this.apiBaseUrl = apiBaseUrl;
+
+    this.polyfillPromise = (0, _polyfills2.default)();
   }
 
   /**
-   * Loads the polyfills required to make the SDK work.
+   * Creates and populates a new event model.
    *
-   * @returns {!Promise}
+   * @param {!String} identifier The identifier of the pictawall event.
+   * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+   * @param {Object.<String, Function>} [collections = ] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
+   * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
+   *
+   * @example
+   * sdk.getEvent('undiscovered-london', {}, {
+   *  textAssets: event => new AssetCollection(event, { kind: 'text' })
+   * });
    */
 
 
   _createClass(Sdk, [{
-    key: 'loadPolyfills',
-    value: function loadPolyfills() {
-      try {
-        var polyfillPromises = [];
-
-        // global.fetch
-        polyfillPromises.push(_FetchShim2.default.loadFetchPolyfill());
-
-        if (typeof Symbol === 'undefined') {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
-              resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
-            }, 'Symbol-polyfill');
-          }));
-        }
-
-        if (!require('es6-map/is-implemented')()) {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['es6-map/implement'], function (require) {
-              resolve(require('es6-map/implement'));
-            }, 'Map-polyfill');
-          }));
-        }
-
-        // Map.toJSON
-        if (!Map.prototype.toJSON) {
-          // TODO replace with https://github.com/ljharb/map-tojson/blob/master/index.js
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['map.prototype.tojson'], function (require) {
-              resolve(require('map.prototype.tojson'));
-            }, 'Map.toJson-polyfill');
-          }));
-        }
-
-        // Array.includes
-        if (!Array.prototype.includes) {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['array-includes'], function (require) {
-              var includes = require('array-includes');
-
-              includes.shim();
-
-              resolve();
-            }, 'Array.includes-polyfill');
-          }));
-        }
-
-        // String.endsWith
-        if (!String.prototype.endsWith) {
-          polyfillPromises.push(new Promise(function (resolve) {
-            require.ensure(['es5-ext/string/#/ends-with/implement'], function (require) {
-              resolve(require('es5-ext/string/#/ends-with/implement'));
-            }, 'String.endsWith-polyfill');
-          }));
-        }
-
-        return Promise.all(polyfillPromises);
-      } catch (e) {
-        return Promise.reject(e);
-      }
-    }
-
-    /**
-     * Creates and populates a new event model.
-     *
-     * @param {!String} identifier The identifier of the pictawall event.
-     * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
-     * @param {Object.<String, Function>} [collections] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
-     * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
-     *
-     * @example
-     * sdk.getEvent('undiscovered-london', {}, {
-     *  textAssets: event => new AssetCollection(event, { kind: 'text' })
-     * });
-     */
-
-  }, {
     key: 'getEvent',
-    value: function getEvent(identifier) {
-      var eventConfig = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
-      var collections = arguments[2];
-
+    value: function getEvent(identifier, eventConfig, collections) {
+      var _this = this;
 
       try {
-        var EventModel = require('../models/EventModel').default;
-        var event = new EventModel(this, identifier, eventConfig);
+        return this.polyfillPromise.then(function () {
+          var EventModel = require('../models/EventModel').default;
+          var event = new EventModel(_this, identifier, eventConfig);
 
-        _insertCollections(event, collections);
-
-        return event.fetch();
+          _insertCollections(event, collections);
+          return Promise.all([event.fetch(), event.fetchCollections()]).then(function () {
+            return event;
+          });
+        });
       } catch (e) {
         return Promise.reject(e);
       }
@@ -200,16 +132,28 @@ var Sdk = function () {
      * <p>The event configuration will be fetched from the API. If you need to have local control over it, you should use {@link Sdk#getEvent} instead.</p>
      *
      * @param {!String} identifier The identifier of the pictawall channel.
-     * @returns {Promise.<EventModel>} A promise which resolves when the model has been populated.
+     * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
+     * @param {Object.<String, Function>} [collections = ] A list of collections factories to use to create the collections to add to the event and fetch. By default this will create one of each available collections: 'users', 'assets', 'messages', 'ads'.
+     * @returns {Promise.<ChannelModel>} A promise which resolves when the model has been populated.
      */
 
   }, {
     key: 'getChannel',
-    value: function getChannel(identifier) {
+    value: function getChannel(identifier, eventConfig, collections) {
+      var _this2 = this;
+
       try {
-        var ChannelModel = require('../models/ChannelModel').default;
-        var channel = new ChannelModel(this, identifier);
-        return channel.fetch();
+        return this.polyfillPromise.then(function () {
+          var ChannelModel = require('../models/ChannelModel').default;
+          var channel = new ChannelModel(_this2, identifier, eventConfig);
+
+          return channel.fetch().then(function (channel) {
+            _insertCollections(channel.event, collections);
+            return channel.event.fetchCollections();
+          }).then(function () {
+            return channel;
+          });
+        });
       } catch (e) {
         return Promise.reject(e);
       }

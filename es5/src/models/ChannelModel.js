@@ -40,10 +40,11 @@ var ChannelModel = function (_BaseModel) {
    * <p>Creates a new Channel Model, you can fill it with server data by calling {@link #fetch}</p>
    *
    * @param {!Sdk} sdk The SDK in which this model is running.
-   * @param {!String} channelId - The pictawall channel identifier.
+   * @param {!String} channelId The pictawall channel identifier.
+   * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
    */
 
-  function ChannelModel(sdk, channelId) {
+  function ChannelModel(sdk, channelId, eventConfig) {
     _classCallCheck(this, ChannelModel);
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ChannelModel).call(this, sdk));
@@ -52,6 +53,7 @@ var ChannelModel = function (_BaseModel) {
       throw new _Errors.SdkError(_this, 'Channel identifier "' + channelId + '" is not valid.');
     }
 
+    _this._eventConfig = eventConfig;
     _this.apiPath = '/channels/' + channelId;
     _this.fetchParser = function (serverResponse) {
       return serverResponse.data;
@@ -65,27 +67,15 @@ var ChannelModel = function (_BaseModel) {
 
 
   _createClass(ChannelModel, [{
-    key: 'fetch',
-    value: function fetch(queryParameters) {
-      var _this2 = this;
-
-      return _get(Object.getPrototypeOf(ChannelModel.prototype), 'fetch', this).call(this, queryParameters).then(function () {
-        return _this2._event.fetchCollections();
-      }).then(function () {
-        return _this2;
-      });
-    }
-
-    /**
-     * @inheritDoc
-     */
-
-  }, {
     key: 'setProperties',
     value: function setProperties(properties) {
       var eventProperties = properties.event;
-      this._event = new _EventModel2.default(this.sdk, eventProperties.identifier);
+      this._event = new _EventModel2.default(this.sdk, eventProperties.identifier, this._eventConfig);
       this._event.setProperties(eventProperties);
+
+      if (Array.isArray(properties.properties)) {
+        properties.properties = {};
+      }
 
       return _get(Object.getPrototypeOf(ChannelModel.prototype), 'setProperties', this).call(this, properties);
     }
@@ -98,6 +88,16 @@ var ChannelModel = function (_BaseModel) {
     key: 'event',
     get: function get() {
       return this._event;
+    }
+
+    /**
+     * @inheritDoc
+     */
+
+  }, {
+    key: 'type',
+    get: function get() {
+      return 'channel';
     }
   }]);
 

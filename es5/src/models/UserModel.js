@@ -88,6 +88,16 @@ var UserModel = function (_BaseModel) {
         return _this2;
       });
     }
+
+    /**
+     * @inheritDoc
+     */
+
+  }, {
+    key: 'type',
+    get: function get() {
+      return 'user';
+    }
   }]);
 
   return UserModel;
