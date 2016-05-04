@@ -58,7 +58,7 @@ var EventModel = function (_BaseModel) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventModel).call(this, sdk));
 
-    if (typeof identifier !== 'string') {
+    if (typeof identifier !== 'string' || !/^[a-z0-9\-_]+$/i.test(identifier)) {
       throw new _Errors.SdkError(_this, 'Event identifier "' + identifier + '" is not valid.');
     }
 

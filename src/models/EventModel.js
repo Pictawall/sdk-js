@@ -30,7 +30,7 @@ class EventModel extends BaseModel {
   constructor(sdk, identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 10000 } = {}) {
     super(sdk);
 
-    if (typeof identifier !== 'string') {
+    if (typeof identifier !== 'string' || !/^[a-z0-9\-_]+$/i.test(identifier)) {
       throw new SdkError(this, `Event identifier "${identifier}" is not valid.`);
     }
 
