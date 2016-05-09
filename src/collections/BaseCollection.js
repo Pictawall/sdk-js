@@ -4,6 +4,7 @@ import ClassUtil from '../util/ClassUtil';
 import { SdkError } from '../core/Errors';
 import FetchMixin from '../mixins/FetchMixin';
 import FindMixin from '../mixins/FindMixin';
+import Sdk from '../core/Sdk';
 
 /**
  * @class BaseCollection
@@ -56,7 +57,7 @@ class BaseCollection {
    */
   fetch() {
     if (!this.hasMore) {
-      return Promise.reject(new SdkError(this, '#fetch called but #hasMore returns false'));
+      return Sdk.Promise.reject(new SdkError(this, '#fetch called but #hasMore returns false'));
     }
 
     return this.fetchRaw(this.fetchOptions)

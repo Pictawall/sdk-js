@@ -18,6 +18,10 @@ var _UserModel = require('./UserModel');
 
 var _UserModel2 = _interopRequireDefault(_UserModel);
 
+var _Sdk = require('../core/Sdk');
+
+var _Sdk2 = _interopRequireDefault(_Sdk);
+
 var _Errors = require('../core/Errors');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -154,7 +158,7 @@ var AssetModel = function (_BaseModel) {
       var _this3 = this;
 
       if (this.isSafe) {
-        return Promise.resolve(this);
+        return _Sdk2.default.Promise.resolve(this);
       }
 
       return this.sdk.callApi(this.apiPath + '/report', { method: 'PATCH' }).then(function () {

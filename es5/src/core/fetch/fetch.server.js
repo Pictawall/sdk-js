@@ -15,5 +15,11 @@ exports.default = {
 
 
   fetch: _nodeFetch2.default,
-  Response: _nodeFetch.Response
+  Response: _nodeFetch.Response,
+
+  set Promise(implementation) {
+    if (_nodeFetch2.default.Promise === global.Promise) {
+      _nodeFetch2.default.Promise = implementation;
+    }
+  }
 };

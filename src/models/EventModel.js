@@ -1,6 +1,7 @@
 'use strict';
 
 import BaseModel from './BaseModel';
+import Sdk from '../core/Sdk';
 
 import { SdkError } from '../core/Errors';
 
@@ -52,7 +53,7 @@ class EventModel extends BaseModel {
       promises.push(collection.fetch());
     });
 
-    return Promise.all(promises);
+    return Sdk.Promise.all(promises);
   }
 
   /**

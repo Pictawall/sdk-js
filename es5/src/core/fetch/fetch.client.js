@@ -33,5 +33,8 @@ exports.default = {
         _this.Response = window.Response;
       }
     });
-  }
+  },
+
+
+  set Promise(implementation) {}
 };

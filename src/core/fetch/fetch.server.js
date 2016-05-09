@@ -4,5 +4,11 @@ export default {
   load() {},
 
   fetch,
-  Response
+  Response,
+
+  set Promise(implementation) {
+    if (fetch.Promise === global.Promise) {
+      fetch.Promise = implementation;
+    }
+  }
 };

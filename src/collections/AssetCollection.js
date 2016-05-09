@@ -2,6 +2,7 @@
 
 import PagedCollection from './PagedCollection';
 import AssetModel from '../models/AssetModel';
+import Sdk from '../core/Sdk';
 import { SdkError } from '../core/Errors';
 
 // TODO: updateAll
@@ -61,17 +62,17 @@ class AssetCollection extends PagedCollection {
   getFeaturedAsset() {
     try {
       if (!this.hasFeaturedAsset()) {
-        return Promise.resolve(null);
+        return Sdk.Promise.resolve(null);
       }
 
       const localResult = this.findOne({ featured: true });
       if (localResult != null) {
-        return Promise.resolve(localResult);
+        return Sdk.Promise.resolve(localResult);
       }
 
       return this.fetchById(this._event.getProperty('featuredAssetId'));
     } catch (e) {
-      return Promise.reject(e);
+      return Sdk.Promise.reject(e);
     }
   }
 

@@ -10,6 +10,10 @@ var _BaseModel2 = require('./BaseModel');
 
 var _BaseModel3 = _interopRequireDefault(_BaseModel2);
 
+var _Sdk = require('../core/Sdk');
+
+var _Sdk2 = _interopRequireDefault(_Sdk);
+
 var _Errors = require('../core/Errors');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -83,7 +87,7 @@ var EventModel = function (_BaseModel) {
         promises.push(collection.fetch());
       });
 
-      return Promise.all(promises);
+      return _Sdk2.default.Promise.all(promises);
     }
 
     /**

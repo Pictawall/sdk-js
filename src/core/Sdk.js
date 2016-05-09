@@ -40,8 +40,6 @@ class Sdk {
    */
   constructor(apiBaseUrl = 'https://api.pictawall.com/v2.5') {
     this.apiBaseUrl = apiBaseUrl;
-
-    this.polyfillPromise = loadPolyfills();
   }
 
   /**
@@ -59,20 +57,16 @@ class Sdk {
    */
   getEvent(identifier, eventConfig, collections) {
 
-    try {
-      return this.polyfillPromise.then(() => {
-        const EventModel = require('../models/EventModel').default;
-        const event = new EventModel(this, identifier, eventConfig);
+    return loadPolyfills().then(() => {
+      const EventModel = require('../models/EventModel').default;
+      const event = new EventModel(this, identifier, eventConfig);
 
-        _insertCollections(event, collections);
-        return Promise.all([
-          event.fetch(),
-          event.fetchCollections()
-        ]).then(() => event);
-      });
-    } catch (e) {
-      return Promise.reject(e);
-    }
+      _insertCollections(event, collections);
+      return Sdk.Promise.all([
+        event.fetch(),
+        event.fetchCollections()
+      ]).then(() => event);
+    });
   }
 
   /**
@@ -85,21 +79,17 @@ class Sdk {
    * @returns {Promise.<ChannelModel>} A promise which resolves when the model has been populated.
    */
   getChannel(identifier, eventConfig, collections) {
-    try {
-      return this.polyfillPromise.then(() => {
-        const ChannelModel = require('../models/ChannelModel').default;
-        const channel = new ChannelModel(this, identifier, eventConfig);
+    return loadPolyfills().then(() => {
+      const ChannelModel = require('../models/ChannelModel').default;
+      const channel = new ChannelModel(this, identifier, eventConfig);
 
-        return channel.fetch()
-          .then(channel => {
-            _insertCollections(channel.event, collections);
-            return channel.event.fetchCollections();
-          })
-          .then(() => channel);
-      });
-    } catch (e) {
-      return Promise.reject(e);
-    }
+      return channel.fetch()
+        .then(channel => {
+          _insertCollections(channel.event, collections);
+          return channel.event.fetchCollections();
+        })
+        .then(() => channel);
+    });
   }
 
   /**

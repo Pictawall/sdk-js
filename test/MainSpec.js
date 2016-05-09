@@ -1,15 +1,16 @@
 'use strict';
 
+import polyfills from '../src/core/polyfills';
+const XhrMock = require('./mock/XhrMock');
+
 require('./src/mixins/MongoQuery/MongoFinderTest');
 require('./src/mixins/MongoQuery/mongoWhereParserTest');
 
 describe('API', () => {
-  const XhrMock = require('./mock/XhrMock');
-
   beforeAll(done => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
 
-    require('./mock/ClassMock').sdk.polyfillPromise.then(() => {
+    return polyfills().then(() => {
       XhrMock.init();
       done();
     }).catch(e => {

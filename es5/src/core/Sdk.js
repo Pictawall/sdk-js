@@ -88,8 +88,6 @@ var Sdk = function () {
     _classCallCheck(this, Sdk);
 
     this.apiBaseUrl = apiBaseUrl;
-
-    this.polyfillPromise = (0, _polyfills2.default)();
   }
 
   /**
@@ -112,19 +110,15 @@ var Sdk = function () {
     value: function getEvent(identifier, eventConfig, collections) {
       var _this = this;
 
-      try {
-        return this.polyfillPromise.then(function () {
-          var EventModel = require('../models/EventModel').default;
-          var event = new EventModel(_this, identifier, eventConfig);
+      return (0, _polyfills2.default)().then(function () {
+        var EventModel = require('../models/EventModel').default;
+        var event = new EventModel(_this, identifier, eventConfig);
 
-          _insertCollections(event, collections);
-          return Promise.all([event.fetch(), event.fetchCollections()]).then(function () {
-            return event;
-          });
+        _insertCollections(event, collections);
+        return Sdk.Promise.all([event.fetch(), event.fetchCollections()]).then(function () {
+          return event;
         });
-      } catch (e) {
-        return Promise.reject(e);
-      }
+      });
     }
 
     /**
@@ -142,21 +136,17 @@ var Sdk = function () {
     value: function getChannel(identifier, eventConfig, collections) {
       var _this2 = this;
 
-      try {
-        return this.polyfillPromise.then(function () {
-          var ChannelModel = require('../models/ChannelModel').default;
-          var channel = new ChannelModel(_this2, identifier, eventConfig);
+      return (0, _polyfills2.default)().then(function () {
+        var ChannelModel = require('../models/ChannelModel').default;
+        var channel = new ChannelModel(_this2, identifier, eventConfig);
 
-          return channel.fetch().then(function (channel) {
-            _insertCollections(channel.event, collections);
-            return channel.event.fetchCollections();
-          }).then(function () {
-            return channel;
-          });
+        return channel.fetch().then(function (channel) {
+          _insertCollections(channel.event, collections);
+          return channel.event.fetchCollections();
+        }).then(function () {
+          return channel;
         });
-      } catch (e) {
-        return Promise.reject(e);
-      }
+      });
     }
 
     /**

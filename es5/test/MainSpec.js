@@ -1,15 +1,21 @@
 'use strict';
 
+var _polyfills = require('../src/core/polyfills');
+
+var _polyfills2 = _interopRequireDefault(_polyfills);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var XhrMock = require('./mock/XhrMock');
+
 require('./src/mixins/MongoQuery/MongoFinderTest');
 require('./src/mixins/MongoQuery/mongoWhereParserTest');
 
 describe('API', function () {
-  var XhrMock = require('./mock/XhrMock');
-
   beforeAll(function (done) {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
 
-    require('./mock/ClassMock').sdk.polyfillPromise.then(function () {
+    return (0, _polyfills2.default)().then(function () {
       XhrMock.init();
       done();
     }).catch(function (e) {

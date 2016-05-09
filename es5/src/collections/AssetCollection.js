@@ -16,6 +16,10 @@ var _AssetModel = require('../models/AssetModel');
 
 var _AssetModel2 = _interopRequireDefault(_AssetModel);
 
+var _Sdk = require('../core/Sdk');
+
+var _Sdk2 = _interopRequireDefault(_Sdk);
+
 var _Errors = require('../core/Errors');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -107,17 +111,17 @@ var AssetCollection = function (_PagedCollection) {
     value: function getFeaturedAsset() {
       try {
         if (!this.hasFeaturedAsset()) {
-          return Promise.resolve(null);
+          return _Sdk2.default.Promise.resolve(null);
         }
 
         var localResult = this.findOne({ featured: true });
         if (localResult != null) {
-          return Promise.resolve(localResult);
+          return _Sdk2.default.Promise.resolve(localResult);
         }
 
         return this.fetchById(this._event.getProperty('featuredAssetId'));
       } catch (e) {
-        return Promise.reject(e);
+        return _Sdk2.default.Promise.reject(e);
       }
     }
 
