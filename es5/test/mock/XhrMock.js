@@ -4,9 +4,9 @@ var _StringUtil = require('../../src/util/StringUtil');
 
 var _StringUtil2 = _interopRequireDefault(_StringUtil);
 
-var _FetchShim = require('../../src/core/FetchShim');
+var _fetch = require('../../src/core/fetch');
 
-var _FetchShim2 = _interopRequireDefault(_FetchShim);
+var _fetch2 = _interopRequireDefault(_fetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -14,7 +14,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var sdk = require('./ClassMock').sdk;
 var FakeFetch = require('./Xhr/FakeFetch');
-var oldFetch = _FetchShim2.default.fetch;
+var oldFetch = _fetch2.default.fetch;
 
 function mockRequest(path, pathParams, response) {
   var stubbedPath = new RegExp('^' + sdk.apiBaseUrl + _StringUtil2.default.format.apply(_StringUtil2.default, [path, false].concat(_toConsumableArray(pathParams))) + '([\\?#].*)?$');
@@ -26,7 +26,7 @@ module.exports = {
   init: function init() {
     var _this = this;
 
-    _FetchShim2.default.fetch = FakeFetch.fetch;
+    _fetch2.default.fetch = FakeFetch.fetch;
 
     var routes = ['/events/{0}', '/events/{0}/assets', '/events/{0}/users', '/events/{0}/ads', '/events/{0}/messages'];
     var defaultResponses = [this.VALID_EVENT, this.VALID_EVENT_ASSETS, this.VALID_EVENT_USERS, this.VALID_EVENT_ADS, this.VALID_EVENT_MESSAGES];
@@ -76,7 +76,7 @@ module.exports = {
     });
   },
   destroy: function destroy() {
-    _FetchShim2.default.fetch = oldFetch;
+    _fetch2.default.fetch = oldFetch;
   },
 
 

@@ -1,11 +1,5 @@
 'use strict';
 
-var _app_server = require('../src/app_server');
-
-var _app_server2 = _interopRequireDefault(_app_server);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 require('./src/mixins/MongoQuery/MongoFinderTest');
 require('./src/mixins/MongoQuery/mongoWhereParserTest');
 

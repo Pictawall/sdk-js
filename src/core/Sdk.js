@@ -1,7 +1,7 @@
 'use strict';
 
 import StringUtil from '../util/StringUtil';
-import FetchShim from './FetchShim';
+import FetchShim from './fetch';
 import loadPolyfills from './polyfills';
 
 import QueryString from 'qs-lite';
@@ -125,6 +125,14 @@ class Sdk {
     }
 
     return FetchShim.fetch(this.apiBaseUrl + path, parameters);
+  }
+
+  /**
+   * The promise implementation to use inside the SDK, replace this field by your promise implementation.
+   * @type {Promise}
+   */
+  static get Promise() {
+    return Promise;
   }
 }
 

@@ -54,8 +54,7 @@
     "strip-loader": "^0.1.2",
     "webpack": "^1.12.13"
   },
-  "main": "es5/src/app_server.js",
-  "browser": "es5/src/app_client.js",
+  "main": "es5/src/core/Sdk.js",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/pictawall/sdk-js/issues"

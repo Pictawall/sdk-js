@@ -2,7 +2,7 @@
 
 import AssetModel from '../../../src/models/AssetModel';
 import UserModel from '../../../src/models/UserModel';
-import FetchShim from '../../../src/core/FetchShim';
+import FetchShim from '../../../src/core/fetch';
 
 const ClassMock = require('../../mock/ClassMock');
 const XhrMock = require('../../mock/XhrMock');

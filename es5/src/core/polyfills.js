@@ -14,7 +14,7 @@ exports.default = function () {
     var polyfillPromises = [];
 
     // global.fetch
-    polyfillPromises.push(_FetchShim2.default.loadFetchPolyfill());
+    polyfillPromises.push(_fetch2.default.load());
 
     // Symbol
     if (typeof Symbol === 'undefined') {
@@ -119,9 +119,9 @@ exports.default = function () {
   }
 };
 
-var _FetchShim = require('./FetchShim');
+var _fetch = require('./fetch');
 
-var _FetchShim2 = _interopRequireDefault(_FetchShim);
+var _fetch2 = _interopRequireDefault(_fetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 

@@ -1,6 +1,6 @@
 'use strict';
 
-import FetchShim from './FetchShim';
+import FetchShim from './fetch';
 
 if (typeof require.ensure !== 'function') {
   require.ensure = function (dependencies, callback) {
@@ -20,7 +20,7 @@ export default function () {
     const polyfillPromises = [];
 
     // global.fetch
-    polyfillPromises.push(FetchShim.loadFetchPolyfill());
+    polyfillPromises.push(FetchShim.load());
 
     // Symbol
     if (typeof Symbol === 'undefined') {

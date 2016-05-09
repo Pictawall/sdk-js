@@ -10,9 +10,9 @@ var _StringUtil = require('../util/StringUtil');
 
 var _StringUtil2 = _interopRequireDefault(_StringUtil);
 
-var _FetchShim = require('./FetchShim');
+var _fetch = require('./fetch');
 
-var _FetchShim2 = _interopRequireDefault(_FetchShim);
+var _fetch2 = _interopRequireDefault(_fetch);
 
 var _polyfills = require('./polyfills');
 
@@ -186,7 +186,18 @@ var Sdk = function () {
         path += '?' + queryString;
       }
 
-      return _FetchShim2.default.fetch(this.apiBaseUrl + path, parameters);
+      return _fetch2.default.fetch(this.apiBaseUrl + path, parameters);
+    }
+
+    /**
+     * The promise implementation to use inside the SDK, replace this field by your promise implementation.
+     * @type {Promise}
+     */
+
+  }], [{
+    key: 'Promise',
+    get: function get() {
+      return Promise;
     }
   }]);
 
