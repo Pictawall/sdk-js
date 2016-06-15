@@ -4,11 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _fetchParser, _FetchMixin, _mutatorMap;
-
 var _Errors = require('../core/Errors');
-
-function _defineEnumerableProperties(obj, descs) { for (var key in descs) { var desc = descs[key]; desc.configurable = desc.enumerable = true; if ("value" in desc) desc.writable = true; Object.defineProperty(obj, key, desc); } return obj; }
 
 var _fetchParsers = new WeakMap();
 
@@ -17,7 +13,7 @@ var _fetchParsers = new WeakMap();
  *
  * @mixin FetchMixin
  */
-var FetchMixin = (_FetchMixin = {
+var FetchMixin = {
 
   /**
    * <p>Executes an HTTP GET on the api path of the model and returns the HTTP response as JSON.</p>
@@ -97,10 +93,11 @@ var FetchMixin = (_FetchMixin = {
    */
   set fetchParser(parser) {
     _fetchParsers.set(this, parser);
-  }
+  },
 
-}, _fetchParser = 'fetchParser', _mutatorMap = {}, _mutatorMap[_fetchParser] = _mutatorMap[_fetchParser] || {}, _mutatorMap[_fetchParser].get = function () {
-  return _fetchParsers.get(this);
-}, _defineEnumerableProperties(_FetchMixin, _mutatorMap), _FetchMixin);
+  get fetchParser() {
+    return _fetchParsers.get(this);
+  }
+};
 
 exports.default = FetchMixin;

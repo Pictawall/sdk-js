@@ -13,7 +13,7 @@
     "build-dev": "NODE_ENV=development gulp dist && gulp es5",
     "test": "npm run test-server && npm run test-client",
     "test-server": "gulp es5 && jasmine",
-    "test-client": "karma start karma.conf.js"
+    "test-client": "./node_modules/.bin/karma start karma.conf.js"
   },
   "dependencies": {
     "array-includes": "latest",
