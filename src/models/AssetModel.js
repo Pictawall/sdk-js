@@ -2,6 +2,7 @@
 
 import BaseModel from './BaseModel';
 import UserModel from './UserModel';
+import Sdk from '../core/Sdk';
 
 import { SdkError } from '../core/Errors';
 
@@ -108,7 +109,7 @@ class AssetModel extends BaseModel {
    */
   report() {
     if (this.isSafe) {
-      return Promise.resolve(this);
+      return Sdk.Promise.resolve(this);
     }
 
     return this.sdk.callApi(`${this.apiPath}/report`, { method: 'PATCH' }).then(() => this);

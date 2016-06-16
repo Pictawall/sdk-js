@@ -1,7 +1,7 @@
 'use strict';
 
 import StringUtil from '../../src/util/StringUtil';
-import FetchShim from '../../src/core/FetchShim';
+import FetchShim from '../../src/core/fetch';
 
 const sdk = require('./ClassMock').sdk;
 const FakeFetch = require('./Xhr/FakeFetch');

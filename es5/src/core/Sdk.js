@@ -10,9 +10,9 @@ var _StringUtil = require('../util/StringUtil');
 
 var _StringUtil2 = _interopRequireDefault(_StringUtil);
 
-var _FetchShim = require('./FetchShim');
+var _fetch = require('./fetch');
 
-var _FetchShim2 = _interopRequireDefault(_FetchShim);
+var _fetch2 = _interopRequireDefault(_fetch);
 
 var _polyfills = require('./polyfills');
 
@@ -88,8 +88,6 @@ var Sdk = function () {
     _classCallCheck(this, Sdk);
 
     this.apiBaseUrl = apiBaseUrl;
-
-    this.polyfillPromise = (0, _polyfills2.default)();
   }
 
   /**
@@ -112,19 +110,15 @@ var Sdk = function () {
     value: function getEvent(identifier, eventConfig, collections) {
       var _this = this;
 
-      try {
-        return this.polyfillPromise.then(function () {
-          var EventModel = require('../models/EventModel').default;
-          var event = new EventModel(_this, identifier, eventConfig);
+      return (0, _polyfills2.default)().then(function () {
+        var EventModel = require('../models/EventModel').default;
+        var event = new EventModel(_this, identifier, eventConfig);
 
-          _insertCollections(event, collections);
-          return Promise.all([event.fetch(), event.fetchCollections()]).then(function () {
-            return event;
-          });
+        _insertCollections(event, collections);
+        return Sdk.Promise.all([event.fetch(), event.fetchCollections()]).then(function () {
+          return event;
         });
-      } catch (e) {
-        return Promise.reject(e);
-      }
+      });
     }
 
     /**
@@ -142,21 +136,17 @@ var Sdk = function () {
     value: function getChannel(identifier, eventConfig, collections) {
       var _this2 = this;
 
-      try {
-        return this.polyfillPromise.then(function () {
-          var ChannelModel = require('../models/ChannelModel').default;
-          var channel = new ChannelModel(_this2, identifier, eventConfig);
+      return (0, _polyfills2.default)().then(function () {
+        var ChannelModel = require('../models/ChannelModel').default;
+        var channel = new ChannelModel(_this2, identifier, eventConfig);
 
-          return channel.fetch().then(function (channel) {
-            _insertCollections(channel.event, collections);
-            return channel.event.fetchCollections();
-          }).then(function () {
-            return channel;
-          });
+        return channel.fetch().then(function (channel) {
+          _insertCollections(channel.event, collections);
+          return channel.event.fetchCollections();
+        }).then(function () {
+          return channel;
         });
-      } catch (e) {
-        return Promise.reject(e);
-      }
+      });
     }
 
     /**
@@ -186,7 +176,18 @@ var Sdk = function () {
         path += '?' + queryString;
       }
 
-      return _FetchShim2.default.fetch(this.apiBaseUrl + path, parameters);
+      return _fetch2.default.fetch(this.apiBaseUrl + path, parameters);
+    }
+
+    /**
+     * The promise implementation to use inside the SDK, replace this field by your promise implementation.
+     * @type {Promise}
+     */
+
+  }], [{
+    key: 'Promise',
+    get: function get() {
+      return Promise;
     }
   }]);
 

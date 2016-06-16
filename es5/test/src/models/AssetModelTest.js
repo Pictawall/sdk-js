@@ -8,9 +8,9 @@ var _UserModel = require('../../../src/models/UserModel');
 
 var _UserModel2 = _interopRequireDefault(_UserModel);
 
-var _FetchShim = require('../../../src/core/FetchShim');
+var _fetch = require('../../../src/core/fetch');
 
-var _FetchShim2 = _interopRequireDefault(_FetchShim);
+var _fetch2 = _interopRequireDefault(_fetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -42,18 +42,18 @@ describe('AssetModel', function () {
   });
 
   it('can be marked as dead', function () {
-    spyOn(_FetchShim2.default, 'fetch').and.returnValue(Promise.resolve(new FakeFetch.FakeResponse('{}', 200)));
+    spyOn(_fetch2.default, 'fetch').and.returnValue(Promise.resolve(new FakeFetch.FakeResponse('{}', 200)));
 
     assetModel.markMediaAsDead();
 
-    expect(_FetchShim2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.VALID_IDENTIFIER_FEATURED + '/assets/' + assetData.id + '/check', { method: 'PATCH' });
+    expect(_fetch2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.VALID_IDENTIFIER_FEATURED + '/assets/' + assetData.id + '/check', { method: 'PATCH' });
   });
 
   it('can be reported', function () {
-    spyOn(_FetchShim2.default, 'fetch').and.returnValue(Promise.resolve(new FakeFetch.FakeResponse('{}', 200)));
+    spyOn(_fetch2.default, 'fetch').and.returnValue(Promise.resolve(new FakeFetch.FakeResponse('{}', 200)));
 
     assetModel.report();
 
-    expect(_FetchShim2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.VALID_IDENTIFIER_FEATURED + '/assets/' + assetData.id + '/report', { method: 'PATCH' });
+    expect(_fetch2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.VALID_IDENTIFIER_FEATURED + '/assets/' + assetData.id + '/report', { method: 'PATCH' });
   });
 });

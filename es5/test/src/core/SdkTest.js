@@ -11,7 +11,6 @@ var _ChannelModel2 = _interopRequireDefault(_ChannelModel);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var ClassMock = require('../../mock/ClassMock');
-var FetchShim = require('../../../src/core/FetchShim');
 var XhrMock = require('../../mock/XhrMock');
 
 describe('SDK', function () {

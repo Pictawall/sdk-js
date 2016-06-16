@@ -14,11 +14,11 @@ exports.default = function () {
     var polyfillPromises = [];
 
     // global.fetch
-    polyfillPromises.push(_FetchShim2.default.loadFetchPolyfill());
+    polyfillPromises.push(_fetch2.default.load());
 
     // Symbol
     if (typeof Symbol === 'undefined') {
-      polyfillPromises.push(new Promise(function (resolve) {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
         require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
           resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
         }, 'Symbol-polyfill');
@@ -26,7 +26,7 @@ exports.default = function () {
     }
 
     // Map
-    var mapPromise = new Promise(function (resolve) {
+    var mapPromise = new _Sdk2.default.Promise(function (resolve) {
       if (require('es6-map/is-implemented')()) {
         return resolve();
       }
@@ -41,7 +41,7 @@ exports.default = function () {
 
     // Map.toJSON
     polyfillPromises.push(mapPromise.then(function () {
-      return new Promise(function (resolve) {
+      return new _Sdk2.default.Promise(function (resolve) {
         if (Map.prototype.toJSON) {
           return resolve();
         }
@@ -54,7 +54,7 @@ exports.default = function () {
 
     // Array.includes
     if (!Array.prototype.includes) {
-      polyfillPromises.push(new Promise(function (resolve) {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
         require.ensure(['array-includes'], function (require) {
           require('array-includes').shim();
 
@@ -65,7 +65,7 @@ exports.default = function () {
 
     // Array.findIndex
     if (!Array.prototype.findIndex) {
-      polyfillPromises.push(new Promise(function (resolve) {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
         require.ensure(['es5-ext/array/#/find-index/implement'], function (require) {
           resolve(require('es5-ext/array/#/find-index/implement'));
         }, 'Array.prototype.findIndex-polyfill');
@@ -74,7 +74,7 @@ exports.default = function () {
 
     // Array.from
     if (!Array.from) {
-      polyfillPromises.push(new Promise(function (resolve) {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
         require.ensure(['es5-ext/array/from/implement'], function (require) {
           resolve(require('es5-ext/array/from/implement'));
         }, 'Array.from-polyfill');
@@ -83,7 +83,7 @@ exports.default = function () {
 
     // String.endsWith
     if (!String.prototype.endsWith) {
-      polyfillPromises.push(new Promise(function (resolve) {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
         require.ensure(['es5-ext/string/#/ends-with/implement'], function (require) {
           resolve(require('es5-ext/string/#/ends-with/implement'));
         }, 'String.endsWith-polyfill');
@@ -92,7 +92,7 @@ exports.default = function () {
 
     // Object.is
     if (!Object.is) {
-      polyfillPromises.push(new Promise(function (resolve) {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
         require.ensure(['object-is'], function (require) {
           Object.is = require('object-is');
 
@@ -103,7 +103,7 @@ exports.default = function () {
 
     // WeakMap
     if (typeof WeakMap !== 'function') {
-      polyfillPromises.push(new Promise(function (resolve) {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
         require.ensure(['es6-weak-map/implement'], function (require) {
           require('es6-weak-map/implement');
 
@@ -112,16 +112,20 @@ exports.default = function () {
       }));
     }
 
-    loadingPromise = Promise.all(polyfillPromises).then(function () {}); // resolve nothing
+    loadingPromise = _Sdk2.default.Promise.all(polyfillPromises).then(function () {}); // resolve nothing
     return loadingPromise;
   } catch (e) {
-    return Promise.reject(e);
+    return _Sdk2.default.Promise.reject(e);
   }
 };
 
-var _FetchShim = require('./FetchShim');
+var _fetch = require('./fetch');
 
-var _FetchShim2 = _interopRequireDefault(_FetchShim);
+var _fetch2 = _interopRequireDefault(_fetch);
+
+var _Sdk = require('./Sdk');
+
+var _Sdk2 = _interopRequireDefault(_Sdk);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -132,3 +136,8 @@ if (typeof require.ensure !== 'function') {
 }
 
 var loadingPromise = null;
+
+/**
+ * Loads the polyfills required to make the sdk work properly.
+ * @returns {!Promise}
+ */

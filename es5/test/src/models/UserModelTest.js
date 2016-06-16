@@ -4,9 +4,9 @@ var _UserModel = require('../../../src/models/UserModel');
 
 var _UserModel2 = _interopRequireDefault(_UserModel);
 
-var _FetchShim = require('../../../src/core/FetchShim');
+var _fetch = require('../../../src/core/fetch');
 
-var _FetchShim2 = _interopRequireDefault(_FetchShim);
+var _fetch2 = _interopRequireDefault(_fetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,10 +33,10 @@ describe('UserModel', function () {
   });
 
   it('can be marked as dead', function () {
-    spyOn(_FetchShim2.default, 'fetch').and.returnValue(Promise.resolve(new FakeFetch.FakeResponse('{}', 200)));
+    spyOn(_fetch2.default, 'fetch').and.returnValue(Promise.resolve(new FakeFetch.FakeResponse('{}', 200)));
 
     userModel.markAvatarAsDead();
 
-    expect(_FetchShim2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.VALID_IDENTIFIER_FEATURED + '/users/' + userData.id + '/check', { method: 'PATCH' });
+    expect(_fetch2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.VALID_IDENTIFIER_FEATURED + '/users/' + userData.id + '/check', { method: 'PATCH' });
   });
 });
