@@ -26,7 +26,7 @@ exports.default = {
 
     return loader.then(function () {
       if (!_this.fetch) {
-        _this.fetch = window.fetch();
+        _this.fetch = window.fetch.bind(window);
       }
 
       if (!_this.Response) {

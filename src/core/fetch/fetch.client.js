@@ -17,7 +17,7 @@ export default {
   load() {
     return loader.then(() => {
       if (!this.fetch) {
-        this.fetch = window.fetch();
+        this.fetch = window.fetch.bind(window);
       }
 
       if (!this.Response) {
