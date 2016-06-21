@@ -6,8 +6,8 @@ This repository is an SDK you can use to access the [pictawall](https://pictawal
 
 The SDK isn't available in bower's nor npm's registry yet. You can however install it using their git integration.
 
-- NPM: `npm install --save git+ssh://git@github.com:pictawall/sdk-js.git#1.0.x`
-- Bower: `bower install git+ssh://git@github.com:pictawall/sdk-js.git#1.0.x`
+- NPM: `npm install --save pictawall.sdk`
+- Bower: `bower install --save pictawall.sdk`
 
 ## Usage
 

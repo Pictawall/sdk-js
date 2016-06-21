@@ -36,9 +36,10 @@ function _insertCollections(event, collections) {
 class Sdk {
 
   /**
-   * @param {String} [apiBaseUrl = 'https://api.pictawall.com/v2.5'] The pictawall API endpoint.
+   * Pictawall endpoint (direct access via https://api.pictawall.com/v2.5)
+   * @param {String} [apiBaseUrl = 'https://api.pictawall.net/v2.5'] The pictawall cached API endpoint.
    */
-  constructor(apiBaseUrl = 'https://api.pictawall.com/v2.5') {
+  constructor(apiBaseUrl = 'https://api.pictawall.net/v2.5') {
     this.apiBaseUrl = apiBaseUrl;
   }
 
