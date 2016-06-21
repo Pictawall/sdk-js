@@ -79,11 +79,12 @@ function _insertCollections(event, collections) {
 var Sdk = function () {
 
   /**
-   * @param {String} [apiBaseUrl = 'https://api.pictawall.com/v2.5'] The pictawall API endpoint.
+   * Pictawall endpoint (direct access via https://api.pictawall.com/v2.5)
+   * @param {String} [apiBaseUrl = 'https://api.pictawall.net/v2.5'] The pictawall cached API endpoint.
    */
 
   function Sdk() {
-    var apiBaseUrl = arguments.length <= 0 || arguments[0] === void 0 ? 'https://api.pictawall.com/v2.5' : arguments[0];
+    var apiBaseUrl = arguments.length <= 0 || arguments[0] === void 0 ? 'https://api.pictawall.net/v2.5' : arguments[0];
 
     _classCallCheck(this, Sdk);
 
