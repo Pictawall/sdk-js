@@ -3,8 +3,6 @@
 import BaseCollection from '../collections/BaseCollection';
 import MessageModel from '../models/MessageModel';
 
-// TODO updateAll
-
 /**
  * Collection of event messages.
  *

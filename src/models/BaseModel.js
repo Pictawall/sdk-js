@@ -106,6 +106,20 @@ class BaseModel {
   get type() {
     throw new SdkError(this, 'get type() not implemented');
   }
+
+  /**
+   * Returns the identifier of the model.
+   * @returns {*}
+   */
+  get id() {
+    const id = this.getProperty('id');
+
+    if (!id) {
+      throw new SdkError(this, 'This model does not have an ID.');
+    }
+
+    return id;
+  }
 }
 
 ClassUtil.merge(BaseModel, FetchMixin);

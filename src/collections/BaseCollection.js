@@ -26,7 +26,22 @@ class BaseCollection {
     }
 
     this.sdk = sdk;
+
+    /**
+     * @type {Array.<BaseModel>}
+     * @private
+     */
     this._models = [];
+  }
+
+  fetchParser(data) {
+    if (data.since) {
+      this._lastUpdate = data.since;
+    } else {
+      this._lastUpdate = Date.now() / 1000; // TODO check if it returns as seconds or ms
+    }
+
+    return data;
   }
 
   /**
@@ -67,7 +82,7 @@ class BaseCollection {
         }
 
         modelsData.forEach(data => {
-          this.add(this.buildModel(data), true, false);
+          this.add(this.buildModel(data), true);
         });
 
         this._loaded = true;
@@ -77,14 +92,76 @@ class BaseCollection {
   }
 
   /**
+   * Loads the assets that have been added to the server database after the collection was loaded and removes those deleted.
+   * Note: This will make the index jump as it will add data at the front of the collection.
+   *
+   * @return {!Promise.<>} The model has been updated.
+   */
+  update() {
+    const initialCollectionSize = this.length;
+
+    if (!this.loaded) {
+      return this.fetch().then(ignored => this.length - initialCollectionSize);
+    }
+
+    const fetchOptions = this.fetchOptions;
+    fetchOptions.since = this._lastUpdate;
+
+    const addedItemsPromise = this.fetchRaw(fetchOptions);
+    const removedItemsPromise = this.fetchRaw(fetchOptions, 'deleted');
+
+    Promise
+      .all([addedItemsPromise, removedItemsPromise])
+      .then(([addedItems, removedItems]) => {
+        removedItems.forEach(id => this.remove(id));
+        addedItems.forEach(item => this.add(item, true, true));
+      });
+  }
+
+  /**
    * Adds a model to the collection.
    *
    * @param model
    * @param {boolean} [replace = true] If a model with the same ID already exists, overwrite it if true. Ignore the new model if false.
-   * @param {boolean} [persist = true] Currently unused - Persist the model on the server.
+   * @param {boolean} [prepend = false] Insert the model at the beginning of the collection. // TODO auto sort instead like with AssetCollection.sortOrder ?
+   *
+   * @return {!BaseModel} The model that was actually added (Could be the already existing model if replace is false and the id already exists).
    */
-  add(model, replace = true, persist = true) {
-    this._models.push(model);
+  add(newModel, replace = true, prepend = false) {
+
+    const index = this._loaded ? this._models.findIndex(model => model.id === newModel.id) : -1;
+
+    if (index === -1) {
+      if (prepend) {
+        this._models.unshift(newModel);
+      } else {
+        this._models.push(newModel);
+      }
+
+      return newModel;
+    }
+
+    if (replace) {
+      this._models[index] = newModel;
+      return newModel;
+    } else {
+      return this._models[index];
+    }
+  }
+
+  /**
+   * Removes an item based on its identifier.
+   * @param modelId - The model identifier.
+   * @return {BaseModel} The model that was removed, or null if none was.
+   */
+  remove(modelId) {
+    const index = this._models.findIndex(element => element.id === modelId);
+
+    if (index === -1) {
+      return null;
+    }
+
+    return this._models.splice(index, 1);
   }
 
   toJSON() {
@@ -134,20 +211,10 @@ class BaseCollection {
     return this._models[pos];
   }
 
-  [Symbol.iterator]() {
-    const _this = this;
-
-    return {
-      next: function () {
-        if (this._index >= _this.length) {
-          return { done: true };
-        }
-
-        return { done: false, value: _this.at(this._index++) };
-      },
-
-      _index: 0
-    };
+  *[Symbol.iterator]() {
+    for (let i = 0; i < this.length; i++) {
+      yield this.at(i);
+    }
   }
 }
 

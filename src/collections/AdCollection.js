@@ -3,8 +3,6 @@
 import BaseCollection from '../collections/BaseCollection';
 import AdModel from '../models/AdModel';
 
-// TODO updateAll
-
 /**
  * Collection of event ads.
  *

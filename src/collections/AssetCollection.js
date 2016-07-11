@@ -5,7 +5,21 @@ import AssetModel from '../models/AssetModel';
 import Sdk from '../core/Sdk';
 import { SdkError } from '../core/Errors';
 
-// TODO: updateAll
+/**
+ * OrderBy value => Asset property mapping.
+ */
+const SORT_PROPERTIES = {
+  display: 'displayCount',
+  date: 'postTime',
+  likes: 'likeCount'
+}; // ['display', 'date', 'likes'];
+
+/**
+ * @typedef SortOrder
+ * @type Object
+ * @property {!string} property - The property of the collection whose values are used to sort.
+ * @property {!number} direction - -1 for DESC, 1 for ASC
+ */
 
 /**
  * Collection of event assets.
@@ -21,18 +35,25 @@ class AssetCollection extends PagedCollection {
    * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
    * @param {string} [fetchOptions.orderBy = 'date DESC'] Sort order returned by the API. See API Specifications for possible orders.
    * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
-   * @param {number} [fetchOptions.since] Filters out assets created before the timestamp this number represents.
    */
-  constructor(event, { limit = 100, orderBy = 'date DESC', since, kind } = {}) {
+  constructor(event, { limit = 100, orderBy = 'date DESC', kind } = {}) {
     super(event.sdk, limit, orderBy);
 
     this._event = event;
     this.apiPath = `/events/${event.getProperty('identifier')}/assets/{assetId}`;
     this.fetchParser = (response => response.data);
 
-    this._sinceFilter = since;
     this._kindFilter = kind;
     this._orderBy = orderBy;
+    // this._sinceFilter = null;
+    
+    if (/^[a-z]+[_ ](asc|desc)$/i.test(this._orderBy)) {
+      throw new SdkError(this, `orderBy value "${this._orderBy}" does not match the parameter requirements (/^[a-z]+[_ ](asc|desc)$/i)`);
+    }
+
+    if (!this.sortOrder.property) {
+      throw new SdkError(this, `orderBy property should be one of "${Object.keys(SORT_PROPERTIES).join('", "')}".`);
+    }
   }
 
   /**
@@ -49,6 +70,58 @@ class AssetCollection extends PagedCollection {
     }
 
     return assetId !== -1;
+  }
+
+  // /**
+  //  * Load the assets that have been added to the server database after the collection was loaded.
+  //  * Note: This will make the index jump as it will add data at the front of the collection.
+  //  *
+  //  * @return {!Promise.<number>} The amount of models added to the collection.
+  //  */
+  // update() {
+  //   const initialCollectionSize = this.length;
+  //
+  //   if (!this._sinceValue) {
+  //     return this.fetch().then(ignored => this.length - initialCollectionSize);
+  //   }
+  //
+  //   // TODO bit hacky, could be better
+  //   this._sinceFilter = this._sinceValue;
+  //   const promise = this.fetch();
+  //   this._sinceFilter = null;
+  //
+  //   return promise.then(ignored => {
+  //     const sortOrder = this.sortOrder;
+  //
+  //     this._models.sort(function (a, b) {
+  //       const propertyA = a.getProperty(sortOrder.property);
+  //       const propertyB = b.getProperty(sortOrder.property);
+  //
+  //       if (propertyA === propertyB) {
+  //         return 0;
+  //       }
+  //
+  //       if (propertyA > propertyB) {
+  //         return sortOrder.direction;
+  //       }
+  //
+  //       return -sortOrder.direction;
+  //     });
+  //
+  //     return this.length - initialCollectionSize;
+  //   });
+  // }
+
+  /**
+   * Returns the sort order.
+   *
+   * @returns {!SortOrder}
+   */
+  get sortOrder() {
+    const [property, direction] = this._orderBy.toLowerCase().split(/[_ ]/);
+
+    //noinspection JSValidateTypes
+    return { property: SORT_PROPERTIES[property], direction: direction === 'asc' ? 1 : -1 };
   }
 
   /**
@@ -89,16 +162,14 @@ class AssetCollection extends PagedCollection {
   }
 
   /**
-   * Options sent with fetch requests as query parameters.
-   *
-   * @readonly
+   * @inheritDoc
    */
   get fetchOptions() {
     const options = super.fetchOptions;
 
-    if (this._sinceFilter) {
-      options.since = this._sinceFilter;
-    }
+    // if (this._sinceFilter) {
+    //   options.since = this._sinceFilter;
+    // }
 
     if (this._kindFilter) {
       options.kind = this._kindFilter;

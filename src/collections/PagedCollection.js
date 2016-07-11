@@ -45,6 +45,9 @@ class PagedCollection extends BaseCollection {
     return options;
   }
 
+  /**
+   * @inheritDoc
+   */
   set fetchParser(parser) {
     super.fetchParser = parser;
   }
