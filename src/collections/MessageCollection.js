@@ -19,10 +19,8 @@ class MessageCollection extends BaseCollection {
   constructor(event) {
     super(event.sdk);
 
-    this.apiPath = `/events/${event.getProperty('identifier')}/ads/{adId}`;
-    this.fetchParser = function (data) {
-      return data.data;
-    };
+    this.apiPath = `/events/${event.getProperty('identifier')}/messages/{messageId}`;
+    this.fetchParser = (response => response.data);
   }
 
   /**
