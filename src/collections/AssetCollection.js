@@ -70,46 +70,6 @@ class AssetCollection extends PictawallPagedCollection {
     return assetId !== -1;
   }
 
-  // /**
-  //  * Load the assets that have been added to the server database after the collection was loaded.
-  //  * Note: This will make the index jump as it will add data at the front of the collection.
-  //  *
-  //  * @return {!Promise.<number>} The amount of models added to the collection.
-  //  */
-  // update() {
-  //   const initialCollectionSize = this.length;
-  //
-  //   if (!this._sinceValue) {
-  //     return this.fetch().then(ignored => this.length - initialCollectionSize);
-  //   }
-  //
-  //   // TODO bit hacky, could be better
-  //   this._sinceFilter = this._sinceValue;
-  //   const promise = this.fetch();
-  //   this._sinceFilter = null;
-  //
-  //   return promise.then(ignored => {
-  //     const sortOrder = this.sortOrder;
-  //
-  //     this._models.sort(function (a, b) {
-  //       const propertyA = a.getProperty(sortOrder.property);
-  //       const propertyB = b.getProperty(sortOrder.property);
-  //
-  //       if (propertyA === propertyB) {
-  //         return 0;
-  //       }
-  //
-  //       if (propertyA > propertyB) {
-  //         return sortOrder.direction;
-  //       }
-  //
-  //       return -sortOrder.direction;
-  //     });
-  //
-  //     return this.length - initialCollectionSize;
-  //   });
-  // }
-
   /**
    * Returns the sort order.
    *

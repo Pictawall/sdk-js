@@ -55,9 +55,6 @@ var ChannelModel = function (_PictawallModel) {
 
     _this._eventConfig = eventConfig;
     _this.apiPath = '/channels/' + channelId;
-    _this.parseResponse = function (serverResponse) {
-      return serverResponse.data;
-    };
     return _this;
   }
 

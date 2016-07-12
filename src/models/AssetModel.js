@@ -29,7 +29,6 @@ class AssetModel extends PictawallModel {
      * @private
      */
     this._event = event;
-    this.parseResponse = data => data.data;
   }
 
   /**

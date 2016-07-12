@@ -28,9 +28,6 @@ class ChannelModel extends PictawallModel {
 
     this._eventConfig = eventConfig;
     this.apiPath = `/channels/${channelId}`;
-    this.parseResponse = function (serverResponse) {
-      return serverResponse.data;
-    };
   }
 
   /**

@@ -17,7 +17,6 @@ class UserModel extends PictawallModel {
     super(event.sdk);
 
     this._event = event;
-    this.parseResponse = data => data.data;
   }
 
   /**

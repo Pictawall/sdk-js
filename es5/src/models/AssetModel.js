@@ -60,9 +60,6 @@ var AssetModel = function (_PictawallModel) {
      * @private
      */
     _this._event = event;
-    _this.parseResponse = function (data) {
-      return data.data;
-    };
     return _this;
   }
 

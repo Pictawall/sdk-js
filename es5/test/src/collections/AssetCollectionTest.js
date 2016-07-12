@@ -61,7 +61,6 @@ describe('AssetCollection', function () {
         });
 
         addedModels.forEach(function (model) {
-          console.log('Yay its here');
           expect(collectionWithoutFeatured.findOne({ id: model.id })).not.toBeNull();
         });
 

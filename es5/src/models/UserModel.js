@@ -40,9 +40,6 @@ var UserModel = function (_PictawallModel) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(UserModel).call(this, event.sdk));
 
     _this._event = event;
-    _this.parseResponse = function (data) {
-      return data.data;
-    };
     return _this;
   }
 
