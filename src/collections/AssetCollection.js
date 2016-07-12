@@ -1,9 +1,9 @@
 'use strict';
 
-import PagedCollection from './PagedCollection';
 import AssetModel from '../models/AssetModel';
 import Sdk from '../core/Sdk';
 import { SdkError } from '../core/Errors';
+import PictawallPagedCollection from './abstract/PictawallPagedCollection';
 
 /**
  * OrderBy value => Asset property mapping.
@@ -25,9 +25,9 @@ const SORT_PROPERTIES = {
  * Collection of event assets.
  *
  * @class AssetCollection
- * @extends PagedCollection
+ * @extends PictawallPagedCollection
  */
-class AssetCollection extends PagedCollection {
+class AssetCollection extends PictawallPagedCollection {
 
   /**
    * @param {!EventModel} event The owning event.
@@ -40,14 +40,12 @@ class AssetCollection extends PagedCollection {
     super(event.sdk, limit, orderBy);
 
     this._event = event;
-    this.apiPath = `/events/${event.getProperty('identifier')}/assets/{assetId}`;
-    this.fetchParser = (response => response.data);
+    this.apiPath = `/events/${event.getProperty('identifier')}/assets/{modelId}`;
 
     this._kindFilter = kind;
     this._orderBy = orderBy;
-    // this._sinceFilter = null;
-    
-    if (/^[a-z]+[_ ](asc|desc)$/i.test(this._orderBy)) {
+
+    if (!/^[a-z]+[_ ](asc|desc)$/i.test(this._orderBy)) {
       throw new SdkError(this, `orderBy value "${this._orderBy}" does not match the parameter requirements (/^[a-z]+[_ ](asc|desc)$/i)`);
     }
 
@@ -149,27 +147,13 @@ class AssetCollection extends PagedCollection {
     }
   }
 
-  /**
-   * Retrieves the asset matching the passed ID.
-   *
-   * @param {number} assetId The ID of the asset to fetch.
-   * @returns {!Promise.<AssetModel>}
-   */
-  fetchById(assetId) {
-    return this.fetchRaw(null, { assetId }).then(asset => {
-      return this.buildModel(asset);
-    });
-  }
+
 
   /**
    * @inheritDoc
    */
   get fetchOptions() {
     const options = super.fetchOptions;
-
-    // if (this._sinceFilter) {
-    //   options.since = this._sinceFilter;
-    // }
 
     if (this._kindFilter) {
       options.kind = this._kindFilter;

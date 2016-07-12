@@ -6,15 +6,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseModel2 = require('./BaseModel');
-
-var _BaseModel3 = _interopRequireDefault(_BaseModel2);
-
 var _Sdk = require('../core/Sdk');
 
 var _Sdk2 = _interopRequireDefault(_Sdk);
 
 var _Errors = require('../core/Errors');
+
+var _PictawallModel2 = require('./abstract/PictawallModel');
+
+var _PictawallModel3 = _interopRequireDefault(_PictawallModel2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -33,11 +33,11 @@ var collectionLists = new WeakMap();
  * Model for pictawall events.
  *
  * @class EventModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
 
-var EventModel = function (_BaseModel) {
-  _inherits(EventModel, _BaseModel);
+var EventModel = function (_PictawallModel) {
+  _inherits(EventModel, _PictawallModel);
 
   /**
    * <p>Creates a new Event model.</p>
@@ -70,7 +70,7 @@ var EventModel = function (_BaseModel) {
 
     _this.setProperty('identifier', identifier);
     _this.apiPath = '/events/' + identifier;
-    _this.fetchParser = function (serverResponse) {
+    _this.parseResponse = function (serverResponse) {
       return serverResponse.data;
     };
 
@@ -163,6 +163,6 @@ var EventModel = function (_BaseModel) {
   }]);
 
   return EventModel;
-}(_BaseModel3.default);
+}(_PictawallModel3.default);
 
 exports.default = EventModel;

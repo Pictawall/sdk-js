@@ -14,12 +14,12 @@ describe('AssetCollection', function () {
   /**
    * @type AssetCollection
    */
-  var collectionWithoutFeatured = ClassMock.build(_AssetCollection2.default, XhrMock.VALID_IDENTIFIER);
+  var collectionWithoutFeatured = ClassMock.build(_AssetCollection2.default, XhrMock.EVENT_ID);
 
   /**
    * @type AssetCollection
    */
-  var collectionWithFeatured = ClassMock.build(_AssetCollection2.default, XhrMock.VALID_IDENTIFIER_FEATURED);
+  var collectionWithFeatured = ClassMock.build(_AssetCollection2.default, XhrMock.EVENT_ID_FEATURED);
 
   beforeAll(function (done) {
     Promise.all([collectionWithoutFeatured.fetch(), collectionWithFeatured.fetch()]).then(function () {
@@ -40,6 +40,33 @@ describe('AssetCollection', function () {
 
     favorites.forEach(function (asset) {
       expect(asset.getProperty('favorited')).toBe(true);
+    });
+  });
+
+  describe('#update', function () {
+    it('synchronises the collection with the remote server', function (done) {
+
+      expect(true).toBe(true);
+
+      var initialLength = collectionWithoutFeatured.length;
+      var removedModels = XhrMock.ASSET_COLLECTION_DELETED.data;
+      var addedModels = XhrMock.ASSET_COLLECTION_ADDED.data;
+
+      collectionWithoutFeatured.update().then(function (result) {
+        expect(collectionWithoutFeatured.length).toBe(initialLength - removedModels.length + addedModels.length);
+        expect(result).toBe(addedModels.length - removedModels.length);
+
+        removedModels.forEach(function (id) {
+          expect(collectionWithoutFeatured.findOne({ id: id })).toBeNull();
+        });
+
+        addedModels.forEach(function (model) {
+          console.log('Yay its here');
+          expect(collectionWithoutFeatured.findOne({ id: model.id })).not.toBeNull();
+        });
+
+        done();
+      });
     });
   });
 
@@ -72,7 +99,7 @@ describe('AssetCollection', function () {
       expect(fetchPromise).toEqual(jasmine.any(Promise));
 
       fetchPromise.then(function (asset) {
-        expect(asset.getProperty('id')).toBe(XhrMock.VALID_EVENT__FEATURED.data.featuredAssetId);
+        expect(asset.getProperty('id')).toBe(XhrMock.EVENT_FEATURED.data.featuredAssetId);
         expect(asset.getProperty('featured')).toBe(true);
         done();
       }).catch(function (e) {

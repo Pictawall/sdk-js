@@ -30,7 +30,7 @@ var FindMixin = {
    */
 
   findOne: function findOne(query) {
-    return this.find(query).limit(1).first();
+    return this.find(query).limit(1).first() || null;
   },
 
 

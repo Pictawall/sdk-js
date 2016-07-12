@@ -1,15 +1,13 @@
-'use strict';
-
-import BaseCollection from '../collections/BaseCollection';
 import AdModel from '../models/AdModel';
+import PictawallCollection from './abstract/PictawallCollection';
 
 /**
  * Collection of event ads.
  *
  * @class AdCollection
- * @extends BaseCollection
+ * @extends PictawallCollection
  */
-class AdCollection extends BaseCollection {
+class AdCollection extends PictawallCollection {
 
   /**
    * @param {!EventModel} event The owning event.
@@ -17,8 +15,7 @@ class AdCollection extends BaseCollection {
   constructor(event) {
     super(event.sdk);
 
-    this.apiPath = `/events/${event.getProperty('identifier')}/ads/{adId}`;
-    this.fetchParser = (response => response.data);
+    this.apiPath = `/events/${event.getProperty('identifier')}/ads/{modelId}`;
   }
 
   /**

@@ -1,8 +1,8 @@
 'use strict';
 
-import FetchMixin from '../mixins/FetchMixin';
-import ClassUtil from '../util/ClassUtil';
-import { SdkError } from '../core/Errors';
+import FetchMixin from '../../mixins/FetchMixin';
+import ClassUtil from '../../util/ClassUtil';
+import { SdkError } from '../../core/Errors';
 
 /**
  * Maps containing the properties of the models.
@@ -112,13 +112,7 @@ class BaseModel {
    * @returns {*}
    */
   get id() {
-    const id = this.getProperty('id');
-
-    if (!id) {
-      throw new SdkError(this, 'This model does not have an ID.');
-    }
-
-    return id;
+    throw new SdkError(this, 'get id() not implemented');
   }
 }
 

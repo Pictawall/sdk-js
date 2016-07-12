@@ -1,9 +1,8 @@
 'use strict';
 
-import BaseModel from './BaseModel';
 import Sdk from '../core/Sdk';
-
 import { SdkError } from '../core/Errors';
+import PictawallModel from './abstract/PictawallModel';
 
 /**
  * @type {WeakMap.<EventModel, Map.<String, BaseCollection>>}
@@ -14,9 +13,9 @@ const collectionLists = new WeakMap();
  * Model for pictawall events.
  *
  * @class EventModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
-class EventModel extends BaseModel {
+class EventModel extends PictawallModel {
 
   /**
    * <p>Creates a new Event model.</p>
@@ -39,7 +38,7 @@ class EventModel extends BaseModel {
 
     this.setProperty('identifier', identifier);
     this.apiPath = `/events/${identifier}`;
-    this.fetchParser = function (serverResponse) {
+    this.parseResponse = function (serverResponse) {
       return serverResponse.data;
     };
 

@@ -8,9 +8,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === void 0) { var parent = Object.getPrototypeOf(object); if (parent === null) { return void 0; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === void 0) { return void 0; } return getter.call(receiver); } };
 
-var _BaseModel2 = require('./BaseModel');
+var _PictawallModel2 = require('./abstract/PictawallModel');
 
-var _BaseModel3 = _interopRequireDefault(_BaseModel2);
+var _PictawallModel3 = _interopRequireDefault(_PictawallModel2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24,11 +24,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * User model.
  *
  * @class UserModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
 
-var UserModel = function (_BaseModel) {
-  _inherits(UserModel, _BaseModel);
+var UserModel = function (_PictawallModel) {
+  _inherits(UserModel, _PictawallModel);
 
   /**
    * @param {!EventModel} event The event this user is creating content for.
@@ -40,7 +40,7 @@ var UserModel = function (_BaseModel) {
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(UserModel).call(this, event.sdk));
 
     _this._event = event;
-    _this.fetchParser = function (data) {
+    _this.parseResponse = function (data) {
       return data.data;
     };
     return _this;
@@ -101,6 +101,6 @@ var UserModel = function (_BaseModel) {
   }]);
 
   return UserModel;
-}(_BaseModel3.default);
+}(_PictawallModel3.default);
 
 exports.default = UserModel;

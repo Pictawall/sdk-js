@@ -1,10 +1,8 @@
-'use strict';
-
-import ClassUtil from '../util/ClassUtil';
-import { SdkError } from '../core/Errors';
-import FetchMixin from '../mixins/FetchMixin';
-import FindMixin from '../mixins/FindMixin';
-import Sdk from '../core/Sdk';
+import ClassUtil from '../../util/ClassUtil';
+import { SdkError } from '../../core/Errors';
+import FetchMixin, { Symbols as FetchSymbols } from '../../mixins/FetchMixin';
+import FindMixin from '../../mixins/FindMixin';
+import Sdk from '../../core/Sdk';
 
 /**
  * @class BaseCollection
@@ -34,14 +32,24 @@ class BaseCollection {
     this._models = [];
   }
 
-  fetchParser(data) {
-    if (data.since) {
-      this._lastUpdate = data.since;
+  /**
+   * Parses the data retrieved by {@link FetchMixin#fetchRaw}.
+   *
+   * @param {!*} serverResponse The data fetched from the server, as an object.
+   * @return {!*} The parsed data, to use to populate the model / collection.
+   */
+  [FetchSymbols.parseResponse](serverResponse) {
+    if (serverResponse.since) {
+      /**
+       * Unix timestamp of the last collection synchronisation.
+       * @private
+       */
+      this._lastUpdate = serverResponse.since;
     } else {
-      this._lastUpdate = Date.now() / 1000; // TODO check if it returns as seconds or ms
+      this._lastUpdate = Date.now() / 1000; // requires a unix timestamp
     }
 
-    return data;
+    return serverResponse;
   }
 
   /**
@@ -104,17 +112,21 @@ class BaseCollection {
       return this.fetch().then(ignored => this.length - initialCollectionSize);
     }
 
+    // TODO what happens if it's sorted ?
+
     const fetchOptions = this.fetchOptions;
     fetchOptions.since = this._lastUpdate;
 
     const addedItemsPromise = this.fetchRaw(fetchOptions);
-    const removedItemsPromise = this.fetchRaw(fetchOptions, 'deleted');
+    const removedItemsPromise = this.fetchRaw(fetchOptions, { modelId: 'deleted' });
 
-    Promise
+    return Promise
       .all([addedItemsPromise, removedItemsPromise])
       .then(([addedItems, removedItems]) => {
         removedItems.forEach(id => this.remove(id));
-        addedItems.forEach(item => this.add(item, true, true));
+        addedItems.forEach(item => this.add(item, false, true));
+
+        return addedItems.length - removedItems.length;
       });
   }
 
@@ -150,6 +162,16 @@ class BaseCollection {
   }
 
   /**
+   * Retrieves the model matching the passed ID.
+   *
+   * @param {!number} modelId - The ID of the model to fetch.
+   * @returns {!Promise.<BaseModel>}
+   */
+  fetchById(modelId) {
+    return this.fetchRaw(null, { modelId }).then(modelData => this.add(this.buildModel(modelData)));
+  }
+
+  /**
    * Removes an item based on its identifier.
    * @param modelId - The model identifier.
    * @return {BaseModel} The model that was removed, or null if none was.
@@ -161,7 +183,7 @@ class BaseCollection {
       return null;
     }
 
-    return this._models.splice(index, 1);
+    return this._models.splice(index, 1)[0];
   }
 
   toJSON() {
@@ -211,10 +233,26 @@ class BaseCollection {
     return this._models[pos];
   }
 
-  *[Symbol.iterator]() {
-    for (let i = 0; i < this.length; i++) {
-      yield this.at(i);
-    }
+  // *[Symbol.iterator]() {
+  //   for (let i = 0; i < this.length; i++) {
+  //     yield this.at(i);
+  //   }
+  // }
+
+  [Symbol.iterator]() {
+    const _this = this;
+
+    return {
+      next: function () {
+        if (this._index >= _this.length) {
+          return { done: true };
+        }
+
+        return { done: false, value: _this.at(this._index++) };
+      },
+
+      _index: 0
+    };
   }
 }
 

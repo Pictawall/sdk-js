@@ -1,5 +1,7 @@
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; }; // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+
 var _StringUtil = require('../../src/util/StringUtil');
 
 var _StringUtil2 = _interopRequireDefault(_StringUtil);
@@ -10,16 +12,20 @@ var _fetch2 = _interopRequireDefault(_fetch);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
 var sdk = require('./ClassMock').sdk;
 var FakeFetch = require('./Xhr/FakeFetch');
 var oldFetch = _fetch2.default.fetch;
 
-function mockRequest(path, pathParams, response) {
-  var stubbedPath = new RegExp('^' + sdk.apiBaseUrl + _StringUtil2.default.format.apply(_StringUtil2.default, [path, false].concat(_toConsumableArray(pathParams))) + '([\\?#].*)?$');
+function mockRequest(path, response) {
+  var queryParameters = void 0;
+  if ((typeof path === 'undefined' ? 'undefined' : _typeof(path)) === 'object') {
+    queryParameters = path.query;
+    path = path.path;
+  }
 
-  FakeFetch.mockRoute(stubbedPath, response);
+  response.body = response.body ? JSON.stringify(response.body) : '';
+
+  FakeFetch.mockRoute({ path: sdk.apiBaseUrl + path, queryParameters: queryParameters }, response);
 }
 
 module.exports = {
@@ -28,52 +34,67 @@ module.exports = {
 
     _fetch2.default.fetch = FakeFetch.fetch;
 
-    var routes = ['/events/{0}', '/events/{0}/assets', '/events/{0}/users', '/events/{0}/ads', '/events/{0}/messages'];
-    var defaultResponses = [this.VALID_EVENT, this.VALID_EVENT_ASSETS, this.VALID_EVENT_USERS, this.VALID_EVENT_ADS, this.VALID_EVENT_MESSAGES];
+    var responses200 = [this.EVENT, this.ASSET_COLLECTION, this.USER_COLLECTION, this.AD_COLLECTION, this.MESSAGE_COLLECTION];
+    var responses200Featured = [this.EVENT_FEATURED];
+    var queryParameters = [void 0, {
+      page: '1',
+      order_by: 'date DESC'
+    }, {
+      page: '1'
+    }];
 
-    function registerValidRoutes(identifier) {
-      var except = arguments.length <= 1 || arguments[1] === void 0 ? [] : arguments[1];
+    ['/events/{0}', '/events/{0}/assets', '/events/{0}/users', '/events/{0}/ads', '/events/{0}/messages'].forEach(function (path, i) {
+      var path200 = _StringUtil2.default.format(path, false, _this.EVENT_ID);
+      var path200Featured = _StringUtil2.default.format(path, false, _this.EVENT_ID_FEATURED);
+      var path404 = _StringUtil2.default.format(path, false, _this.EVENT_ID_INVALID);
 
-      routes.forEach(function (route, index) {
-        if (except.includes(route)) {
-          return;
-        }
-
-        mockRequest(route, [identifier], {
-          body: JSON.stringify(defaultResponses[index])
-        });
+      mockRequest({
+        path: path200,
+        query: queryParameters[i]
+      }, {
+        body: responses200[i]
       });
-    }
 
-    // VALID ROUTES
-    registerValidRoutes(this.VALID_IDENTIFIER);
-    registerValidRoutes(this.VALID_IDENTIFIER_FEATURED, [routes[0]]);
+      mockRequest({
+        path: path200Featured,
+        query: queryParameters[i]
+      }, {
+        body: responses200Featured[i] || responses200[i]
+      });
 
-    mockRequest(routes[0], [this.VALID_IDENTIFIER_FEATURED], {
-      body: JSON.stringify(this.VALID_EVENT__FEATURED)
+      mockRequest(path404, { status: 404 });
     });
 
-    mockRequest('/events/{0}/users/{1}', [this.VALID_IDENTIFIER_FEATURED, this.VALID_EVENT_USER.data.id], {
-      body: JSON.stringify(this.VALID_EVENT_USER)
+    // Added assets collection
+    mockRequest({
+      path: '/events/' + this.EVENT_ID + '/assets',
+      query: {
+        page: '2',
+        order_by: 'date DESC',
+        since: '1456856265'
+      }
+    }, {
+      body: this.ASSET_COLLECTION_ADDED
     });
+
+    // Deleted assets collection
+    mockRequest({
+      path: '/events/' + this.EVENT_ID + '/assets/deleted',
+      query: {
+        page: '2',
+        order_by: 'date DESC',
+        since: '1456856265'
+      }
+    }, { body: this.ASSET_COLLECTION_DELETED });
+
+    // Single user
+    mockRequest('/events/' + this.EVENT_ID_FEATURED + '/users/' + this.USER.data.id, { body: this.USER });
 
     // featured asset
-    mockRequest('/events/{0}/assets/{1}', [this.VALID_IDENTIFIER_FEATURED, this.VALID_EVENT__FEATURED.data.featuredAssetId], {
-      body: JSON.stringify(this.VALID_EVENT_ASSET_FEATURED)
-    });
+    mockRequest('/events/' + this.EVENT_ID_FEATURED + '/assets/' + this.EVENT_FEATURED.data.featuredAssetId, { body: this.ASSET_FEATURED });
 
-    mockRequest('/channels/{0}', [this.CHANNEL_ID], {
-      body: JSON.stringify(this.CHANNEL)
-    });
-
-    //1255548
-
-    // INVALID ROUTES
-    routes.forEach(function (route) {
-      mockRequest(route, [_this.INVALID_IDENTIFIER], {
-        status: 404
-      });
-    });
+    // Channel
+    mockRequest('/channels/' + this.CHANNEL_ID, { body: this.CHANNEL });
   },
   destroy: function destroy() {
     _fetch2.default.fetch = oldFetch;
@@ -81,17 +102,24 @@ module.exports = {
 
 
   CHANNEL_ID: 'f81d4fae-7dec-11d0-a765-00a0c91e6bf6',
-  VALID_IDENTIFIER: 'VALID',
-  VALID_IDENTIFIER_FEATURED: 'VALID_FEATURED',
-  INVALID_IDENTIFIER: 'INVALID',
+  EVENT_ID: 'VALID',
+  EVENT_ID_FEATURED: 'VALID_FEATURED',
+  EVENT_ID_INVALID: 'INVALID',
 
-  CHANNEL: require('./Xhr/channel.json'),
-  VALID_EVENT: require('./Xhr/event.json'),
-  VALID_EVENT__FEATURED: require('./Xhr/event-with-featured.json'),
-  VALID_EVENT_ASSETS: require('./Xhr/event_assets.json'),
-  VALID_EVENT_ASSET_FEATURED: require('./Xhr/event_asset_featured.json'),
-  VALID_EVENT_USER: require('./Xhr/event_user.json'),
-  VALID_EVENT_USERS: require('./Xhr/event_users.json'),
-  VALID_EVENT_ADS: require('./Xhr/event_ads.json'),
-  VALID_EVENT_MESSAGES: require('./Xhr/event_messages.json')
+  CHANNEL: require('./Xhr/channels/channel.json'),
+
+  EVENT: require('./Xhr/events/w.o.featured.json'),
+  EVENT_FEATURED: require('./Xhr/events/w.featured.json'),
+
+  ASSET_COLLECTION: require('./Xhr/assets/collection_base.json'),
+  ASSET_COLLECTION_DELETED: require('./Xhr/assets/collection_deleted.json'),
+  ASSET_COLLECTION_ADDED: require('./Xhr/assets/collection_added.json'),
+  ASSET_FEATURED: require('./Xhr/assets/single_featured.json'),
+
+  USER: require('./Xhr/users/single.json'),
+  USER_COLLECTION: require('./Xhr/users/collection.json'),
+
+  AD_COLLECTION: require('./Xhr/ads/collection.json'),
+
+  MESSAGE_COLLECTION: require('./Xhr/messages/collection.json')
 };

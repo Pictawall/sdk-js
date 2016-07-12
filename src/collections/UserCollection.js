@@ -1,15 +1,13 @@
-'use strict';
-
-import PagedCollection from './PagedCollection';
 import UserModel from '../models/UserModel';
+import PictawallPagedCollection from './abstract/PictawallPagedCollection';
 
 /**
  * Collection of event users.
  *
  * @class UserCollection
- * @extends PagedCollection
+ * @extends PictawallPagedCollection
  */
-class UserCollection extends PagedCollection {
+class UserCollection extends PictawallPagedCollection {
 
   /**
    * @param {!EventModel} event The owning event.
@@ -18,8 +16,7 @@ class UserCollection extends PagedCollection {
     super(event.sdk, 5, 'score');
 
     this._event = event;
-    this.apiPath = `/events/${event.getProperty('identifier')}/users/{userId}`;
-    this.fetchParser = data => data.data;
+    this.apiPath = `/events/${event.getProperty('identifier')}/users/{modelId}`;
   }
 
   /**

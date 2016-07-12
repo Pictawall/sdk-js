@@ -1,7 +1,7 @@
 'use strict';
 
-import BaseModel from '../../../src/models/BaseModel';
-import BaseCollection from '../../../src/collections/BaseCollection';
+import BaseModel from '../../../src/models/abstract/BaseModel';
+import BaseCollection from '../../../src/collections/abstract/PictawallCollection';
 
 const ClassMock = require('../../mock/ClassMock');
 const XhrMock = require('../../mock/XhrMock');
@@ -10,8 +10,7 @@ class FakeCollection extends BaseCollection {
   constructor(sdk) {
     super(sdk);
 
-    this.apiPath = `/events/${XhrMock.VALID_IDENTIFIER}/ads`;
-    this.fetchParser = data => data.data;
+    this.apiPath = `/events/${XhrMock.EVENT_ID}/ads`;
   }
 
   createModel() {
@@ -36,7 +35,7 @@ describe('BaseCollection', () => {
         expect(collection.loaded).toBe(true);
         expect(collection.hasMore).toBe(false);
 
-        const source = XhrMock.VALID_EVENT_ADS.data;
+        const source = XhrMock.AD_COLLECTION.data;
         expect(collection.length).toBe(source.length, 'Collection size does not match source size');
 
         for (let i = 0; i < source.length; i++) {

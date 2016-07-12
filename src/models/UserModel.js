@@ -1,14 +1,14 @@
 'use strict';
 
-import BaseModel from './BaseModel';
+import PictawallModel from './abstract/PictawallModel';
 
 /**
  * User model.
  *
  * @class UserModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
-class UserModel extends BaseModel {
+class UserModel extends PictawallModel {
 
   /**
    * @param {!EventModel} event The event this user is creating content for.
@@ -17,7 +17,7 @@ class UserModel extends BaseModel {
     super(event.sdk);
 
     this._event = event;
-    this.fetchParser = data => data.data;
+    this.parseResponse = data => data.data;
   }
 
   /**
