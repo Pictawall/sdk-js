@@ -45,7 +45,7 @@ var ClassMock = {
 
   _mockers: {
     EventModel: function EventModel(identifier) {
-      return new _EventModel3.default(ClassMock.sdk, identifier || require('./XhrMock').VALID_IDENTIFIER);
+      return new _EventModel3.default(ClassMock.sdk, identifier || require('./XhrMock').EVENT_ID);
     },
 
     AssetModel: function AssetModel(assetId, eventId) {

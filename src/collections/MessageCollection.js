@@ -1,17 +1,13 @@
-'use strict';
-
-import BaseCollection from '../collections/BaseCollection';
 import MessageModel from '../models/MessageModel';
-
-// TODO updateAll
+import PictawallCollection from './abstract/PictawallCollection';
 
 /**
  * Collection of event messages.
  *
  * @class MessageCollection
- * @extends BaseCollection
+ * @extends PictawallCollection
  */
-class MessageCollection extends BaseCollection {
+class MessageCollection extends PictawallCollection {
 
   /**
    * @param {!EventModel} event The owning event.
@@ -19,10 +15,7 @@ class MessageCollection extends BaseCollection {
   constructor(event) {
     super(event.sdk);
 
-    this.apiPath = `/events/${event.getProperty('identifier')}/ads/{adId}`;
-    this.fetchParser = function (data) {
-      return data.data;
-    };
+    this.apiPath = `/events/${event.getProperty('identifier')}/messages/{modelId}`;
   }
 
   /**

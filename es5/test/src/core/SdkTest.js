@@ -18,7 +18,7 @@ describe('SDK', function () {
   var sdk = ClassMock.sdk;
 
   it('can make events', function (done) {
-    sdk.getEvent(XhrMock.VALID_IDENTIFIER).then(function (event) {
+    sdk.getEvent(XhrMock.EVENT_ID).then(function (event) {
 
       expect(event).toEqual(jasmine.any(_EventModel2.default));
       expect(event.getProperty('id')).toBe(44759);

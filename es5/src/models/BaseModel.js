@@ -168,6 +168,23 @@ var BaseModel = function () {
     get: function get() {
       throw new _Errors.SdkError(this, 'get type() not implemented');
     }
+
+    /**
+     * Returns the identifier of the model.
+     * @returns {*}
+     */
+
+  }, {
+    key: 'id',
+    get: function get() {
+      var id = this.getProperty('id');
+
+      if (!id) {
+        throw new _Errors.SdkError(this, 'This model does not have an ID.');
+      }
+
+      return id;
+    }
   }]);
 
   return BaseModel;

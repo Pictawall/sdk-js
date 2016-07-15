@@ -1,5 +1,8 @@
 'use strict';
 
+const qs = require('qs-lite');
+const _ = require('lodash');
+
 const mockedRoutes = [];
 
 class FakeResponse {
@@ -16,12 +19,21 @@ class FakeResponse {
 
 module.exports = {
   fetch(requestPath) {
+    const [path, queryString] = requestPath.split('?');
+    const queryParameters = qs.parse(queryString);
+
     const route = mockedRoutes.find(mockedRoute => {
       if (mockedRoute.path instanceof RegExp) {
-        return mockedRoute.path.test(requestPath);
+        if (!mockedRoute.path.test(path)) {
+          return false;
+        }
+      } else {
+        if (mockedRoute.path !== path) {
+          return false;
+        }
       }
 
-      return mockedRoute.path === requestPath;
+      return _.isEqual(queryParameters, mockedRoute.queryParameters);
     });
 
     if (route == null) {
@@ -31,9 +43,10 @@ module.exports = {
     return Promise.resolve(route.response);
   },
 
-  mockRoute(path, { body = '', status = 200 }) {
+  mockRoute({ path, queryParameters = {} }, { body = '', status = 200 }) {
     mockedRoutes.push({
       path,
+      queryParameters,
       response: new FakeResponse(body, status)
     });
   },

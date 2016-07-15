@@ -98,6 +98,11 @@ var PagedCollection = function (_BaseCollection) {
 
       return options;
     }
+
+    /**
+     * @inheritDoc
+     */
+
   }, {
     key: 'fetchParser',
     set: function set(parser) {
@@ -115,7 +120,12 @@ var PagedCollection = function (_BaseCollection) {
       return function (serverResponse) {
         _this._parse(serverResponse);
 
-        return originalParser ? originalParser(serverResponse) : serverResponse;
+        if (originalParser) {
+          console.log(originalParser.toString());
+          return originalParser(serverResponse);
+        } else {
+          return serverResponse;
+        }
       };
     }
   }, {

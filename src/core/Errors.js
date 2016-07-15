@@ -11,13 +11,12 @@ import ClassUtil from '../util/ClassUtil';
 export class PictawallError extends Error {
 
   /**
-   * @param {*} thrower The thrower of this error.
-   * @param {!String} message A message to display.
-   * @param {string} [filename] The filename in which the error occurred.
-   * @param {number} [lineNumber] The line at which the error occurred.
+   * @param {*} thrower - The thrower of this error.
+   * @param {!String} message - A message to display.
+   * @param [errorArgs] errorArgs - The list of args to pass to the Error constructor after the message parameter.
    */
-  constructor(thrower, message, filename, lineNumber) {
-    super(`[${ClassUtil.getName(thrower)}] ${message}`, filename, lineNumber);
+  constructor(thrower, message, ...errorArgs) {
+    super(`[${ClassUtil.getName(thrower)}] ${message}`, ...errorArgs);
 
     this.name = this.constructor.name;
   }

@@ -1,19 +1,33 @@
 'use strict';
 
-import PagedCollection from './PagedCollection';
 import AssetModel from '../models/AssetModel';
 import Sdk from '../core/Sdk';
 import { SdkError } from '../core/Errors';
+import PictawallPagedCollection from './abstract/PictawallPagedCollection';
 
-// TODO: updateAll
+/**
+ * OrderBy value => Asset property mapping.
+ */
+const SORT_PROPERTIES = {
+  display: 'displayCount',
+  date: 'postTime',
+  likes: 'likeCount'
+}; // ['display', 'date', 'likes'];
+
+/**
+ * @typedef SortOrder
+ * @type Object
+ * @property {!string} property - The property of the collection whose values are used to sort.
+ * @property {!number} direction - -1 for DESC, 1 for ASC
+ */
 
 /**
  * Collection of event assets.
  *
  * @class AssetCollection
- * @extends PagedCollection
+ * @extends PictawallPagedCollection
  */
-class AssetCollection extends PagedCollection {
+class AssetCollection extends PictawallPagedCollection {
 
   /**
    * @param {!EventModel} event The owning event.
@@ -21,18 +35,23 @@ class AssetCollection extends PagedCollection {
    * @param {number} [fetchOptions.limit = 100] How many assets should be returned by each api call.
    * @param {string} [fetchOptions.orderBy = 'date DESC'] Sort order returned by the API. See API Specifications for possible orders.
    * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
-   * @param {number} [fetchOptions.since] Filters out assets created before the timestamp this number represents.
    */
-  constructor(event, { limit = 100, orderBy = 'date DESC', since, kind } = {}) {
+  constructor(event, { limit = 100, orderBy = 'date DESC', kind } = {}) {
     super(event.sdk, limit, orderBy);
 
     this._event = event;
-    this.apiPath = `/events/${event.getProperty('identifier')}/assets/{assetId}`;
-    this.fetchParser = (response => response.data);
+    this.apiPath = `/events/${event.getProperty('identifier')}/assets/{modelId}`;
 
-    this._sinceFilter = since;
     this._kindFilter = kind;
     this._orderBy = orderBy;
+
+    if (!/^[a-z]+[_ ](asc|desc)$/i.test(this._orderBy)) {
+      throw new SdkError(this, `orderBy value "${this._orderBy}" does not match the parameter requirements (/^[a-z]+[_ ](asc|desc)$/i)`);
+    }
+
+    if (!this.sortOrder.property) {
+      throw new SdkError(this, `orderBy property should be one of "${Object.keys(SORT_PROPERTIES).join('", "')}".`);
+    }
   }
 
   /**
@@ -49,6 +68,18 @@ class AssetCollection extends PagedCollection {
     }
 
     return assetId !== -1;
+  }
+
+  /**
+   * Returns the sort order.
+   *
+   * @returns {!SortOrder}
+   */
+  get sortOrder() {
+    const [property, direction] = this._orderBy.toLowerCase().split(/[_ ]/);
+
+    //noinspection JSValidateTypes
+    return { property: SORT_PROPERTIES[property], direction: direction === 'asc' ? 1 : -1 };
   }
 
   /**
@@ -76,29 +107,13 @@ class AssetCollection extends PagedCollection {
     }
   }
 
-  /**
-   * Retrieves the asset matching the passed ID.
-   *
-   * @param {number} assetId The ID of the asset to fetch.
-   * @returns {!Promise.<AssetModel>}
-   */
-  fetchById(assetId) {
-    return this.fetchRaw(null, { assetId }).then(asset => {
-      return this.buildModel(asset);
-    });
-  }
+
 
   /**
-   * Options sent with fetch requests as query parameters.
-   *
-   * @readonly
+   * @inheritDoc
    */
   get fetchOptions() {
     const options = super.fetchOptions;
-
-    if (this._sinceFilter) {
-      options.since = this._sinceFilter;
-    }
 
     if (this._kindFilter) {
       options.kind = this._kindFilter;

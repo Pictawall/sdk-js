@@ -1,6 +1,6 @@
 {
   "name": "pictawall.sdk",
-  "version": "1.0.3",
+  "version": "1.2.0",
   "description": "JavaScript SDK for the Pictawall API",
   "keywords": [
     "pictawall",
@@ -50,6 +50,7 @@
     "karma-safari-launcher": "^0.1.1",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
+    "lodash": "^4.13.1",
     "merge-stream": "^1.0.0",
     "strip-loader": "^0.1.2",
     "webpack": "^1.12.13"

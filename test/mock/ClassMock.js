@@ -22,7 +22,7 @@ const ClassMock = {
 
   _mockers: {
     EventModel: (identifier) => {
-      return new EventModel(ClassMock.sdk, identifier || require('./XhrMock').VALID_IDENTIFIER);
+      return new EventModel(ClassMock.sdk, identifier || require('./XhrMock').EVENT_ID);
     },
 
     AssetModel: (assetId, eventId) => {

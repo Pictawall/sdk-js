@@ -8,15 +8,15 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === void 0) { var parent = Object.getPrototypeOf(object); if (parent === null) { return void 0; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === void 0) { return void 0; } return getter.call(receiver); } };
 
-var _BaseModel2 = require('./BaseModel');
-
-var _BaseModel3 = _interopRequireDefault(_BaseModel2);
-
 var _EventModel = require('./EventModel');
 
 var _EventModel2 = _interopRequireDefault(_EventModel);
 
 var _Errors = require('../core/Errors');
+
+var _PictawallModel2 = require('./abstract/PictawallModel');
+
+var _PictawallModel3 = _interopRequireDefault(_PictawallModel2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -30,11 +30,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * Model for pictawall channels.
  *
  * @class ChannelModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
 
-var ChannelModel = function (_BaseModel) {
-  _inherits(ChannelModel, _BaseModel);
+var ChannelModel = function (_PictawallModel) {
+  _inherits(ChannelModel, _PictawallModel);
 
   /**
    * <p>Creates a new Channel Model, you can fill it with server data by calling {@link #fetch}</p>
@@ -55,9 +55,6 @@ var ChannelModel = function (_BaseModel) {
 
     _this._eventConfig = eventConfig;
     _this.apiPath = '/channels/' + channelId;
-    _this.fetchParser = function (serverResponse) {
-      return serverResponse.data;
-    };
     return _this;
   }
 
@@ -102,6 +99,6 @@ var ChannelModel = function (_BaseModel) {
   }]);
 
   return ChannelModel;
-}(_BaseModel3.default);
+}(_PictawallModel3.default);
 
 exports.default = ChannelModel;

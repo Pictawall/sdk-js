@@ -2,6 +2,10 @@
 
 import { PictawallError } from '../core/Errors';
 
+export const Symbols = {
+  disableSymbolMerge: Symbol('disableSymbolMerge')
+};
+
 function _mergeClass(receivingClass, givingPrototype) {
   if (givingPrototype === Object.prototype) {
     return;
@@ -25,6 +29,14 @@ function _mergeClass(receivingClass, givingPrototype) {
 
     Object.defineProperty(receivingPrototype, propertyName, Object.getOwnPropertyDescriptor(givingPrototype, propertyName));
   });
+
+  if (givingPrototype[Symbols.disableSymbolMerge] !== true) {
+    const symbols = Object.getOwnPropertySymbols(givingPrototype);
+
+    symbols.forEach(symbol => {
+      Object.defineProperty(receivingPrototype, symbol, Object.getOwnPropertyDescriptor(givingPrototype, symbol));
+    });
+  }
 }
 
 /**
@@ -90,6 +102,4 @@ const ClassUtil = {
   }
 };
 
-Object.freeze(ClassUtil);
-
-export default ClassUtil;
+export default Object.freeze(ClassUtil);

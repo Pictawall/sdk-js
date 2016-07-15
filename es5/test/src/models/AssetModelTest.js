@@ -20,12 +20,12 @@ var FakeFetch = require('../../mock/Xhr/FakeFetch');
 
 describe('AssetModel', function () {
 
-  var assetData = XhrMock.VALID_EVENT_ASSET_FEATURED.data;
+  var assetData = XhrMock.ASSET_FEATURED.data;
 
   /**
    * @type AssetModel
    */
-  var assetModel = ClassMock.build(_AssetModel2.default, assetData.id, XhrMock.VALID_IDENTIFIER_FEATURED);
+  var assetModel = ClassMock.build(_AssetModel2.default, assetData.id, XhrMock.EVENT_ID_FEATURED);
 
   it('can be retrieved from the server', function (done) {
     assetModel.fetch().then(function () {
@@ -46,7 +46,7 @@ describe('AssetModel', function () {
 
     assetModel.markMediaAsDead();
 
-    expect(_fetch2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.VALID_IDENTIFIER_FEATURED + '/assets/' + assetData.id + '/check', { method: 'PATCH' });
+    expect(_fetch2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.EVENT_ID_FEATURED + '/assets/' + assetData.id + '/check', { method: 'PATCH' });
   });
 
   it('can be reported', function () {
@@ -54,6 +54,6 @@ describe('AssetModel', function () {
 
     assetModel.report();
 
-    expect(_fetch2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.VALID_IDENTIFIER_FEATURED + '/assets/' + assetData.id + '/report', { method: 'PATCH' });
+    expect(_fetch2.default.fetch).toHaveBeenCalledWith(ClassMock.sdk.apiBaseUrl + '/events/' + XhrMock.EVENT_ID_FEATURED + '/assets/' + assetData.id + '/report', { method: 'PATCH' });
   });
 });

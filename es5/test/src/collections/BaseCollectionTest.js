@@ -2,13 +2,13 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseModel = require('../../../src/models/BaseModel');
+var _BaseModel = require('../../../src/models/abstract/BaseModel');
 
 var _BaseModel2 = _interopRequireDefault(_BaseModel);
 
-var _BaseCollection2 = require('../../../src/collections/BaseCollection');
+var _PictawallCollection = require('../../../src/collections/abstract/PictawallCollection');
 
-var _BaseCollection3 = _interopRequireDefault(_BaseCollection2);
+var _PictawallCollection2 = _interopRequireDefault(_PictawallCollection);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -29,10 +29,7 @@ var FakeCollection = function (_BaseCollection) {
 
     var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FakeCollection).call(this, sdk));
 
-    _this.apiPath = '/events/' + XhrMock.VALID_IDENTIFIER + '/ads';
-    _this.fetchParser = function (data) {
-      return data.data;
-    };
+    _this.apiPath = '/events/' + XhrMock.EVENT_ID + '/ads';
     return _this;
   }
 
@@ -44,7 +41,7 @@ var FakeCollection = function (_BaseCollection) {
   }]);
 
   return FakeCollection;
-}(_BaseCollection3.default);
+}(_PictawallCollection2.default);
 
 describe('BaseCollection', function () {
 
@@ -63,7 +60,7 @@ describe('BaseCollection', function () {
         expect(collection.loaded).toBe(true);
         expect(collection.hasMore).toBe(false);
 
-        var source = XhrMock.VALID_EVENT_ADS.data;
+        var source = XhrMock.AD_COLLECTION.data;
         expect(collection.length).toBe(source.length, 'Collection size does not match source size');
 
         for (var i = 0; i < source.length; i++) {
