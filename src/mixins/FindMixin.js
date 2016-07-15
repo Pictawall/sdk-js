@@ -21,7 +21,7 @@ const FindMixin = {
    * @instance
    */
   findOne(query) {
-    return this.find(query).limit(1).first();
+    return this.find(query).limit(1).first() || null;
   },
 
   /**

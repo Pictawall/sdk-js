@@ -28,16 +28,21 @@ var PictawallError = exports.PictawallError = function (_Error) {
   _inherits(PictawallError, _Error);
 
   /**
-   * @param {*} thrower The thrower of this error.
-   * @param {!String} message A message to display.
-   * @param {string} [filename] The filename in which the error occurred.
-   * @param {number} [lineNumber] The line at which the error occurred.
+   * @param {*} thrower - The thrower of this error.
+   * @param {!String} message - A message to display.
+   * @param [errorArgs] errorArgs - The list of args to pass to the Error constructor after the message parameter.
    */
 
-  function PictawallError(thrower, message, filename, lineNumber) {
+  function PictawallError(thrower, message) {
+    var _Object$getPrototypeO;
+
     _classCallCheck(this, PictawallError);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PictawallError).call(this, '[' + _ClassUtil2.default.getName(thrower) + '] ' + message, filename, lineNumber));
+    for (var _len = arguments.length, errorArgs = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+      errorArgs[_key - 2] = arguments[_key];
+    }
+
+    var _this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(PictawallError)).call.apply(_Object$getPrototypeO, [this, '[' + _ClassUtil2.default.getName(thrower) + '] ' + message].concat(errorArgs)));
 
     _this.name = _this.constructor.name;
     return _this;
@@ -58,15 +63,15 @@ var SdkError = exports.SdkError = function (_PictawallError) {
   _inherits(SdkError, _PictawallError);
 
   function SdkError() {
-    var _Object$getPrototypeO;
+    var _Object$getPrototypeO2;
 
     _classCallCheck(this, SdkError);
 
-    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
     }
 
-    return _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(SdkError)).call.apply(_Object$getPrototypeO, [this].concat(args)));
+    return _possibleConstructorReturn(this, (_Object$getPrototypeO2 = Object.getPrototypeOf(SdkError)).call.apply(_Object$getPrototypeO2, [this].concat(args)));
   }
 
   return SdkError;

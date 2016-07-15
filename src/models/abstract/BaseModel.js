@@ -1,8 +1,8 @@
 'use strict';
 
-import FetchMixin from '../mixins/FetchMixin';
-import ClassUtil from '../util/ClassUtil';
-import { SdkError } from '../core/Errors';
+import FetchMixin from '../../mixins/FetchMixin';
+import ClassUtil from '../../util/ClassUtil';
+import { SdkError } from '../../core/Errors';
 
 /**
  * Maps containing the properties of the models.
@@ -105,6 +105,14 @@ class BaseModel {
    */
   get type() {
     throw new SdkError(this, 'get type() not implemented');
+  }
+
+  /**
+   * Returns the identifier of the model.
+   * @returns {*}
+   */
+  get id() {
+    throw new SdkError(this, 'get id() not implemented');
   }
 }
 

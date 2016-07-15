@@ -1,18 +1,18 @@
 'use strict';
 
-import BaseModel from './BaseModel';
 import UserModel from './UserModel';
 import Sdk from '../core/Sdk';
 
 import { SdkError } from '../core/Errors';
+import PictawallModel from './abstract/PictawallModel';
 
 /**
  * Asset model.
  *
  * @class AssetModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
-class AssetModel extends BaseModel {
+class AssetModel extends PictawallModel {
 
   /**
    * @param {!EventModel} event The owning event model.
@@ -29,7 +29,6 @@ class AssetModel extends BaseModel {
      * @private
      */
     this._event = event;
-    this.fetchParser = data => data.data;
   }
 
   /**

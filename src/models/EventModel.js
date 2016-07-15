@@ -1,22 +1,42 @@
 'use strict';
 
-import BaseModel from './BaseModel';
 import Sdk from '../core/Sdk';
-
 import { SdkError } from '../core/Errors';
+import PictawallModel from './abstract/PictawallModel';
 
 /**
- * @type {WeakMap.<EventModel, Map.<String, BaseCollection>>}
+ * @type {WeakMap.<EventModel, {
+ *  collections: Map.<String, BaseCollection>,
+ *  autoUpdate: boolean,
+ *  autoUpdateTimeout: number
+ * }>}
  */
-const collectionLists = new WeakMap();
+const properties = new WeakMap();
+
+/**
+ * @param {!EventModel} self
+ * @private
+ */
+function _runAutoUpdate(self) {
+  const props = properties.get(self);
+  if (!props.autoUpdate) {
+    return;
+  }
+
+  props.autoUpdateTimeout = void 0;
+
+  self.updateCollections().then(() => {
+    props.autoUpdateTimeout = setTimeout(() => _runAutoUpdate(self), self.autoUpdateVelocity);
+  });
+}
 
 /**
  * Model for pictawall events.
  *
  * @class EventModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
-class EventModel extends BaseModel {
+class EventModel extends PictawallModel {
 
   /**
    * <p>Creates a new Event model.</p>
@@ -28,28 +48,28 @@ class EventModel extends BaseModel {
    * @param {boolean} [config.autoUpdate = false] - Should the collections periodically fetch their contents ?
    * @param {number} [config.autoUpdateVelocity = 10000] - Time in ms between each auto-update.
    */
-  constructor(sdk, identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 10000 } = {}) {
+  constructor(sdk, identifier, /* config = */ { autoUpdate = false, autoUpdateVelocity = 15000 } = {}) {
     super(sdk);
 
     if (typeof identifier !== 'string' || !/^[a-z0-9\-_]+$/i.test(identifier)) {
       throw new SdkError(this, `Event identifier "${identifier}" is not valid.`);
     }
 
-    //this.autoUpdateVelocity = autoUpdateVelocity;
-
     this.setProperty('identifier', identifier);
     this.apiPath = `/events/${identifier}`;
-    this.fetchParser = function (serverResponse) {
-      return serverResponse.data;
-    };
 
-    collectionLists.set(this, new Map());
+    this.autoUpdateVelocity = autoUpdateVelocity;
+
+    properties.set(this, {
+      collections: new Map(),
+      autoUpdate
+    });
   }
 
   fetchCollections() {
     const promises = [];
 
-    collectionLists.get(this).forEach(collection => {
+    properties.get(this).collections.forEach(collection => {
       promises.push(collection.fetch());
     });
 
@@ -62,7 +82,7 @@ class EventModel extends BaseModel {
    *
    * @param {!String} collectionName
    * @param {!BaseCollection} collection
-   * @return {!this}
+   * @return {!EventModel}
    *
    * @example
    * // split media and text assets in two different collections
@@ -70,7 +90,7 @@ class EventModel extends BaseModel {
    * event.addCollection('assetMediaCollection', new AssetCollection(event, { limit: 100, orderBy: 'date_desc', kind: 'text' }))
    */
   addCollection(collectionName, collection) {
-    const collectionList = collectionLists.get(this);
+    const collectionList = properties.get(this).collections;
 
     if (collectionList.has(collectionName)) {
       throw new SdkError(this, `Collection ${collectionName} already registered for this event`);
@@ -82,36 +102,41 @@ class EventModel extends BaseModel {
   }
 
   getCollection(collectionName) {
-    const collectionList = collectionLists.get(this);
-
-    return collectionList.get(collectionName);
+    return properties.get(this).collections.get(collectionName);
   }
 
-  //_runAutoUpdate() {
-  //  if (!this._autoUpdate){
-  //    return;
-  //  }
-  //
-  //  this.update().then(() => {
-  //    setTimeout(() => this._runAutoUpdate(), this.autoUpdateVelocity);
-  //  });
-  //}
+  updateCollections() {
+    const props = properties.get(this);
 
-  //updateAll() {
-  //  return Promise.all([
-  //    this.fetch(),
-  //    this.assetCollection.loadMore()
-  //  ]);
-  //}
-  //
-  //stopAutoUpdate() {
-  //  this._autoUpdate = false;
-  //}
-  //
-  //startAutoUpdate() {
-  //  this._autoUpdate = true;
-  //  this._runAutoUpdate();
-  //}
+    const promises = [];
+    props.collections.forEach(collection => promises.push(collection.update()));
+
+    return Promise.all(promises);
+  }
+
+  set autoUpdate(autoUpdate) {
+    autoUpdate = !!autoUpdate;
+
+    const props = properties.get(this);
+    if (props.autoUpdate === autoUpdate) {
+      return;
+    }
+
+    props.autoUpdate = autoUpdate;
+
+    if (!autoUpdate) {
+      if (props.autoUpdateTimeout) {
+        clearTimeout(props.autoUpdateTimeout);
+        props.autoUpdateTimeout = void 0;
+      }
+    } else {
+      _runAutoUpdate(this);
+    }
+  }
+
+  get autoUpdate() {
+    return properties.get(this).autoUpdate;
+  }
 
   /**
    * @inheritDoc

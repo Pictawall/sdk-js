@@ -6,15 +6,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _BaseModel2 = require('./BaseModel');
-
-var _BaseModel3 = _interopRequireDefault(_BaseModel2);
-
 var _Sdk = require('../core/Sdk');
 
 var _Sdk2 = _interopRequireDefault(_Sdk);
 
 var _Errors = require('../core/Errors');
+
+var _PictawallModel2 = require('./abstract/PictawallModel');
+
+var _PictawallModel3 = _interopRequireDefault(_PictawallModel2);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -25,19 +25,42 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * @type {WeakMap.<EventModel, Map.<String, BaseCollection>>}
+ * @type {WeakMap.<EventModel, {
+ *  collections: Map.<String, BaseCollection>,
+ *  autoUpdate: boolean,
+ *  autoUpdateTimeout: number
+ * }>}
  */
-var collectionLists = new WeakMap();
+var properties = new WeakMap();
+
+/**
+ * @param {!EventModel} self
+ * @private
+ */
+function _runAutoUpdate(self) {
+  var props = properties.get(self);
+  if (!props.autoUpdate) {
+    return;
+  }
+
+  props.autoUpdateTimeout = void 0;
+
+  self.updateCollections().then(function () {
+    props.autoUpdateTimeout = setTimeout(function () {
+      return _runAutoUpdate(self);
+    }, self.autoUpdateVelocity);
+  });
+}
 
 /**
  * Model for pictawall events.
  *
  * @class EventModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
 
-var EventModel = function (_BaseModel) {
-  _inherits(EventModel, _BaseModel);
+var EventModel = function (_PictawallModel) {
+  _inherits(EventModel, _PictawallModel);
 
   /**
    * <p>Creates a new Event model.</p>
@@ -56,7 +79,7 @@ var EventModel = function (_BaseModel) {
     var _ref$autoUpdate = _ref.autoUpdate;
     var /* config = */autoUpdate = _ref$autoUpdate === void 0 ? false : _ref$autoUpdate;
     var _ref$autoUpdateVeloci = _ref.autoUpdateVelocity;
-    var autoUpdateVelocity = _ref$autoUpdateVeloci === void 0 ? 10000 : _ref$autoUpdateVeloci;
+    var autoUpdateVelocity = _ref$autoUpdateVeloci === void 0 ? 15000 : _ref$autoUpdateVeloci;
 
     _classCallCheck(this, EventModel);
 
@@ -66,15 +89,15 @@ var EventModel = function (_BaseModel) {
       throw new _Errors.SdkError(_this, 'Event identifier "' + identifier + '" is not valid.');
     }
 
-    //this.autoUpdateVelocity = autoUpdateVelocity;
-
     _this.setProperty('identifier', identifier);
     _this.apiPath = '/events/' + identifier;
-    _this.fetchParser = function (serverResponse) {
-      return serverResponse.data;
-    };
 
-    collectionLists.set(_this, new Map());
+    _this.autoUpdateVelocity = autoUpdateVelocity;
+
+    properties.set(_this, {
+      collections: new Map(),
+      autoUpdate: autoUpdate
+    });
     return _this;
   }
 
@@ -83,7 +106,7 @@ var EventModel = function (_BaseModel) {
     value: function fetchCollections() {
       var promises = [];
 
-      collectionLists.get(this).forEach(function (collection) {
+      properties.get(this).collections.forEach(function (collection) {
         promises.push(collection.fetch());
       });
 
@@ -96,7 +119,7 @@ var EventModel = function (_BaseModel) {
      *
      * @param {!String} collectionName
      * @param {!BaseCollection} collection
-     * @return {!this}
+     * @return {!EventModel}
      *
      * @example
      * // split media and text assets in two different collections
@@ -107,7 +130,7 @@ var EventModel = function (_BaseModel) {
   }, {
     key: 'addCollection',
     value: function addCollection(collectionName, collection) {
-      var collectionList = collectionLists.get(this);
+      var collectionList = properties.get(this).collections;
 
       if (collectionList.has(collectionName)) {
         throw new _Errors.SdkError(this, 'Collection ' + collectionName + ' already registered for this event');
@@ -120,36 +143,44 @@ var EventModel = function (_BaseModel) {
   }, {
     key: 'getCollection',
     value: function getCollection(collectionName) {
-      var collectionList = collectionLists.get(this);
-
-      return collectionList.get(collectionName);
+      return properties.get(this).collections.get(collectionName);
     }
+  }, {
+    key: 'updateCollections',
+    value: function updateCollections() {
+      var props = properties.get(this);
 
-    //_runAutoUpdate() {
-    //  if (!this._autoUpdate){
-    //    return;
-    //  }
-    //
-    //  this.update().then(() => {
-    //    setTimeout(() => this._runAutoUpdate(), this.autoUpdateVelocity);
-    //  });
-    //}
+      var promises = [];
+      props.collections.forEach(function (collection) {
+        return promises.push(collection.update());
+      });
 
-    //updateAll() {
-    //  return Promise.all([
-    //    this.fetch(),
-    //    this.assetCollection.loadMore()
-    //  ]);
-    //}
-    //
-    //stopAutoUpdate() {
-    //  this._autoUpdate = false;
-    //}
-    //
-    //startAutoUpdate() {
-    //  this._autoUpdate = true;
-    //  this._runAutoUpdate();
-    //}
+      return Promise.all(promises);
+    }
+  }, {
+    key: 'autoUpdate',
+    set: function set(autoUpdate) {
+      autoUpdate = !!autoUpdate;
+
+      var props = properties.get(this);
+      if (props.autoUpdate === autoUpdate) {
+        return;
+      }
+
+      props.autoUpdate = autoUpdate;
+
+      if (!autoUpdate) {
+        if (props.autoUpdateTimeout) {
+          clearTimeout(props.autoUpdateTimeout);
+          props.autoUpdateTimeout = void 0;
+        }
+      } else {
+        _runAutoUpdate(this);
+      }
+    },
+    get: function get() {
+      return properties.get(this).autoUpdate;
+    }
 
     /**
      * @inheritDoc
@@ -163,6 +194,6 @@ var EventModel = function (_BaseModel) {
   }]);
 
   return EventModel;
-}(_BaseModel3.default);
+}(_PictawallModel3.default);
 
 exports.default = EventModel;

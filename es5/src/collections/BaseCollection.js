@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = void 0; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _ClassUtil = require('../util/ClassUtil');
@@ -43,6 +45,8 @@ var BaseCollection = function () {
    */
 
   function BaseCollection(sdk) {
+    var _this2 = this;
+
     _classCallCheck(this, BaseCollection);
 
     this._loaded = false;
@@ -52,7 +56,28 @@ var BaseCollection = function () {
     }
 
     this.sdk = sdk;
+
+    /**
+     * @type {Array.<BaseModel>}
+     * @private
+     */
     this._models = [];
+
+    this.fetchParser = function (data) {
+      console.log('yo');
+
+      if (data.since) {
+        /**
+         * Unix timestamp of the last collection synchronisation.
+         * @private
+         */
+        _this2._lastUpdate = data.since;
+      } else {
+        _this2._lastUpdate = Date.now() / 1000; // requires a unix timestamp
+      }
+
+      return data;
+    };
   }
 
   /**
@@ -92,7 +117,7 @@ var BaseCollection = function () {
   }, {
     key: 'fetch',
     value: function fetch() {
-      var _this2 = this;
+      var _this3 = this;
 
       if (!this.hasMore) {
         return _Sdk2.default.Promise.reject(new _Errors.SdkError(this, '#fetch called but #hasMore returns false'));
@@ -100,16 +125,57 @@ var BaseCollection = function () {
 
       return this.fetchRaw(this.fetchOptions).then(function (modelsData) {
         if (!Array.isArray(modelsData)) {
-          throw new _Errors.SdkError(_this2, 'Invalid response from the http API. Should have returned array, got "' + JSON.stringify(modelsData) + '"');
+          throw new _Errors.SdkError(_this3, 'Invalid response from the http API. Should have returned array, got "' + JSON.stringify(modelsData) + '"');
         }
 
         modelsData.forEach(function (data) {
-          _this2.add(_this2.buildModel(data), true, false);
+          _this3.add(_this3.buildModel(data), true);
         });
 
-        _this2._loaded = true;
+        _this3._loaded = true;
 
-        return _this2;
+        return _this3;
+      });
+    }
+
+    /**
+     * Loads the assets that have been added to the server database after the collection was loaded and removes those deleted.
+     * Note: This will make the index jump as it will add data at the front of the collection.
+     *
+     * @return {!Promise.<>} The model has been updated.
+     */
+
+  }, {
+    key: 'update',
+    value: function update() {
+      var _this4 = this;
+
+      var initialCollectionSize = this.length;
+
+      if (!this.loaded) {
+        return this.fetch().then(function (ignored) {
+          return _this4.length - initialCollectionSize;
+        });
+      }
+
+      var fetchOptions = this.fetchOptions;
+      fetchOptions.since = this._lastUpdate;
+
+      var addedItemsPromise = this.fetchRaw(fetchOptions);
+      var removedItemsPromise = this.fetchRaw(fetchOptions, 'deleted');
+
+      Promise.all([addedItemsPromise, removedItemsPromise]).then(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 2);
+
+        var addedItems = _ref2[0];
+        var removedItems = _ref2[1];
+
+        removedItems.forEach(function (id) {
+          return _this4.remove(id);
+        });
+        addedItems.forEach(function (item) {
+          return _this4.add(item, true, true);
+        });
       });
     }
 
@@ -118,16 +184,58 @@ var BaseCollection = function () {
      *
      * @param model
      * @param {boolean} [replace = true] If a model with the same ID already exists, overwrite it if true. Ignore the new model if false.
-     * @param {boolean} [persist = true] Currently unused - Persist the model on the server.
+     * @param {boolean} [prepend = false] Insert the model at the beginning of the collection. // TODO auto sort instead like with AssetCollection.sortOrder ?
+     *
+     * @return {!BaseModel} The model that was actually added (Could be the already existing model if replace is false and the id already exists).
      */
 
   }, {
     key: 'add',
-    value: function add(model) {
+    value: function add(newModel) {
       var replace = arguments.length <= 1 || arguments[1] === void 0 ? true : arguments[1];
-      var persist = arguments.length <= 2 || arguments[2] === void 0 ? true : arguments[2];
+      var prepend = arguments.length <= 2 || arguments[2] === void 0 ? false : arguments[2];
 
-      this._models.push(model);
+
+      var index = this._loaded ? this._models.findIndex(function (model) {
+        return model.id === newModel.id;
+      }) : -1;
+
+      if (index === -1) {
+        if (prepend) {
+          this._models.unshift(newModel);
+        } else {
+          this._models.push(newModel);
+        }
+
+        return newModel;
+      }
+
+      if (replace) {
+        this._models[index] = newModel;
+        return newModel;
+      } else {
+        return this._models[index];
+      }
+    }
+
+    /**
+     * Removes an item based on its identifier.
+     * @param modelId - The model identifier.
+     * @return {BaseModel} The model that was removed, or null if none was.
+     */
+
+  }, {
+    key: 'remove',
+    value: function remove(modelId) {
+      var index = this._models.findIndex(function (element) {
+        return element.id === modelId;
+      });
+
+      if (index === -1) {
+        return null;
+      }
+
+      return this._models.splice(index, 1);
     }
   }, {
     key: 'toJSON',
@@ -154,6 +262,13 @@ var BaseCollection = function () {
     value: function at(pos) {
       return this._models[pos];
     }
+
+    // *[Symbol.iterator]() {
+    //   for (let i = 0; i < this.length; i++) {
+    //     yield this.at(i);
+    //   }
+    // }
+
   }, {
     key: Symbol.iterator,
     value: function value() {

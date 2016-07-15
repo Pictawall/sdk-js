@@ -10,12 +10,12 @@ describe('AssetCollection', () => {
   /**
    * @type AssetCollection
    */
-  const collectionWithoutFeatured = ClassMock.build(AssetCollection, XhrMock.VALID_IDENTIFIER);
+  const collectionWithoutFeatured = ClassMock.build(AssetCollection, XhrMock.EVENT_ID);
 
   /**
    * @type AssetCollection
    */
-  const collectionWithFeatured = ClassMock.build(AssetCollection, XhrMock.VALID_IDENTIFIER_FEATURED);
+  const collectionWithFeatured = ClassMock.build(AssetCollection, XhrMock.EVENT_ID_FEATURED);
 
   beforeAll(done => {
     Promise.all([
@@ -39,6 +39,33 @@ describe('AssetCollection', () => {
 
     favorites.forEach(asset => {
       expect(asset.getProperty('favorited')).toBe(true);
+    });
+  });
+
+  describe('#update', () => {
+    it('synchronises the collection with the remote server', done => {
+
+      expect(true).toBe(true);
+
+      const initialLength = collectionWithoutFeatured.length;
+      const removedModels = XhrMock.ASSET_COLLECTION_DELETED.data;
+      const addedModels = XhrMock.ASSET_COLLECTION_ADDED.data;
+
+      collectionWithoutFeatured.update().then(result => {
+        expect(collectionWithoutFeatured.length).toBe(initialLength - removedModels.length + addedModels.length);
+        expect(result).toBe(addedModels.length - removedModels.length);
+
+        removedModels.forEach(id => {
+          expect(collectionWithoutFeatured.findOne({ id })).toBeNull();
+        });
+
+        addedModels.forEach(model => {
+          expect(collectionWithoutFeatured.findOne({ id: model.id })).not.toBeNull();
+        });
+
+        done();
+      });
+
     });
   });
 
@@ -71,7 +98,7 @@ describe('AssetCollection', () => {
       expect(fetchPromise).toEqual(jasmine.any(Promise));
 
       fetchPromise.then(asset => {
-        expect(asset.getProperty('id')).toBe(XhrMock.VALID_EVENT__FEATURED.data.featuredAssetId);
+        expect(asset.getProperty('id')).toBe(XhrMock.EVENT_FEATURED.data.featuredAssetId);
         expect(asset.getProperty('featured')).toBe(true);
         done();
       }).catch(e => {

@@ -1,6 +1,5 @@
-'use strict';
-
 import BaseCollection from './BaseCollection';
+import { Symbols as FetchSymbols } from '../../mixins/FetchMixin';
 
 /**
  * Collection able to fetch data from the API in a paged fashion.
@@ -45,34 +44,20 @@ class PagedCollection extends BaseCollection {
     return options;
   }
 
-  set fetchParser(parser) {
-    super.fetchParser = parser;
-  }
-
   /**
    * @inheritDoc
    */
-  get fetchParser() {
-    const originalParser = super.fetchParser;
+  [FetchSymbols.parseResponse](response) {
+    response = super[FetchSymbols.parseResponse](response);
 
-    const _this = this;
-    return function (serverResponse) {
-      _this._parse(serverResponse);
-
-      return originalParser ? originalParser(serverResponse) : serverResponse;
-    };
-  }
-
-  /**
-   * @private
-   */
-  _parse(serverResponse) {
-    if (serverResponse.currentPage > this._currentPage) {
-      this._currentPage = serverResponse.currentPage;
+    if (response.currentPage > this._currentPage) {
+      this._currentPage = response.currentPage;
     }
 
-    this._pageCount = serverResponse.pageCount;
-    this._total = serverResponse.total;
+    this._pageCount = response.pageCount;
+    this._total = response.total;
+
+    return response;
   }
 
   /**

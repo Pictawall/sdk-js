@@ -1,14 +1,14 @@
 'use strict';
 
-import BaseModel from './BaseModel';
+import PictawallModel from './abstract/PictawallModel';
 
 /**
  * Message model.
  *
  * @class MessageModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
-class MessageModel extends BaseModel {
+class MessageModel extends PictawallModel {
 
   /**
    * @param {!Sdk} sdk The instance of the SDK.

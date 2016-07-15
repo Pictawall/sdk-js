@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": 11,
+      "message": "string",
+      "kind": "string",
+      "media": {
+        "default": "https://s3-eu-west-1.amazonaws.com/mypictawallapp/ads/pictawall_v2.jpg"
+      },
+      "link": "https://thisisasuperapp.net",
+      "displayOrder": 0,
+      "displayCount": 1,
+      "embed": true
+    }
+  ]
+}

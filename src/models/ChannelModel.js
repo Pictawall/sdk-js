@@ -1,16 +1,16 @@
 'use strict';
 
-import BaseModel from './BaseModel';
 import EventModel from './EventModel';
 import { SdkError } from '../core/Errors';
+import PictawallModel from './abstract/PictawallModel';
 
 /**
  * Model for pictawall channels.
  *
  * @class ChannelModel
- * @extends BaseModel
+ * @extends PictawallModel
  */
-class ChannelModel extends BaseModel {
+class ChannelModel extends PictawallModel {
 
   /**
    * <p>Creates a new Channel Model, you can fill it with server data by calling {@link #fetch}</p>
@@ -28,9 +28,6 @@ class ChannelModel extends BaseModel {
 
     this._eventConfig = eventConfig;
     this.apiPath = `/channels/${channelId}`;
-    this.fetchParser = function (serverResponse) {
-      return serverResponse.data;
-    };
   }
 
   /**

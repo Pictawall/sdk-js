@@ -11,7 +11,7 @@ describe('EventModel', () => {
   describe('fetch', () => {
 
     it('rejects if the identifier is not found', done => {
-      const fetchPromise = (ClassMock.build(EventModel, XhrMock.INVALID_IDENTIFIER)).fetch();
+      const fetchPromise = (ClassMock.build(EventModel, XhrMock.EVENT_ID_INVALID)).fetch();
 
       expect(fetchPromise).toEqual(jasmine.any(Promise));
 
@@ -23,7 +23,7 @@ describe('EventModel', () => {
     });
 
     it('resolves once everything is loaded', done => {
-      const eventPromise = (ClassMock.build(EventModel, XhrMock.VALID_IDENTIFIER)).fetch();
+      const eventPromise = (ClassMock.build(EventModel, XhrMock.EVENT_ID)).fetch();
 
       expect(eventPromise).toEqual(jasmine.any(Promise));
 
@@ -31,7 +31,7 @@ describe('EventModel', () => {
         expect(event).toEqual(jasmine.any(EventModel));
 
         // data is loaded.
-        AssertUtil.assertModelLoaded(event, XhrMock.VALID_EVENT.data);
+        AssertUtil.assertModelLoaded(event, XhrMock.EVENT.data);
 
         done();
       }).catch(e => {
