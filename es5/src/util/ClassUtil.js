@@ -3,10 +3,15 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.Symbols = void 0;
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _Errors = require('../core/Errors');
+
+var Symbols = exports.Symbols = {
+  disableSymbolMerge: Symbol('disableSymbolMerge')
+};
 
 function _mergeClass(receivingClass, givingPrototype) {
   if (givingPrototype === Object.prototype) {
@@ -31,6 +36,14 @@ function _mergeClass(receivingClass, givingPrototype) {
 
     Object.defineProperty(receivingPrototype, propertyName, Object.getOwnPropertyDescriptor(givingPrototype, propertyName));
   });
+
+  if (givingPrototype[Symbols.disableSymbolMerge] !== true) {
+    var symbols = Object.getOwnPropertySymbols(givingPrototype);
+
+    symbols.forEach(function (symbol) {
+      Object.defineProperty(receivingPrototype, symbol, Object.getOwnPropertyDescriptor(givingPrototype, symbol));
+    });
+  }
 }
 
 /**
@@ -102,6 +115,4 @@ var ClassUtil = {
   }
 };
 
-Object.freeze(ClassUtil);
-
-exports.default = ClassUtil;
+exports.default = Object.freeze(ClassUtil);

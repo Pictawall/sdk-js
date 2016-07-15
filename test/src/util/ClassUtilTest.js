@@ -53,6 +53,8 @@ describe('ClassUtil', () => {
       expect(() => ClassUtil.merge(Receiver, { sayHi() {} })).toThrow();
     });
 
+    const aSymbol = Symbol('aSymbol');
+
     describe('Class merge', () => {
 
       class MixinClass {
@@ -64,6 +66,10 @@ describe('ClassUtil', () => {
 
         get john() {
           return 'hi';
+        }
+
+        [aSymbol]() {
+          return 'Symbol reporting for duty ?';
         }
 
         static staticMethodA() {
@@ -87,6 +93,7 @@ describe('ClassUtil', () => {
         const receiver = new Receiver();
         expect(receiver.instanceMethodX()).toBe('IAMX');
         expect(receiver.instanceMethodA()).toBe('IAMA');
+        expect(receiver[aSymbol]()).toBe('Symbol reporting for duty ?');
         expect(receiver.john).toBe('hi');
       });
 
@@ -110,6 +117,10 @@ describe('ClassUtil', () => {
 
         instanceMethodB() {
           return 'IAMB';
+        },
+
+        [aSymbol]() {
+          return 'Symbol reporting for duty ?';
         }
       };
 
@@ -130,6 +141,7 @@ describe('ClassUtil', () => {
         const receiver = new Receiver();
         expect(receiver.instanceMethodZ()).toBe('IAMZ');
         expect(receiver.instanceMethodB()).toBe('IAMB');
+        expect(receiver[aSymbol]()).toBe('Symbol reporting for duty ?');
         expect(receiver.john).toBe('hi');
       });
 

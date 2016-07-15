@@ -8,6 +8,8 @@ var _ClassUtil2 = _interopRequireDefault(_ClassUtil);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 describe('ClassUtil', function () {
@@ -80,6 +82,8 @@ describe('ClassUtil', function () {
       }).toThrow();
     });
 
+    var aSymbol = Symbol('aSymbol');
+
     describe('Class merge', function () {
       var MixinClass = function () {
         function MixinClass() {
@@ -90,6 +94,11 @@ describe('ClassUtil', function () {
           key: 'instanceMethodA',
           value: function instanceMethodA() {
             return 'IAMA'; // not a reddit reference.
+          }
+        }, {
+          key: aSymbol,
+          value: function value() {
+            return 'Symbol reporting for duty ?';
           }
         }, {
           key: 'john',
@@ -129,6 +138,7 @@ describe('ClassUtil', function () {
         var receiver = new Receiver();
         expect(receiver.instanceMethodX()).toBe('IAMX');
         expect(receiver.instanceMethodA()).toBe('IAMA');
+        expect(receiver[aSymbol]()).toBe('Symbol reporting for duty ?');
         expect(receiver.john).toBe('hi');
       });
 
@@ -143,7 +153,7 @@ describe('ClassUtil', function () {
 
     describe('Object merge', function () {
 
-      var MixinObject = {
+      var MixinObject = _defineProperty({
         constructor: function constructor() {},
 
 
@@ -154,7 +164,9 @@ describe('ClassUtil', function () {
         instanceMethodB: function instanceMethodB() {
           return 'IAMB';
         }
-      };
+      }, aSymbol, function () {
+        return 'Symbol reporting for duty ?';
+      });
 
       var Receiver = function () {
         function Receiver() {
@@ -179,6 +191,7 @@ describe('ClassUtil', function () {
         var receiver = new Receiver();
         expect(receiver.instanceMethodZ()).toBe('IAMZ');
         expect(receiver.instanceMethodB()).toBe('IAMB');
+        expect(receiver[aSymbol]()).toBe('Symbol reporting for duty ?');
         expect(receiver.john).toBe('hi');
       });
 
