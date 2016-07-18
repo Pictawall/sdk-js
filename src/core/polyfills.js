@@ -1,6 +1,7 @@
 'use strict';
 
 import FetchShim from './fetch';
+import URLSearchParams from './URLSearchParams';
 import Sdk from './Sdk';
 
 if (typeof require.ensure !== 'function') {
@@ -26,6 +27,7 @@ export default function () {
 
     // global.fetch
     polyfillPromises.push(FetchShim.load());
+    polyfillPromises.push(URLSearchParams.load());
 
     // Symbol
     if (typeof Symbol === 'undefined') {

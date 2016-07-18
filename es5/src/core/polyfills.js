@@ -15,6 +15,7 @@ exports.default = function () {
 
     // global.fetch
     polyfillPromises.push(_fetch2.default.load());
+    polyfillPromises.push(_URLSearchParams2.default.load());
 
     // Symbol
     if (typeof Symbol === 'undefined') {
@@ -122,6 +123,10 @@ exports.default = function () {
 var _fetch = require('./fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);
+
+var _URLSearchParams = require('./URLSearchParams');
+
+var _URLSearchParams2 = _interopRequireDefault(_URLSearchParams);
 
 var _Sdk = require('./Sdk');
 

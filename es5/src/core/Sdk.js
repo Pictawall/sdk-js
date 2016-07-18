@@ -14,13 +14,13 @@ var _fetch = require('./fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
+var _URLSearchParams = require('./URLSearchParams');
+
+var _URLSearchParams2 = _interopRequireDefault(_URLSearchParams);
+
 var _polyfills = require('./polyfills');
 
 var _polyfills2 = _interopRequireDefault(_polyfills);
-
-var _qsLite = require('qs-lite');
-
-var _qsLite2 = _interopRequireDefault(_qsLite);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -155,26 +155,56 @@ var Sdk = function () {
      *
      * @param {!String} path - The API endpoint. e. g. "/events"
      * @param {Object} [parameters = {}] - The options to give to {@link Global.fetch}.
-     * @param {Object} [parameters.pathParameters] - Parameters to insert in the path using {@link StringUtil#format}.
-     * @param {Object} [parameters.queryParameters] - List of key -> value parameters to add to the url as query parameters.
+     * @param {Object} [parameters.pathParameters = {}] - Parameters to insert in the path using {@link StringUtil#format}.
+     * @param {Object} [parameters.queryParameters = {}] - List of key -> value parameters to add to the url as query parameters.
      *
      * @return {!Promise.<Response>}
      */
 
   }, {
     key: 'callApi',
-    value: function callApi(path) {
-      var parameters = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
+    value: function callApi(path, parameters) {
+      var pathParameters = parameters.pathParameters || {};
+      var queryParameters = parameters.queryParameters || {};
 
-      path = _StringUtil2.default.format(path, true, parameters.pathParameters);
+      path = _StringUtil2.default.format(path, true, pathParameters);
 
       if (path.endsWith('/')) {
         path = path.slice(0, -1);
       }
 
-      var queryString = _qsLite2.default.stringify(parameters.queryParameters);
-      if (queryString) {
-        path += '?' + queryString;
+      var pathParameterKeys = Object.getOwnPropertyNames(queryParameters);
+      if (pathParameterKeys.length > 0) {
+        var qsBuilder = new _URLSearchParams2.default.URLSearchParams();
+
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+
+        var _iteratorError2 = void 0;
+
+        try {
+          for (var _iterator2 = pathParameterKeys[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var key = _step2.value;
+
+            var value = queryParameters[key];
+            qsBuilder.set(key, value);
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+              _iterator2.return();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+
+        path += '?' + qsBuilder.toString();
       }
 
       return _fetch2.default.fetch(this.apiBaseUrl + path, parameters);
@@ -182,7 +212,7 @@ var Sdk = function () {
 
     /**
      * The promise implementation to use inside the SDK, replace this field by your promise implementation.
-     * @type {Promise}
+     * @type {function}
      */
 
   }], [{

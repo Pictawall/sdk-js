@@ -1,7 +1,7 @@
 'use strict';
 
-const qs = require('qs-lite');
 const _ = require('lodash');
+const qs = require('qs-lite');
 
 const mockedRoutes = [];
 
@@ -20,6 +20,8 @@ class FakeResponse {
 module.exports = {
   fetch(requestPath) {
     const [path, queryString] = requestPath.split('?');
+
+    // TODO replace qs with URL
     const queryParameters = qs.parse(queryString);
 
     const route = mockedRoutes.find(mockedRoute => {
