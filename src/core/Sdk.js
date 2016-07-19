@@ -100,9 +100,9 @@ class Sdk {
    * @param {Object} [parameters.pathParameters = {}] - Parameters to insert in the path using {@link StringUtil#format}.
    * @param {Object} [parameters.queryParameters = {}] - List of key -> value parameters to add to the url as query parameters.
    *
-   * @return {!Promise.<Response>}
+   * @return {!Response}
    */
-  callApi(path, parameters) {
+  async callApi(path, parameters) {
     const pathParameters = parameters.pathParameters || {};
     const queryParameters = parameters.queryParameters || {};
 
@@ -124,11 +124,11 @@ class Sdk {
       path += '?' + qsBuilder.toString();
     }
 
-    return FetchShim
-      .fetch(this.apiBaseUrl + path, parameters)
-      .catch(e => {
-        throw new NetworkError(this, e);
-      });
+    try {
+      return await FetchShim.fetch(this.apiBaseUrl + path, parameters);
+    } catch (e) {
+      throw new NetworkError(this, e);
+    }
   }
 
   /**

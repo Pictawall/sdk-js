@@ -1,5 +1,7 @@
 import AdModel from '../models/AdModel';
 import PictawallCollection from './abstract/PictawallCollection';
+import updateReplaceMixin from '../mixins/updateReplaceMixin';
+import ClassUtil from '../util/ClassUtil';
 
 /**
  * Collection of event ads.
@@ -25,6 +27,8 @@ class AdCollection extends PictawallCollection {
     return new AdModel(this.sdk);
   }
 }
+
+ClassUtil.merge(AdCollection, updateReplaceMixin);
 
 export default AdCollection;
 

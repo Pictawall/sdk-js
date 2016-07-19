@@ -4,6 +4,7 @@ import AssetModel from '../models/AssetModel';
 import Sdk from '../core/Sdk';
 import { SdkError } from '../core/Errors';
 import PictawallPagedCollection from './abstract/PictawallPagedCollection';
+import { Symbols as CollectionSymbols } from './abstract/BaseCollection';
 
 /**
  * OrderBy value => Asset property mapping.
@@ -88,26 +89,21 @@ class AssetCollection extends PictawallPagedCollection {
    * <p>Use {@link #hasFeaturedAsset} to check if this event has a featured asset or not.</p>
    *
    * @throws SdkError The event hasn't been populated.
-   * @returns {!Promise.<UserModel>}
+   * @returns {UserModel}
    */
-  getFeaturedAsset() {
-    try {
-      if (!this.hasFeaturedAsset()) {
-        return Sdk.Promise.resolve(null);
-      }
-
-      const localResult = this.findOne({ featured: true });
-      if (localResult != null) {
-        return Sdk.Promise.resolve(localResult);
-      }
-
-      return this.fetchById(this._event.getProperty('featuredAssetId'));
-    } catch (e) {
-      return Sdk.Promise.reject(e);
+  async getFeaturedAsset() {
+    if (!this.hasFeaturedAsset()) {
+      return null;
     }
+
+    const localResult = this.findOne({ featured: true });
+    if (localResult != null) {
+      return localResult;
+    }
+
+    //noinspection JSValidateTypes
+    return this.fetchById(this._event.getProperty('featuredAssetId'));
   }
-
-
 
   /**
    * @inheritDoc
@@ -131,6 +127,19 @@ class AssetCollection extends PictawallPagedCollection {
    */
   createModel() {
     return new AssetModel(this._event);
+  }
+
+  /**
+   * @inheritDoc
+   */
+  async [CollectionSymbols.getUpdatedItems](since) {
+    const [parent, removed] = promise.all([
+      super[CollectionSymbols.getUpdatedItems](since),
+      this.fetchRaw(Object.assign(this.fetchOptions, { since }), { modelId: 'deleted' })
+    ]);
+
+    parent.removed = removed;
+    return parent;
   }
 }
 
