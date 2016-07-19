@@ -12,15 +12,32 @@ export class PictawallError extends Error {
 
   /**
    * @param {*} thrower - The thrower of this error.
-   * @param {!String} message - A message to display.
-   * @param [errorArgs] errorArgs - The list of args to pass to the Error constructor after the message parameter.
+   * @param {!(String|Error)} message - A message to display.
+   * @param {!(Error|String)} previousException - The previous error message.
    */
-  constructor(thrower, message, ...errorArgs) {
-    super(`[${ClassUtil.getName(thrower)}] ${message}`, ...errorArgs);
+  constructor(thrower, message, previousException) {
+    if (typeof message === 'object' || typeof previousException === 'string') {
+      const tmp = previousException;
+      previousException = message;
+      message = tmp;
+    }
+
+    if (!message) {
+      message = '<No Message Specified>';
+    }
+
+    super(`[${ClassUtil.getName(thrower)}] ${message}`);
 
     this.name = this.constructor.name;
+    this.previousException = previousException;
+  }
+
+  toString() {
+    return 'Hey';
   }
 }
+
+PictawallError.prototype.name = 'PictawallError';
 
 /**
  * Error to use for internal SDK errors.
@@ -33,3 +50,16 @@ export class SdkError extends PictawallError {
     super(...args);
   }
 }
+
+SdkError.prototype.name = 'SdkError';
+
+/**
+ * Error to use for connectivity problems.
+ */
+export class NetworkError extends PictawallError {
+  constructor(...args) {
+    super(...args);
+  }
+}
+
+NetworkError.prototype.name = 'NetworkError';

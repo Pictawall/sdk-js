@@ -4,7 +4,7 @@ import StringUtil from '../util/StringUtil';
 import FetchShim from './fetch';
 import QueryStringShim from './URLSearchParams';
 import loadPolyfills from './polyfills';
-
+import { NetworkError } from './Errors';
 /**
  * @private
  */
@@ -124,7 +124,11 @@ class Sdk {
       path += '?' + qsBuilder.toString();
     }
 
-    return FetchShim.fetch(this.apiBaseUrl + path, parameters);
+    return FetchShim
+      .fetch(this.apiBaseUrl + path, parameters)
+      .catch(e => {
+        throw new NetworkError(this, e);
+      });
   }
 
   /**
