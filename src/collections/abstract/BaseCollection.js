@@ -30,6 +30,7 @@ const instances = new WeakMap();
  * @implements Iterable
  *
  * @property {!Sdk} sdk
+ * @property {!function} createModel
  */
 class BaseCollection {
 

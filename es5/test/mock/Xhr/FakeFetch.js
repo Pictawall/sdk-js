@@ -39,6 +39,8 @@ module.exports = {
     var path = _requestPath$split2[0];
     var queryString = _requestPath$split2[1];
 
+    // TODO replace qs with URL
+
     var queryParameters = qs.parse(queryString);
 
     var route = mockedRoutes.find(function (mockedRoute) {

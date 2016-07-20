@@ -8,11 +8,13 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === void 0) { var parent = Object.getPrototypeOf(object); if (parent === null) { return void 0; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === void 0) { return void 0; } return getter.call(receiver); } };
 
-var _FetchMixin = require('../../mixins/FetchMixin');
-
 var _PagedCollection2 = require('./PagedCollection');
 
 var _PagedCollection3 = _interopRequireDefault(_PagedCollection2);
+
+var _FetchMixin = require('../../mixins/FetchMixin');
+
+var _BaseCollection = require('./BaseCollection');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -51,6 +53,34 @@ var PictawallPagedCollection = function (_PagedCollection) {
     key: _FetchMixin.Symbols.parseResponse,
     value: function value(response) {
       return _get(Object.getPrototypeOf(PictawallPagedCollection.prototype), _FetchMixin.Symbols.parseResponse, this).call(this, response).data;
+    }
+
+    /**
+     * @inheritDoc
+     */
+
+  }, {
+    key: _BaseCollection.Symbols.getUpdatedItems,
+    value: function value(since) {
+      return regeneratorRuntime.async(function value$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              _context.next = 2;
+              return regeneratorRuntime.awrap(this.fetchRaw(Object.assign(this.fetchOptions, { since: since })));
+
+            case 2:
+              _context.t0 = _context.sent;
+              return _context.abrupt('return', {
+                added: _context.t0
+              });
+
+            case 4:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, null, this);
     }
   }]);
 

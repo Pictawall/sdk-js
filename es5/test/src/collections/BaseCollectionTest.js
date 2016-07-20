@@ -21,6 +21,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var ClassMock = require('../../mock/ClassMock');
 var XhrMock = require('../../mock/XhrMock');
 
+/**
+ * @class FakeCollection
+ * @extends BaseCollection
+ */
+
 var FakeCollection = function (_BaseCollection) {
   _inherits(FakeCollection, _BaseCollection);
 
@@ -32,6 +37,11 @@ var FakeCollection = function (_BaseCollection) {
     _this.apiPath = '/events/' + XhrMock.EVENT_ID + '/ads';
     return _this;
   }
+
+  /**
+   * @inheritDoc
+   */
+
 
   _createClass(FakeCollection, [{
     key: 'createModel',

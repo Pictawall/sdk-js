@@ -1,13 +1,12 @@
 'use strict';
 
+import global from './global';
 import FetchShim from './fetch';
 import URLSearchParams from './URLSearchParams';
 import Sdk from './Sdk';
 
 if (typeof require.ensure !== 'function') {
-  require.ensure = function (dependencies, callback) {
-    callback(require);
-  };
+  require.ensure = (ignored, callback) => callback(require);
 }
 
 let loadingPromise = null;
@@ -120,6 +119,16 @@ export default function () {
 
           resolve();
         }, 'WeakMap-polyfill');
+      }));
+    }
+
+    // Generators
+    if (typeof regeneratorRuntime === 'undefined') {
+      polyfillPromises.push(new Sdk.Promise(resolve => {
+        require.ensure(['regenerator-runtime'], require => {
+          global.regeneratorRuntime = require('regenerator-runtime');
+          resolve();
+        }, 'RegeneratorRuntime');
       }));
     }
 

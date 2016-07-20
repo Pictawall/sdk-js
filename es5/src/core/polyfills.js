@@ -113,12 +113,26 @@ exports.default = function () {
       }));
     }
 
+    // Generators
+    if (typeof regeneratorRuntime === 'undefined') {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
+        require.ensure(['regenerator-runtime'], function (require) {
+          _global2.default.regeneratorRuntime = require('regenerator-runtime');
+          resolve();
+        }, 'RegeneratorRuntime');
+      }));
+    }
+
     loadingPromise = _Sdk2.default.Promise.all(polyfillPromises).then(function () {}); // resolve nothing
     return loadingPromise;
   } catch (e) {
     return _Sdk2.default.Promise.reject(e);
   }
 };
+
+var _global = require('./global');
+
+var _global2 = _interopRequireDefault(_global);
 
 var _fetch = require('./fetch');
 
@@ -135,8 +149,8 @@ var _Sdk2 = _interopRequireDefault(_Sdk);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (typeof require.ensure !== 'function') {
-  require.ensure = function (dependencies, callback) {
-    callback(require);
+  require.ensure = function (ignored, callback) {
+    return callback(require);
   };
 }
 

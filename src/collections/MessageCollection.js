@@ -28,7 +28,7 @@ class MessageCollection extends PictawallCollection {
   }
 }
 
-ClassUtil.merge(AdCollection, updateReplaceMixin);
+ClassUtil.merge(MessageCollection, updateReplaceMixin);
 
 export default MessageCollection;
 

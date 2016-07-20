@@ -24,6 +24,8 @@ var _PictawallPagedCollection = require('./abstract/PictawallPagedCollection');
 
 var _PictawallPagedCollection2 = _interopRequireDefault(_PictawallPagedCollection);
 
+var _BaseCollection = require('./abstract/BaseCollection');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -131,23 +133,40 @@ var AssetCollection = function (_PictawallPagedCollec) {
      * <p>Use {@link #hasFeaturedAsset} to check if this event has a featured asset or not.</p>
      *
      * @throws SdkError The event hasn't been populated.
-     * @returns {!Promise.<UserModel>}
+     * @returns {UserModel}
      */
     value: function getFeaturedAsset() {
-      try {
-        if (!this.hasFeaturedAsset()) {
-          return _Sdk2.default.Promise.resolve(null);
-        }
+      var localResult;
+      return regeneratorRuntime.async(function getFeaturedAsset$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              if (this.hasFeaturedAsset()) {
+                _context.next = 2;
+                break;
+              }
 
-        var localResult = this.findOne({ featured: true });
-        if (localResult != null) {
-          return _Sdk2.default.Promise.resolve(localResult);
-        }
+              return _context.abrupt('return', null);
 
-        return this.fetchById(this._event.getProperty('featuredAssetId'));
-      } catch (e) {
-        return _Sdk2.default.Promise.reject(e);
-      }
+            case 2:
+              localResult = this.findOne({ featured: true });
+
+              if (!(localResult != null)) {
+                _context.next = 5;
+                break;
+              }
+
+              return _context.abrupt('return', localResult);
+
+            case 5:
+              return _context.abrupt('return', this.fetchById(this._event.getProperty('featuredAssetId')));
+
+            case 6:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, null, this);
     }
 
     /**
@@ -163,6 +182,36 @@ var AssetCollection = function (_PictawallPagedCollec) {
      */
     value: function createModel() {
       return new _AssetModel2.default(this._event);
+    }
+
+    /**
+     * @inheritDoc
+     */
+
+  }, {
+    key: _BaseCollection.Symbols.getUpdatedItems,
+    value: function value(since) {
+      var _promise$all, _promise$all2, parent, removed;
+
+      return regeneratorRuntime.async(function value$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              _promise$all = promise.all([_get(Object.getPrototypeOf(AssetCollection.prototype), _BaseCollection.Symbols.getUpdatedItems, this).call(this, since), this.fetchRaw(Object.assign(this.fetchOptions, { since: since }), { modelId: 'deleted' })]);
+              _promise$all2 = _slicedToArray(_promise$all, 2);
+              parent = _promise$all2[0];
+              removed = _promise$all2[1];
+
+
+              parent.removed = removed;
+              return _context2.abrupt('return', parent);
+
+            case 6:
+            case 'end':
+              return _context2.stop();
+          }
+        }
+      }, null, this);
     }
   }, {
     key: 'sortOrder',

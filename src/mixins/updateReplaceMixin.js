@@ -12,9 +12,9 @@ export default {
    * @inheritDoc
    */
   async [CollectionSymbols.getUpdatedItems]() {
-    const models = this.fetchRaw(this.fetchOptions);
+    let modelList = await this.fetchRaw(this.fetchOptions);
 
     // TODO optimise
-    return { removed: models, added: models };
+    return { removed: modelList, added: modelList };
   }
-}
+};

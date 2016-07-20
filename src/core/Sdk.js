@@ -5,6 +5,7 @@ import FetchShim from './fetch';
 import QueryStringShim from './URLSearchParams';
 import loadPolyfills from './polyfills';
 import { NetworkError } from './Errors';
+
 /**
  * @private
  */

@@ -6,34 +6,28 @@ var _polyfills2 = _interopRequireDefault(_polyfills);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var XhrMock = require('./mock/XhrMock');
-
 require('./src/mixins/MongoQuery/MongoFinderTest');
 require('./src/mixins/MongoQuery/mongoWhereParserTest');
 
-describe('API', function () {
-  beforeAll(function (done) {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
+(0, _polyfills2.default)().then(function () {
+  require('./mock/XhrMock').init();
 
-    return (0, _polyfills2.default)().then(function () {
-      XhrMock.init();
-      done();
-    }).catch(function (e) {
-      fail(e);
-      done();
+  describe('API', function () {
+    beforeAll(function () {
+      return jasmine.DEFAULT_TIMEOUT_INTERVAL = 2500;
     });
-  });
 
-  require('./src/core/SdkTest');
-  require('./src/models/EventModelTest');
-  require('./src/models/AssetModelTest');
-  require('./src/models/UserModelTest');
+    require('./src/core/SdkTest');
+    require('./src/models/EventModelTest');
+    require('./src/models/AssetModelTest');
+    require('./src/models/UserModelTest');
 
-  require('./src/collections/BaseCollectionTest');
-  require('./src/collections/AssetCollectionTest');
+    require('./src/collections/BaseCollectionTest');
+    require('./src/collections/AssetCollectionTest');
 
-  afterAll(function () {
-    return XhrMock.destroy();
+    afterAll(function () {
+      return require('./mock/XhrMock').destroy();
+    });
   });
 });
 

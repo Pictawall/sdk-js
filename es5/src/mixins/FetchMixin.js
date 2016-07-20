@@ -45,27 +45,63 @@ var FetchMixin = {
    */
 
   fetchRaw: function fetchRaw(queryParameters, pathParameters) {
-    var _this = this;
+    var response, body;
+    return regeneratorRuntime.async(function fetchRaw$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            if (this.apiPath) {
+              _context.next = 2;
+              break;
+            }
 
-    if (!this.apiPath) {
-      throw new _Errors.SdkError(this, 'Property apiPath has not been set.');
-    }
+            throw new _Errors.SdkError(this, 'Property "apiPath" is not defined.');
 
-    var promise = this.sdk.callApi(this.apiPath, { queryParameters: queryParameters, pathParameters: pathParameters }).then(function (response) {
-      if (!response.ok) {
-        throw new _Errors.SdkError(_this, 'API responded with http code ' + response.status + ' for endpoint "' + response.url + '"');
+          case 2:
+            if (this.sdk) {
+              _context.next = 4;
+              break;
+            }
+
+            throw new _Errors.SdkError(this, 'Property "sdk" is not defined');
+
+          case 4:
+            _context.next = 6;
+            return regeneratorRuntime.awrap(this.sdk.callApi(this.apiPath, { queryParameters: queryParameters, pathParameters: pathParameters }));
+
+          case 6:
+            response = _context.sent;
+
+            if (response.ok) {
+              _context.next = 9;
+              break;
+            }
+
+            throw new _Errors.ApiError(this, 'API responded with http code ' + response.status + ' for endpoint "' + response.url + '"', response);
+
+          case 9:
+            _context.next = 11;
+            return regeneratorRuntime.awrap(response.json());
+
+          case 11:
+            body = _context.sent;
+
+            if (!(typeof this[Symbols.parseResponse] !== 'function')) {
+              _context.next = 14;
+              break;
+            }
+
+            return _context.abrupt('return', body);
+
+          case 14:
+            return _context.abrupt('return', this[Symbols.parseResponse](body));
+
+          case 15:
+          case 'end':
+            return _context.stop();
+        }
       }
-
-      return response.json();
-    });
-
-    if (typeof this[Symbols.parseResponse] !== 'function') {
-      return promise;
-    }
-
-    return promise.then(function (json) {
-      return _this[Symbols.parseResponse](json);
-    });
+    }, null, this);
   }
 };
 

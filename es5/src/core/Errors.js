@@ -3,7 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.SdkError = exports.PictawallError = void 0;
+exports.ApiError = exports.NetworkError = exports.SdkError = exports.PictawallError = void 0;
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 var _ClassUtil = require('../util/ClassUtil');
 
@@ -22,6 +24,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  *
  * @class PictawallError
  * @extends Error
+ *
+ * @property {Error} previousException - The exception that caused this one.
+ * @property {*} thrower - The instance which throwed the exception.
  */
 
 var PictawallError = exports.PictawallError = function (_Error) {
@@ -29,27 +34,34 @@ var PictawallError = exports.PictawallError = function (_Error) {
 
   /**
    * @param {*} thrower - The thrower of this error.
-   * @param {!String} message - A message to display.
-   * @param [errorArgs] errorArgs - The list of args to pass to the Error constructor after the message parameter.
+   * @param {!(String|Error)} message - A message to display.
+   * @param {!(Error|String)} [previousException] - The previous error message.
    */
 
-  function PictawallError(thrower, message) {
-    var _Object$getPrototypeO;
-
+  function PictawallError(thrower, message, previousException) {
     _classCallCheck(this, PictawallError);
 
-    for (var _len = arguments.length, errorArgs = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
-      errorArgs[_key - 2] = arguments[_key];
+    if ((typeof message === 'undefined' ? 'undefined' : _typeof(message)) === 'object' || typeof previousException === 'string') {
+      var tmp = previousException;
+      previousException = message;
+      message = tmp;
     }
 
-    var _this = _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(PictawallError)).call.apply(_Object$getPrototypeO, [this, '[' + _ClassUtil2.default.getName(thrower) + '] ' + message].concat(errorArgs)));
+    if (!message) {
+      message = '<No Message Specified>';
+    }
 
-    _this.name = _this.constructor.name;
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PictawallError).call(this, '[' + _ClassUtil2.default.getName(thrower) + '] ' + message));
+
+    _ClassUtil2.default.defineFinal(_this, 'thrower', thrower);
+    _ClassUtil2.default.defineFinal(_this, 'previousException', previousException);
     return _this;
   }
 
   return PictawallError;
 }(Error);
+
+PictawallError.prototype.name = 'PictawallError';
 
 /**
  * Error to use for internal SDK errors.
@@ -58,21 +70,81 @@ var PictawallError = exports.PictawallError = function (_Error) {
  * @extends PictawallError
  */
 
-
 var SdkError = exports.SdkError = function (_PictawallError) {
   _inherits(SdkError, _PictawallError);
 
   function SdkError() {
-    var _Object$getPrototypeO2;
+    var _Object$getPrototypeO;
 
     _classCallCheck(this, SdkError);
+
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(SdkError)).call.apply(_Object$getPrototypeO, [this].concat(args)));
+  }
+
+  return SdkError;
+}(PictawallError);
+
+SdkError.prototype.name = 'SdkError';
+
+/**
+ * Error to use for connectivity problems.
+ *
+ * @class NetworkError
+ * @extends PictawallError
+ */
+
+var NetworkError = exports.NetworkError = function (_PictawallError2) {
+  _inherits(NetworkError, _PictawallError2);
+
+  function NetworkError() {
+    var _Object$getPrototypeO2;
+
+    _classCallCheck(this, NetworkError);
 
     for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
       args[_key2] = arguments[_key2];
     }
 
-    return _possibleConstructorReturn(this, (_Object$getPrototypeO2 = Object.getPrototypeOf(SdkError)).call.apply(_Object$getPrototypeO2, [this].concat(args)));
+    return _possibleConstructorReturn(this, (_Object$getPrototypeO2 = Object.getPrototypeOf(NetworkError)).call.apply(_Object$getPrototypeO2, [this].concat(args)));
   }
 
-  return SdkError;
+  return NetworkError;
 }(PictawallError);
+
+NetworkError.prototype.name = 'NetworkError';
+
+/**
+ * Error to use for connectivity problems.
+ *
+ * @class ApiError
+ * @extends NetworkError
+ * @property {!Response} response - The fetch response.
+ */
+
+var ApiError = exports.ApiError = function (_NetworkError) {
+  _inherits(ApiError, _NetworkError);
+
+  /**
+   * @param {*} thrower
+   * @param {!(String|Error)} message
+   * @param {!Response} response
+   * @param {!(String|Error)} [previousException]
+   */
+
+  function ApiError(thrower, message, response, previousException) {
+    _classCallCheck(this, ApiError);
+
+    var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(ApiError).call(this, thrower, message, previousException));
+
+    _ClassUtil2.default.defineFinal(_this4, 'response', response);
+    return _this4;
+  }
+
+  return ApiError;
+}(NetworkError);
+
+ApiError.prototype.name = 'ApiError';
