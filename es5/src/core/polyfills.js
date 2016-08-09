@@ -20,8 +20,12 @@ exports.default = function () {
     // Symbol
     if (typeof Symbol === 'undefined') {
       polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
-        require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
-          resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
+        // es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement
+
+        require.ensure(['get-own-property-symbols'], function (require) {
+          // resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
+          require('get-own-property-symbols');
+          resolve();
         }, 'Symbol-polyfill');
       }));
     }
