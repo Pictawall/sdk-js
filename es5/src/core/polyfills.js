@@ -45,17 +45,15 @@ exports.default = function () {
     polyfillPromises.push(mapPromise);
 
     // Map.toJSON
-    polyfillPromises.push(mapPromise.then(function () {
-      return new _Sdk2.default.Promise(function (resolve) {
-        if (Map.prototype.toJSON) {
-          return resolve();
-        }
-
-        require.ensure(['map.prototype.tojson'], function (require) {
-          resolve(require('map.prototype.tojson'));
-        }, 'Map.toJson-polyfill');
-      });
-    }));
+    // polyfillPromises.push(mapPromise.then(() => new Sdk.Promise(resolve => {
+    //   if (Map.prototype.toJSON) {
+    //     return resolve();
+    //   }
+    //
+    //   require.ensure(['map.prototype.tojson'], require => {
+    //     resolve(require('map.prototype.tojson'));
+    //   }, 'Map.toJson-polyfill');
+    // })));
 
     // Array.includes
     if (!Array.prototype.includes) {
