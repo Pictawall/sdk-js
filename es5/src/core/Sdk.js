@@ -14,13 +14,15 @@ var _fetch = require('./fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);
 
+var _URLSearchParams = require('./URLSearchParams');
+
+var _URLSearchParams2 = _interopRequireDefault(_URLSearchParams);
+
 var _polyfills = require('./polyfills');
 
 var _polyfills2 = _interopRequireDefault(_polyfills);
 
-var _qsLite = require('qs-lite');
-
-var _qsLite2 = _interopRequireDefault(_qsLite);
+var _Errors = require('./Errors');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -155,34 +157,112 @@ var Sdk = function () {
      *
      * @param {!String} path - The API endpoint. e. g. "/events"
      * @param {Object} [parameters = {}] - The options to give to {@link Global.fetch}.
-     * @param {Object} [parameters.pathParameters] - Parameters to insert in the path using {@link StringUtil#format}.
-     * @param {Object} [parameters.queryParameters] - List of key -> value parameters to add to the url as query parameters.
+     * @param {Object} [parameters.pathParameters = {}] - Parameters to insert in the path using {@link StringUtil#format}.
+     * @param {Object} [parameters.queryParameters = {}] - List of key -> value parameters to add to the url as query parameters.
      *
-     * @return {!Promise.<Response>}
+     * @return {!Response}
      */
 
   }, {
     key: 'callApi',
-    value: function callApi(path) {
-      var parameters = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
+    value: function callApi(path, parameters) {
+      var pathParameters, queryParameters, pathParameterKeys, qsBuilder, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, key, value;
 
-      path = _StringUtil2.default.format(path, true, parameters.pathParameters);
+      return regeneratorRuntime.async(function callApi$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              pathParameters = parameters.pathParameters || {};
+              queryParameters = parameters.queryParameters || {};
 
-      if (path.endsWith('/')) {
-        path = path.slice(0, -1);
-      }
 
-      var queryString = _qsLite2.default.stringify(parameters.queryParameters);
-      if (queryString) {
-        path += '?' + queryString;
-      }
+              path = _StringUtil2.default.format(path, true, pathParameters);
 
-      return _fetch2.default.fetch(this.apiBaseUrl + path, parameters);
+              if (path.endsWith('/')) {
+                path = path.slice(0, -1);
+              }
+
+              pathParameterKeys = Object.getOwnPropertyNames(queryParameters);
+
+              if (!(pathParameterKeys.length > 0)) {
+                _context.next = 27;
+                break;
+              }
+
+              qsBuilder = new _URLSearchParams2.default.URLSearchParams();
+              _iteratorNormalCompletion2 = true;
+              _didIteratorError2 = false;
+              _iteratorError2 = void 0;
+              _context.prev = 10;
+
+
+              for (_iterator2 = pathParameterKeys[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                key = _step2.value;
+                value = queryParameters[key];
+
+                qsBuilder.set(key, value);
+              }
+
+              _context.next = 18;
+              break;
+
+            case 14:
+              _context.prev = 14;
+              _context.t0 = _context['catch'](10);
+              _didIteratorError2 = true;
+              _iteratorError2 = _context.t0;
+
+            case 18:
+              _context.prev = 18;
+              _context.prev = 19;
+
+              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+              }
+
+            case 21:
+              _context.prev = 21;
+
+              if (!_didIteratorError2) {
+                _context.next = 24;
+                break;
+              }
+
+              throw _iteratorError2;
+
+            case 24:
+              return _context.finish(21);
+
+            case 25:
+              return _context.finish(18);
+
+            case 26:
+              path += '?' + qsBuilder.toString();
+
+            case 27:
+              _context.prev = 27;
+              _context.next = 30;
+              return regeneratorRuntime.awrap(_fetch2.default.fetch(this.apiBaseUrl + path, parameters));
+
+            case 30:
+              return _context.abrupt('return', _context.sent);
+
+            case 33:
+              _context.prev = 33;
+              _context.t1 = _context['catch'](27);
+              throw new _Errors.NetworkError(this, _context.t1);
+
+            case 36:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, null, this, [[10, 14, 18, 26], [19,, 21, 25], [27, 33]]);
     }
 
     /**
      * The promise implementation to use inside the SDK, replace this field by your promise implementation.
-     * @type {Promise}
+     * @type {function}
      */
 
   }], [{

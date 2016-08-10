@@ -206,13 +206,18 @@ var MongoFinder = function () {
     key: '_ensurePending',
     value: function _ensurePending() {
       if (this._ready()) {
-        throw new Error('Cannot change the limit after the query has been executed.');
+        throw new Error('Cannot reconfigure after the query has been executed.');
       }
     }
   }, {
     key: '_ready',
     value: function _ready() {
       return stateMap.get(this).result !== void 0;
+    }
+  }, {
+    key: Symbol.iterator,
+    value: function value() {
+      return this.toArray()[Symbol.iterator];
     }
   }]);
 

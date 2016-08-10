@@ -3,6 +3,7 @@
 import FetchMixin from '../../mixins/FetchMixin';
 import ClassUtil from '../../util/ClassUtil';
 import { SdkError } from '../../core/Errors';
+import MapUtil from '../../util/MapUtil';
 
 /**
  * Maps containing the properties of the models.
@@ -81,7 +82,7 @@ class BaseModel {
   }
 
   toJSON() {
-    return _propertyMaps.get(this).toJSON();
+    return MapUtil.toJson(_propertyMaps.get(this));
   }
 
   /**

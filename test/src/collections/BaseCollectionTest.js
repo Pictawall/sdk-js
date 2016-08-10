@@ -6,6 +6,10 @@ import BaseCollection from '../../../src/collections/abstract/PictawallCollectio
 const ClassMock = require('../../mock/ClassMock');
 const XhrMock = require('../../mock/XhrMock');
 
+/**
+ * @class FakeCollection
+ * @extends BaseCollection
+ */
 class FakeCollection extends BaseCollection {
   constructor(sdk) {
     super(sdk);
@@ -13,6 +17,9 @@ class FakeCollection extends BaseCollection {
     this.apiPath = `/events/${XhrMock.EVENT_ID}/ads`;
   }
 
+  /**
+   * @inheritDoc
+   */
   createModel() {
     return new BaseModel(this.sdk);
   }

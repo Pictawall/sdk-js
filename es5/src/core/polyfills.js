@@ -15,12 +15,17 @@ exports.default = function () {
 
     // global.fetch
     polyfillPromises.push(_fetch2.default.load());
+    polyfillPromises.push(_URLSearchParams2.default.load());
 
     // Symbol
     if (typeof Symbol === 'undefined') {
       polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
-        require.ensure(['es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement'], function (require) {
-          resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
+        // es6-symbol/implement', 'es5-ext/array/#/@@iterator/implement
+
+        require.ensure(['get-own-property-symbols'], function (require) {
+          // resolve([require('es6-symbol/implement'), require('es5-ext/array/#/@@iterator/implement')]);
+          require('get-own-property-symbols');
+          resolve();
         }, 'Symbol-polyfill');
       }));
     }
@@ -40,17 +45,15 @@ exports.default = function () {
     polyfillPromises.push(mapPromise);
 
     // Map.toJSON
-    polyfillPromises.push(mapPromise.then(function () {
-      return new _Sdk2.default.Promise(function (resolve) {
-        if (Map.prototype.toJSON) {
-          return resolve();
-        }
-
-        require.ensure(['map.prototype.tojson'], function (require) {
-          resolve(require('map.prototype.tojson'));
-        }, 'Map.toJson-polyfill');
-      });
-    }));
+    // polyfillPromises.push(mapPromise.then(() => new Sdk.Promise(resolve => {
+    //   if (Map.prototype.toJSON) {
+    //     return resolve();
+    //   }
+    //
+    //   require.ensure(['map.prototype.tojson'], require => {
+    //     resolve(require('map.prototype.tojson'));
+    //   }, 'Map.toJson-polyfill');
+    // })));
 
     // Array.includes
     if (!Array.prototype.includes) {
@@ -112,6 +115,16 @@ exports.default = function () {
       }));
     }
 
+    // Generators
+    if (typeof regeneratorRuntime === 'undefined') {
+      polyfillPromises.push(new _Sdk2.default.Promise(function (resolve) {
+        require.ensure(['regenerator-runtime'], function (require) {
+          _global2.default.regeneratorRuntime = require('regenerator-runtime');
+          resolve();
+        }, 'RegeneratorRuntime');
+      }));
+    }
+
     loadingPromise = _Sdk2.default.Promise.all(polyfillPromises).then(function () {}); // resolve nothing
     return loadingPromise;
   } catch (e) {
@@ -119,9 +132,17 @@ exports.default = function () {
   }
 };
 
+var _global = require('./global');
+
+var _global2 = _interopRequireDefault(_global);
+
 var _fetch = require('./fetch');
 
 var _fetch2 = _interopRequireDefault(_fetch);
+
+var _URLSearchParams = require('./URLSearchParams');
+
+var _URLSearchParams2 = _interopRequireDefault(_URLSearchParams);
 
 var _Sdk = require('./Sdk');
 
@@ -130,8 +151,8 @@ var _Sdk2 = _interopRequireDefault(_Sdk);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 if (typeof require.ensure !== 'function') {
-  require.ensure = function (dependencies, callback) {
-    callback(require);
+  require.ensure = function (ignored, callback) {
+    return callback(require);
   };
 }
 

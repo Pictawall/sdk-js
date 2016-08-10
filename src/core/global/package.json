@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "name": "global",
+  "main": "./global.server.js",
+  "browser": "./global.client.js"
+}

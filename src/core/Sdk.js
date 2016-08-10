@@ -2,9 +2,9 @@
 
 import StringUtil from '../util/StringUtil';
 import FetchShim from './fetch';
+import QueryStringShim from './URLSearchParams';
 import loadPolyfills from './polyfills';
-
-import QueryString from 'qs-lite';
+import { NetworkError } from './Errors';
 
 /**
  * @private
@@ -98,29 +98,43 @@ class Sdk {
    *
    * @param {!String} path - The API endpoint. e. g. "/events"
    * @param {Object} [parameters = {}] - The options to give to {@link Global.fetch}.
-   * @param {Object} [parameters.pathParameters] - Parameters to insert in the path using {@link StringUtil#format}.
-   * @param {Object} [parameters.queryParameters] - List of key -> value parameters to add to the url as query parameters.
+   * @param {Object} [parameters.pathParameters = {}] - Parameters to insert in the path using {@link StringUtil#format}.
+   * @param {Object} [parameters.queryParameters = {}] - List of key -> value parameters to add to the url as query parameters.
    *
-   * @return {!Promise.<Response>}
+   * @return {!Response}
    */
-  callApi(path, parameters = {}) {
-    path = StringUtil.format(path, true, parameters.pathParameters);
+  async callApi(path, parameters) {
+    const pathParameters = parameters.pathParameters || {};
+    const queryParameters = parameters.queryParameters || {};
+
+    path = StringUtil.format(path, true, pathParameters);
 
     if (path.endsWith('/')) {
       path = path.slice(0, -1);
     }
 
-    const queryString = QueryString.stringify(parameters.queryParameters);
-    if (queryString) {
-      path += '?' + queryString;
+    const pathParameterKeys = Object.getOwnPropertyNames(queryParameters);
+    if (pathParameterKeys.length > 0) {
+      const qsBuilder = new QueryStringShim.URLSearchParams();
+
+      for (const key of pathParameterKeys) {
+        const value = queryParameters[key];
+        qsBuilder.set(key, value);
+      }
+
+      path += '?' + qsBuilder.toString();
     }
 
-    return FetchShim.fetch(this.apiBaseUrl + path, parameters);
+    try {
+      return await FetchShim.fetch(this.apiBaseUrl + path, parameters);
+    } catch (e) {
+      throw new NetworkError(this, e);
+    }
   }
 
   /**
    * The promise implementation to use inside the SDK, replace this field by your promise implementation.
-   * @type {Promise}
+   * @type {function}
    */
   static get Promise() {
     return Promise;

@@ -1,5 +1,7 @@
 import MessageModel from '../models/MessageModel';
 import PictawallCollection from './abstract/PictawallCollection';
+import updateReplaceMixin from '../mixins/updateReplaceMixin';
+import ClassUtil from '../util/ClassUtil';
 
 /**
  * Collection of event messages.
@@ -25,6 +27,8 @@ class MessageCollection extends PictawallCollection {
     return new MessageModel(this.sdk);
   }
 }
+
+ClassUtil.merge(MessageCollection, updateReplaceMixin);
 
 export default MessageCollection;
 

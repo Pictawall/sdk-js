@@ -18,6 +18,10 @@ var _ClassUtil2 = _interopRequireDefault(_ClassUtil);
 
 var _Errors = require('../../core/Errors');
 
+var _MapUtil = require('../../util/MapUtil');
+
+var _MapUtil2 = _interopRequireDefault(_MapUtil);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -136,7 +140,7 @@ var BaseModel = function () {
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      return _propertyMaps.get(this).toJSON();
+      return _MapUtil2.default.toJson(_propertyMaps.get(this));
     }
 
     /**

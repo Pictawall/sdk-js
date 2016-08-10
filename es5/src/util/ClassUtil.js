@@ -89,7 +89,7 @@ var ClassUtil = {
    */
   merge: function merge(receivingClass) {
     if (typeof receivingClass !== 'function') {
-      throw new Errors.SdkError(this, 'Receiving Class is not a function');
+      throw new _Errors.SdkError(this, 'Receiving Class is not a function');
     }
 
     for (var _len = arguments.length, mixins = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
@@ -99,7 +99,7 @@ var ClassUtil = {
     for (var i = 0; i < mixins.length; i++) {
       var mixin = mixins[i];
       if (mixin == null) {
-        throw new Errors.SdkError(this, 'Invalid mixin n° ' + i + ', not defined.');
+        throw new _Errors.SdkError(this, 'Invalid mixin n°' + i + ', not defined.');
       }
 
       if ((typeof mixin === 'undefined' ? 'undefined' : _typeof(mixin)) === 'object') {
@@ -107,11 +107,48 @@ var ClassUtil = {
       } else if (typeof mixin === 'function') {
         _mergeClass(receivingClass, mixin.prototype);
       } else {
-        throw new Errors.SdkError(this, 'Invalid type for mixin n° ' + i + ', only functions and objects are accepted as mixins.');
+        throw new _Errors.SdkError(this, 'Invalid type for mixin n°' + i + ', only functions and objects are accepted as mixins.');
       }
     }
 
     return receivingClass;
+  },
+
+
+  /**
+   * Adds a final property to an instance.
+   * @param {!Object} instance
+   * @param {!String} propertyName
+   * @param {*} propertyValue
+   *
+   * @return {!Object} instance
+   */
+  defineFinal: function defineFinal(instance, propertyName, propertyValue) {
+    Object.defineProperty(instance, propertyName, {
+      value: propertyValue,
+      writable: false,
+      configurable: false
+    });
+
+    return instance;
+  },
+
+
+  /**
+   * Adds an abstract instance method to a class.
+   * @param {!Function} clazz
+   * @param {!(String|Symbol)} methodName
+   *
+   * @return {!Object} class.
+   */
+  defineAbstract: function defineAbstract(clazz, methodName) {
+    Object.defineProperty(clazz.prototype, methodName, {
+      value: function value() {
+        throw new _Errors.SdkError('#' + methodName + ' not implemented.');
+      }
+    });
+
+    return clazz;
   }
 };
 

@@ -1,6 +1,6 @@
 'use strict';
 
-import { PictawallError } from '../core/Errors';
+import { PictawallError, SdkError } from '../core/Errors';
 
 export const Symbols = {
   disableSymbolMerge: Symbol('disableSymbolMerge')
@@ -80,13 +80,13 @@ const ClassUtil = {
    */
   merge(receivingClass, ...mixins) {
     if (typeof receivingClass !== 'function') {
-      throw new Errors.SdkError(this, 'Receiving Class is not a function');
+      throw new SdkError(this, 'Receiving Class is not a function');
     }
 
     for (let i = 0; i < mixins.length; i++) {
       const mixin = mixins[i];
       if (mixin == null) {
-        throw new Errors.SdkError(this, `Invalid mixin n° ${i}, not defined.`);
+        throw new SdkError(this, `Invalid mixin n°${i}, not defined.`);
       }
 
       if (typeof mixin === 'object') {
@@ -94,11 +94,46 @@ const ClassUtil = {
       } else if (typeof mixin === 'function') {
         _mergeClass(receivingClass, mixin.prototype);
       } else {
-        throw new Errors.SdkError(this, `Invalid type for mixin n° ${i}, only functions and objects are accepted as mixins.`);
+        throw new SdkError(this, `Invalid type for mixin n°${i}, only functions and objects are accepted as mixins.`);
       }
     }
 
     return receivingClass;
+  },
+
+  /**
+   * Adds a final property to an instance.
+   * @param {!Object} instance
+   * @param {!String} propertyName
+   * @param {*} propertyValue
+   *
+   * @return {!Object} instance
+   */
+  defineFinal(instance, propertyName, propertyValue) {
+    Object.defineProperty(instance, propertyName, {
+      value: propertyValue,
+      writable: false,
+      configurable: false
+    });
+
+    return instance;
+  },
+
+  /**
+   * Adds an abstract instance method to a class.
+   * @param {!Function} clazz
+   * @param {!(String|Symbol)} methodName
+   *
+   * @return {!Object} class.
+   */
+  defineAbstract(clazz, methodName) {
+    Object.defineProperty(clazz.prototype, methodName, {
+      value: function () {
+        throw new SdkError(`#${methodName} not implemented.`);
+      }
+    });
+
+    return clazz;
   }
 };
 

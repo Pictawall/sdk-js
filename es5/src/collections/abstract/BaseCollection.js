@@ -3,8 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = void 0; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+exports.Symbols = void 0;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -30,12 +29,33 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+var Symbols = exports.Symbols = {
+  getUpdatedItems: Symbol('getUpdatedItems')
+};
+
+/**
+ * @typedef {!Object} BaseCollectionProperties
+ * @property {!Array.<BaseModel>} models
+ * @property {!boolean} loaded
+ * @property {!number} lastUpdate - Unix timestamp of the last collection synchronisation.
+ */
+
+/**
+ * Private properties
+ * @type {WeakMap.<BaseCollection, BaseCollectionProperties>}
+ * @private
+ */
+var instances = new WeakMap();
+
 /**
  * @class BaseCollection
  *
  * @mixes FetchMixin
  * @mixes FindMixin
  * @implements Iterable
+ *
+ * @property {!Sdk} sdk
+ * @property {!function} createModel
  */
 
 var BaseCollection = function () {
@@ -47,19 +67,16 @@ var BaseCollection = function () {
   function BaseCollection(sdk) {
     _classCallCheck(this, BaseCollection);
 
-    this._loaded = false;
-
     if (sdk === void 0) {
       throw new _Errors.SdkError(this, 'This model did not receive a SDK instance.');
     }
 
-    this.sdk = sdk;
-
-    /**
-     * @type {Array.<BaseModel>}
-     * @private
-     */
-    this._models = [];
+    _ClassUtil2.default.defineFinal(this, 'sdk', sdk);
+    instances.set(this, {
+      lastUpdate: -1,
+      loaded: false,
+      models: []
+    });
   }
 
   /**
@@ -73,15 +90,7 @@ var BaseCollection = function () {
   _createClass(BaseCollection, [{
     key: _FetchMixin.Symbols.parseResponse,
     value: function value(serverResponse) {
-      if (serverResponse.since) {
-        /**
-         * Unix timestamp of the last collection synchronisation.
-         * @private
-         */
-        this._lastUpdate = serverResponse.since;
-      } else {
-        this._lastUpdate = Date.now() / 1000; // requires a unix timestamp
-      }
+      instances.get(this).lastUpdate = serverResponse.since || Date.now() / 1000;
 
       return serverResponse;
     }
@@ -103,89 +112,153 @@ var BaseCollection = function () {
     }
 
     /**
-     * Model factory.
-     *
-     * @return {!BaseModel}
-     */
-
-  }, {
-    key: 'createModel',
-    value: function createModel() {
-      throw new _Errors.SdkError('CreateModel not implemented');
-    }
-
-    /**
      * Downloads and populates the collection.
-     * @returns {Promise.<this>}
+     * @returns {!BaseCollection} this
      */
 
   }, {
     key: 'fetch',
     value: function fetch() {
-      var _this2 = this;
+      var _this = this;
 
-      if (!this.hasMore) {
-        return _Sdk2.default.Promise.reject(new _Errors.SdkError(this, '#fetch called but #hasMore returns false'));
-      }
+      var modelsData;
+      return regeneratorRuntime.async(function fetch$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              if (this.hasMore) {
+                _context.next = 2;
+                break;
+              }
 
-      return this.fetchRaw(this.fetchOptions).then(function (modelsData) {
-        if (!Array.isArray(modelsData)) {
-          throw new _Errors.SdkError(_this2, 'Invalid response from the http API. Should have returned array, got "' + JSON.stringify(modelsData) + '"');
+              throw new _Errors.SdkError(this, '#fetch called but #hasMore returns false');
+
+            case 2:
+              _context.next = 4;
+              return regeneratorRuntime.awrap(this.fetchRaw(this.fetchOptions));
+
+            case 4:
+              modelsData = _context.sent;
+
+              if (Array.isArray(modelsData)) {
+                _context.next = 7;
+                break;
+              }
+
+              throw new _Errors.SdkError(this, 'Invalid response from the http API. Should have returned array, got "' + JSON.stringify(modelsData) + '"');
+
+            case 7:
+
+              modelsData.forEach(function (data) {
+                _this.add(_this.buildModel(data), true);
+              });
+
+              instances.get(this).loaded = true;
+
+              return _context.abrupt('return', this);
+
+            case 10:
+            case 'end':
+              return _context.stop();
+          }
         }
-
-        modelsData.forEach(function (data) {
-          _this2.add(_this2.buildModel(data), true);
-        });
-
-        _this2._loaded = true;
-
-        return _this2;
-      });
+      }, null, this);
     }
 
     /**
      * Loads the assets that have been added to the server database after the collection was loaded and removes those deleted.
      * Note: This will make the index jump as it will add data at the front of the collection.
      *
-     * @return {!Promise.<>} The model has been updated.
+     * @return {!number} The amount of items added to the collection.
      */
 
   }, {
     key: 'update',
     value: function update() {
-      var _this3 = this;
+      var _this2 = this;
 
-      var initialCollectionSize = this.length;
+      var initialCollectionSize, lastUpdate, _ref, added, removed;
 
-      if (!this.loaded) {
-        return this.fetch().then(function (ignored) {
-          return _this3.length - initialCollectionSize;
-        });
-      }
+      return regeneratorRuntime.async(function update$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              initialCollectionSize = this.length;
 
-      // TODO what happens if it's sorted ?
+              if (this.loaded) {
+                _context2.next = 6;
+                break;
+              }
 
-      var fetchOptions = this.fetchOptions;
-      fetchOptions.since = this._lastUpdate;
+              _context2.next = 4;
+              return regeneratorRuntime.awrap(this.fetch());
 
-      var addedItemsPromise = this.fetchRaw(fetchOptions);
-      var removedItemsPromise = this.fetchRaw(fetchOptions, { modelId: 'deleted' });
+            case 4:
+              _context2.next = 14;
+              break;
 
-      return Promise.all([addedItemsPromise, removedItemsPromise]).then(function (_ref) {
-        var _ref2 = _slicedToArray(_ref, 2);
+            case 6:
+              lastUpdate = instances.get(this).lastUpdate;
+              _context2.next = 9;
+              return regeneratorRuntime.awrap(this[Symbols.getUpdatedItems] ? this[Symbols.getUpdatedItems](lastUpdate) : {});
 
-        var addedItems = _ref2[0];
-        var removedItems = _ref2[1];
+            case 9:
+              _ref = _context2.sent;
+              added = _ref.added;
+              removed = _ref.removed;
 
-        removedItems.forEach(function (id) {
-          return _this3.remove(id);
-        });
-        addedItems.forEach(function (item) {
-          return _this3.add(item, false, true);
-        });
 
-        return addedItems.length - removedItems.length;
-      });
+              if (removed) {
+                removed.forEach(function (id) {
+                  return _this2.remove(id);
+                });
+              }
+
+              if (added) {
+                added.forEach(function (item) {
+                  return _this2.add(item, false, true);
+                });
+              }
+
+            case 14:
+              return _context2.abrupt('return', this.length - initialCollectionSize);
+
+            case 15:
+            case 'end':
+              return _context2.stop();
+          }
+        }
+      }, null, this);
+    }
+
+    /**
+     * Retrieves the model matching the passed ID.
+     *
+     * @param {!number} modelId - The ID of the model to fetch.
+     * @returns {!BaseModel}
+     */
+
+  }, {
+    key: 'fetchById',
+    value: function fetchById(modelId) {
+      var modelData;
+      return regeneratorRuntime.async(function fetchById$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              _context3.next = 2;
+              return regeneratorRuntime.awrap(this.fetchRaw(null, { modelId: modelId }));
+
+            case 2:
+              modelData = _context3.sent;
+              return _context3.abrupt('return', this.add(this.buildModel(modelData)));
+
+            case 4:
+            case 'end':
+              return _context3.stop();
+          }
+        }
+      }, null, this);
     }
 
     /**
@@ -193,7 +266,7 @@ var BaseCollection = function () {
      *
      * @param model
      * @param {boolean} [replace = true] If a model with the same ID already exists, overwrite it if true. Ignore the new model if false.
-     * @param {boolean} [prepend = false] Insert the model at the beginning of the collection. // TODO auto sort instead like with AssetCollection.sortOrder ?
+     * @param {boolean} [prepend = false] Insert the model at the beginning of the collection. // TODO auto sort with a comparator
      *
      * @return {!BaseModel} The model that was actually added (Could be the already existing model if replace is false and the id already exists).
      */
@@ -205,43 +278,28 @@ var BaseCollection = function () {
       var prepend = arguments.length <= 2 || arguments[2] === void 0 ? false : arguments[2];
 
 
-      var index = this._loaded ? this._models.findIndex(function (model) {
+      var properties = instances.get(this);
+
+      var index = properties.loaded ? properties.models.findIndex(function (model) {
         return model.id === newModel.id;
       }) : -1;
 
       if (index === -1) {
         if (prepend) {
-          this._models.unshift(newModel);
+          properties.models.unshift(newModel);
         } else {
-          this._models.push(newModel);
+          properties.models.push(newModel);
         }
 
         return newModel;
       }
 
       if (replace) {
-        this._models[index] = newModel;
+        properties.models[index] = newModel;
         return newModel;
       } else {
-        return this._models[index];
+        return properties.models[index];
       }
-    }
-
-    /**
-     * Retrieves the model matching the passed ID.
-     *
-     * @param {!number} modelId - The ID of the model to fetch.
-     * @returns {!Promise.<BaseModel>}
-     */
-
-  }, {
-    key: 'fetchById',
-    value: function fetchById(modelId) {
-      var _this4 = this;
-
-      return this.fetchRaw(null, { modelId: modelId }).then(function (modelData) {
-        return _this4.add(_this4.buildModel(modelData));
-      });
     }
 
     /**
@@ -253,7 +311,9 @@ var BaseCollection = function () {
   }, {
     key: 'remove',
     value: function remove(modelId) {
-      var index = this._models.findIndex(function (element) {
+      var properties = instances.get(this);
+
+      var index = properties.models.findIndex(function (element) {
         return element.id === modelId;
       });
 
@@ -261,12 +321,12 @@ var BaseCollection = function () {
         return null;
       }
 
-      return this._models.splice(index, 1)[0];
+      return properties.models.splice(index, 1)[0];
     }
   }, {
     key: 'toJSON',
     value: function toJSON() {
-      return this._models;
+      return instances.get(this).models;
     }
 
     /**
@@ -286,32 +346,39 @@ var BaseCollection = function () {
      * @returns {BaseModel}
      */
     value: function at(pos) {
-      return this._models[pos];
+      return instances.get(this).models[pos];
     }
-
-    // *[Symbol.iterator]() {
-    //   for (let i = 0; i < this.length; i++) {
-    //     yield this.at(i);
-    //   }
-    // }
-
   }, {
     key: Symbol.iterator,
-    value: function value() {
-      var _this = this;
+    value: regeneratorRuntime.mark(function value() {
+      var i;
+      return regeneratorRuntime.wrap(function value$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              i = 0;
 
-      return {
-        next: function next() {
-          if (this._index >= _this.length) {
-            return { done: true };
+            case 1:
+              if (!(i < this.length)) {
+                _context4.next = 7;
+                break;
+              }
+
+              _context4.next = 4;
+              return this.at(i);
+
+            case 4:
+              i++;
+              _context4.next = 1;
+              break;
+
+            case 7:
+            case 'end':
+              return _context4.stop();
           }
-
-          return { done: false, value: _this.at(this._index++) };
-        },
-
-        _index: 0
-      };
-    }
+        }
+      }, value, this);
+    })
   }, {
     key: 'fetchOptions',
     get: function get() {
@@ -326,7 +393,7 @@ var BaseCollection = function () {
   }, {
     key: 'length',
     get: function get() {
-      return this._models.length;
+      return instances.get(this).models.length;
     }
 
     /**
@@ -337,7 +404,7 @@ var BaseCollection = function () {
   }, {
     key: 'loaded',
     get: function get() {
-      return this._loaded;
+      return instances.get(this).loaded;
     }
 
     /**
@@ -348,13 +415,14 @@ var BaseCollection = function () {
   }, {
     key: 'hasMore',
     get: function get() {
-      return !this._loaded;
+      return !this.loaded;
     }
   }]);
 
   return BaseCollection;
 }();
 
+_ClassUtil2.default.defineAbstract(BaseCollection, 'createModel');
 _ClassUtil2.default.merge(BaseCollection, _FetchMixin2.default, _FindMixin2.default);
 
 exports.default = BaseCollection;

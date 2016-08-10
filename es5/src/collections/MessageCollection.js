@@ -14,6 +14,14 @@ var _PictawallCollection2 = require('./abstract/PictawallCollection');
 
 var _PictawallCollection3 = _interopRequireDefault(_PictawallCollection2);
 
+var _updateReplaceMixin = require('../mixins/updateReplaceMixin');
+
+var _updateReplaceMixin2 = _interopRequireDefault(_updateReplaceMixin);
+
+var _ClassUtil = require('../util/ClassUtil');
+
+var _ClassUtil2 = _interopRequireDefault(_ClassUtil);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -59,5 +67,7 @@ var MessageCollection = function (_PictawallCollection) {
 
   return MessageCollection;
 }(_PictawallCollection3.default);
+
+_ClassUtil2.default.merge(MessageCollection, _updateReplaceMixin2.default);
 
 exports.default = MessageCollection;

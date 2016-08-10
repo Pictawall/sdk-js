@@ -4,12 +4,33 @@ import FetchMixin, { Symbols as FetchSymbols } from '../../mixins/FetchMixin';
 import FindMixin from '../../mixins/FindMixin';
 import Sdk from '../../core/Sdk';
 
+export const Symbols = {
+  getUpdatedItems: Symbol('getUpdatedItems')
+};
+
+/**
+ * @typedef {!Object} BaseCollectionProperties
+ * @property {!Array.<BaseModel>} models
+ * @property {!boolean} loaded
+ * @property {!number} lastUpdate - Unix timestamp of the last collection synchronisation.
+ */
+
+/**
+ * Private properties
+ * @type {WeakMap.<BaseCollection, BaseCollectionProperties>}
+ * @private
+ */
+const instances = new WeakMap();
+
 /**
  * @class BaseCollection
  *
  * @mixes FetchMixin
  * @mixes FindMixin
  * @implements Iterable
+ *
+ * @property {!Sdk} sdk
+ * @property {!function} createModel
  */
 class BaseCollection {
 
@@ -17,19 +38,16 @@ class BaseCollection {
    * @param {!Sdk} sdk
    */
   constructor(sdk) {
-    this._loaded = false;
-
     if (sdk === void 0) {
       throw new SdkError(this, 'This model did not receive a SDK instance.');
     }
 
-    this.sdk = sdk;
-
-    /**
-     * @type {Array.<BaseModel>}
-     * @private
-     */
-    this._models = [];
+    ClassUtil.defineFinal(this, 'sdk', sdk);
+    instances.set(this, {
+      lastUpdate: -1,
+      loaded: false,
+      models: []
+    });
   }
 
   /**
@@ -39,15 +57,7 @@ class BaseCollection {
    * @return {!*} The parsed data, to use to populate the model / collection.
    */
   [FetchSymbols.parseResponse](serverResponse) {
-    if (serverResponse.since) {
-      /**
-       * Unix timestamp of the last collection synchronisation.
-       * @private
-       */
-      this._lastUpdate = serverResponse.since;
-    } else {
-      this._lastUpdate = Date.now() / 1000; // requires a unix timestamp
-    }
+    instances.get(this).lastUpdate = serverResponse.since || (Date.now() / 1000);
 
     return serverResponse;
   }
@@ -66,68 +76,66 @@ class BaseCollection {
   }
 
   /**
-   * Model factory.
-   *
-   * @return {!BaseModel}
-   */
-  createModel() {
-    throw new SdkError('CreateModel not implemented');
-  }
-
-  /**
    * Downloads and populates the collection.
-   * @returns {Promise.<this>}
+   * @returns {!BaseCollection} this
    */
-  fetch() {
+  async fetch() {
     if (!this.hasMore) {
-      return Sdk.Promise.reject(new SdkError(this, '#fetch called but #hasMore returns false'));
+      throw new SdkError(this, '#fetch called but #hasMore returns false');
     }
 
-    return this.fetchRaw(this.fetchOptions)
-      .then(modelsData => {
-        if (!Array.isArray(modelsData)) {
-          throw new SdkError(this, `Invalid response from the http API. Should have returned array, got "${JSON.stringify(modelsData)}"`);
-        }
+    const modelsData = await this.fetchRaw(this.fetchOptions);
 
-        modelsData.forEach(data => {
-          this.add(this.buildModel(data), true);
-        });
+    if (!Array.isArray(modelsData)) {
+      throw new SdkError(this, `Invalid response from the http API. Should have returned array, got "${JSON.stringify(modelsData)}"`);
+    }
 
-        this._loaded = true;
+    modelsData.forEach(data => {
+      this.add(this.buildModel(data), true);
+    });
 
-        return this;
-      });
+    instances.get(this).loaded = true;
+
+    return this;
   }
 
   /**
    * Loads the assets that have been added to the server database after the collection was loaded and removes those deleted.
    * Note: This will make the index jump as it will add data at the front of the collection.
    *
-   * @return {!Promise.<>} The model has been updated.
+   * @return {!number} The amount of items added to the collection.
    */
-  update() {
+  async update() {
     const initialCollectionSize = this.length;
 
     if (!this.loaded) {
-      return this.fetch().then(ignored => this.length - initialCollectionSize);
+      await this.fetch();
+    } else {
+      const lastUpdate = instances.get(this).lastUpdate;
+
+      const { added, removed } = await (this[Symbols.getUpdatedItems] ? this[Symbols.getUpdatedItems](lastUpdate) : {});
+
+      if (removed) {
+        removed.forEach(id => this.remove(id));
+      }
+
+      if (added) {
+        added.forEach(item => this.add(item, false, true));
+      }
     }
 
-    // TODO what happens if it's sorted ?
+    return this.length - initialCollectionSize;
+  }
 
-    const fetchOptions = this.fetchOptions;
-    fetchOptions.since = this._lastUpdate;
-
-    const addedItemsPromise = this.fetchRaw(fetchOptions);
-    const removedItemsPromise = this.fetchRaw(fetchOptions, { modelId: 'deleted' });
-
-    return Promise
-      .all([addedItemsPromise, removedItemsPromise])
-      .then(([addedItems, removedItems]) => {
-        removedItems.forEach(id => this.remove(id));
-        addedItems.forEach(item => this.add(item, false, true));
-
-        return addedItems.length - removedItems.length;
-      });
+  /**
+   * Retrieves the model matching the passed ID.
+   *
+   * @param {!number} modelId - The ID of the model to fetch.
+   * @returns {!BaseModel}
+   */
+  async fetchById(modelId) {
+    const modelData = await this.fetchRaw(null, { modelId });
+    return this.add(this.buildModel(modelData));
   }
 
   /**
@@ -135,40 +143,32 @@ class BaseCollection {
    *
    * @param model
    * @param {boolean} [replace = true] If a model with the same ID already exists, overwrite it if true. Ignore the new model if false.
-   * @param {boolean} [prepend = false] Insert the model at the beginning of the collection. // TODO auto sort instead like with AssetCollection.sortOrder ?
+   * @param {boolean} [prepend = false] Insert the model at the beginning of the collection. // TODO auto sort with a comparator
    *
    * @return {!BaseModel} The model that was actually added (Could be the already existing model if replace is false and the id already exists).
    */
   add(newModel, replace = true, prepend = false) {
 
-    const index = this._loaded ? this._models.findIndex(model => model.id === newModel.id) : -1;
+    const properties = instances.get(this);
+
+    const index = properties.loaded ? properties.models.findIndex(model => model.id === newModel.id) : -1;
 
     if (index === -1) {
       if (prepend) {
-        this._models.unshift(newModel);
+        properties.models.unshift(newModel);
       } else {
-        this._models.push(newModel);
+        properties.models.push(newModel);
       }
 
       return newModel;
     }
 
     if (replace) {
-      this._models[index] = newModel;
+      properties.models[index] = newModel;
       return newModel;
     } else {
-      return this._models[index];
+      return properties.models[index];
     }
-  }
-
-  /**
-   * Retrieves the model matching the passed ID.
-   *
-   * @param {!number} modelId - The ID of the model to fetch.
-   * @returns {!Promise.<BaseModel>}
-   */
-  fetchById(modelId) {
-    return this.fetchRaw(null, { modelId }).then(modelData => this.add(this.buildModel(modelData)));
   }
 
   /**
@@ -177,17 +177,19 @@ class BaseCollection {
    * @return {BaseModel} The model that was removed, or null if none was.
    */
   remove(modelId) {
-    const index = this._models.findIndex(element => element.id === modelId);
+    const properties = instances.get(this);
+
+    const index = properties.models.findIndex(element => element.id === modelId);
 
     if (index === -1) {
       return null;
     }
 
-    return this._models.splice(index, 1)[0];
+    return properties.models.splice(index, 1)[0];
   }
 
   toJSON() {
-    return this._models;
+    return instances.get(this).models;
   }
 
   /**
@@ -203,7 +205,7 @@ class BaseCollection {
    * @returns {!Number}
    */
   get length() {
-    return this._models.length;
+    return instances.get(this).models.length;
   }
 
   /**
@@ -211,7 +213,7 @@ class BaseCollection {
    * @returns {boolean}
    */
   get loaded() {
-    return this._loaded;
+    return instances.get(this).loaded;
   }
 
   /**
@@ -219,7 +221,7 @@ class BaseCollection {
    * @returns {!boolean}
    */
   get hasMore() {
-    return !this._loaded;
+    return !this.loaded;
   }
 
   /**
@@ -230,32 +232,17 @@ class BaseCollection {
    * @returns {BaseModel}
    */
   at(pos) {
-    return this._models[pos];
+    return instances.get(this).models[pos];
   }
 
-  // *[Symbol.iterator]() {
-  //   for (let i = 0; i < this.length; i++) {
-  //     yield this.at(i);
-  //   }
-  // }
-
-  [Symbol.iterator]() {
-    const _this = this;
-
-    return {
-      next: function () {
-        if (this._index >= _this.length) {
-          return { done: true };
-        }
-
-        return { done: false, value: _this.at(this._index++) };
-      },
-
-      _index: 0
-    };
+  *[Symbol.iterator]() {
+    for (let i = 0; i < this.length; i++) {
+      yield this.at(i);
+    }
   }
 }
 
+ClassUtil.defineAbstract(BaseCollection, 'createModel');
 ClassUtil.merge(BaseCollection, FetchMixin, FindMixin);
 
 export default BaseCollection;

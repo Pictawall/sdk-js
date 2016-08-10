@@ -7,20 +7,36 @@ import ClassUtil from '../util/ClassUtil';
  *
  * @class PictawallError
  * @extends Error
+ *
+ * @property {Error} previousException - The exception that caused this one.
+ * @property {*} thrower - The instance which throwed the exception.
  */
 export class PictawallError extends Error {
 
   /**
    * @param {*} thrower - The thrower of this error.
-   * @param {!String} message - A message to display.
-   * @param [errorArgs] errorArgs - The list of args to pass to the Error constructor after the message parameter.
+   * @param {!(String|Error)} message - A message to display.
+   * @param {!(Error|String)} [previousException] - The previous error message.
    */
-  constructor(thrower, message, ...errorArgs) {
-    super(`[${ClassUtil.getName(thrower)}] ${message}`, ...errorArgs);
+  constructor(thrower, message, previousException) {
+    if (typeof message === 'object' || typeof previousException === 'string') {
+      const tmp = previousException;
+      previousException = message;
+      message = tmp;
+    }
 
-    this.name = this.constructor.name;
+    if (!message) {
+      message = '<No Message Specified>';
+    }
+
+    super(`[${ClassUtil.getName(thrower)}] ${message}`);
+
+    ClassUtil.defineFinal(this, 'thrower', thrower);
+    ClassUtil.defineFinal(this, 'previousException', previousException);
   }
 }
+
+PictawallError.prototype.name = 'PictawallError';
 
 /**
  * Error to use for internal SDK errors.
@@ -33,3 +49,43 @@ export class SdkError extends PictawallError {
     super(...args);
   }
 }
+
+SdkError.prototype.name = 'SdkError';
+
+/**
+ * Error to use for connectivity problems.
+ *
+ * @class NetworkError
+ * @extends PictawallError
+ */
+export class NetworkError extends PictawallError {
+  constructor(...args) {
+    super(...args);
+  }
+}
+
+NetworkError.prototype.name = 'NetworkError';
+
+/**
+ * Error to use for connectivity problems.
+ *
+ * @class ApiError
+ * @extends NetworkError
+ * @property {!Response} response - The fetch response.
+ */
+export class ApiError extends NetworkError {
+
+  /**
+   * @param {*} thrower
+   * @param {!(String|Error)} message
+   * @param {!Response} response
+   * @param {!(String|Error)} [previousException]
+   */
+  constructor(thrower, message, response, previousException) {
+    super(thrower, message, previousException);
+
+    ClassUtil.defineFinal(this, 'response', response);
+  }
+}
+
+ApiError.prototype.name = 'ApiError';

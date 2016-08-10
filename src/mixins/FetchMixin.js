@@ -1,6 +1,6 @@
 'use strict';
 
-import { SdkError } from '../core/Errors';
+import { SdkError, ApiError } from '../core/Errors';
 
 export const Symbols = {
   /**
@@ -38,25 +38,28 @@ const FetchMixin = {
    *
    * @instance
    */
-  fetchRaw(queryParameters, pathParameters) {
+  async fetchRaw(queryParameters, pathParameters) {
     if (!this.apiPath) {
-      throw new SdkError(this, 'Property apiPath has not been set.');
+      throw new SdkError(this, 'Property "apiPath" is not defined.');
     }
 
-    const promise = this.sdk.callApi(this.apiPath, { queryParameters, pathParameters })
-      .then(response => {
-        if (!response.ok) {
-          throw new SdkError(this, `API responded with http code ${response.status} for endpoint "${response.url}"`);
-        }
+    if (!this.sdk) {
+      throw new SdkError(this, 'Property "sdk" is not defined');
+    }
 
-        return response.json();
-      });
+    const response = await this.sdk.callApi(this.apiPath, { queryParameters, pathParameters });
+
+    if (!response.ok) {
+      throw new ApiError(this, `API responded with http code ${response.status} for endpoint "${response.url}"`, response);
+    }
+
+    const body = await response.json();
 
     if (typeof this[Symbols.parseResponse] !== 'function') {
-      return promise;
+      return body;
     }
 
-    return promise.then(json => this[Symbols.parseResponse](json));
+    return this[Symbols.parseResponse](body);
   }
 };
 

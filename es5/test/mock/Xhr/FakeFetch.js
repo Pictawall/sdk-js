@@ -6,8 +6,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var qs = require('qs-lite');
 var _ = require('lodash');
+var qs = require('qs-lite');
 
 var mockedRoutes = [];
 
@@ -38,6 +38,8 @@ module.exports = {
 
     var path = _requestPath$split2[0];
     var queryString = _requestPath$split2[1];
+
+    // TODO replace qs with URL
 
     var queryParameters = qs.parse(queryString);
 

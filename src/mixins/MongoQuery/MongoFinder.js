@@ -167,12 +167,16 @@ class MongoFinder {
 
   _ensurePending() {
     if (this._ready()) {
-      throw new Error('Cannot change the limit after the query has been executed.');
+      throw new Error('Cannot reconfigure after the query has been executed.');
     }
   }
 
   _ready() {
     return stateMap.get(this).result !== void 0;
+  }
+
+  [Symbol.iterator]() {
+    return this.toArray()[Symbol.iterator];
   }
 }
 
