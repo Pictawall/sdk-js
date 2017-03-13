@@ -28,7 +28,6 @@ var FindMixin = {
    *
    * @instance
    */
-
   findOne: function findOne(query) {
     return this.find(query).limit(1).first() || null;
   },

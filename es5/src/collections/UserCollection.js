@@ -28,18 +28,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class UserCollection
  * @extends PictawallPagedCollection
  */
-
 var UserCollection = function (_PictawallPagedCollec) {
   _inherits(UserCollection, _PictawallPagedCollec);
 
   /**
    * @param {!EventModel} event The owning event.
    */
-
   function UserCollection(event) {
     _classCallCheck(this, UserCollection);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(UserCollection).call(this, event.sdk, 5, 'score'));
+    var _this = _possibleConstructorReturn(this, (UserCollection.__proto__ || Object.getPrototypeOf(UserCollection)).call(this, event.sdk, 5, 'score'));
 
     _this._event = event;
     _this.apiPath = '/events/' + event.getProperty('identifier') + '/users/{modelId}';

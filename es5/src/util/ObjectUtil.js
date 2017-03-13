@@ -24,7 +24,6 @@ var ObjectUtil = {
    * @example
    * ObjectUtil.find(window, 'pictawall.SDK.version') // returns version if window.pictawall.SDK.version exists, undefined otherwise.
    */
-
   find: function find(container, propertyName) {
     // add support for \ escaping the dot in case someone decided added a . in their actual property name is a good idea ?
     var names = propertyName.split('.');

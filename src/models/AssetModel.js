@@ -40,17 +40,19 @@ class AssetModel extends PictawallModel {
       properties.source.additionalData = {};
     }
 
-    const userCollection = this._event.getCollection('users');
-    this._owner = userCollection != null ? userCollection.findOne({ id: properties.owner.id }) : null;
+    if (properties.owner) {
+      const userCollection = this._event.getCollection('users');
+      this._owner = userCollection != null ? userCollection.findOne({ id: properties.owner.id }) : null;
 
-    if (this._owner === null) {
-      const owner = new UserModel(this._event);
-      owner.setProperties(properties.owner);
+      if (this._owner === null) {
+        const owner = new UserModel(this._event);
+        owner.setProperties(properties.owner);
 
-      if (userCollection != null) {
-        this._owner = userCollection.add(owner, false, false);
-      } else {
-        this._owner = owner;
+        if (userCollection != null) {
+          this._owner = userCollection.add(owner, false, false);
+        } else {
+          this._owner = owner;
+        }
       }
     }
 

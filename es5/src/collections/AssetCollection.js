@@ -67,19 +67,17 @@ var AssetCollection = function (_PictawallPagedCollec) {
    * @param {string} [fetchOptions.orderBy = 'date DESC'] Sort order returned by the API. See API Specifications for possible orders.
    * @param {string} [fetchOptions.kind] Defines the kind of assets the API may return. Comma separated values of asset kinds, See API Specifications for mode details.
    */
-
   function AssetCollection(event) {
-    var _ref = arguments.length <= 1 || arguments[1] === void 0 ? {} : arguments[1];
-
-    var _ref$limit = _ref.limit;
-    var limit = _ref$limit === void 0 ? 100 : _ref$limit;
-    var _ref$orderBy = _ref.orderBy;
-    var orderBy = _ref$orderBy === void 0 ? 'date DESC' : _ref$orderBy;
-    var kind = _ref.kind;
+    var _ref = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : {},
+        _ref$limit = _ref.limit,
+        limit = _ref$limit === void 0 ? 100 : _ref$limit,
+        _ref$orderBy = _ref.orderBy,
+        orderBy = _ref$orderBy === void 0 ? 'date DESC' : _ref$orderBy,
+        kind = _ref.kind;
 
     _classCallCheck(this, AssetCollection);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AssetCollection).call(this, event.sdk, limit, orderBy));
+    var _this = _possibleConstructorReturn(this, (AssetCollection.__proto__ || Object.getPrototypeOf(AssetCollection)).call(this, event.sdk, limit, orderBy));
 
     _this._event = event;
     _this.apiPath = '/events/' + event.getProperty('identifier') + '/assets/{modelId}';
@@ -197,16 +195,13 @@ var AssetCollection = function (_PictawallPagedCollec) {
         while (1) {
           switch (_context2.prev = _context2.next) {
             case 0:
-              _promise$all = promise.all([_get(Object.getPrototypeOf(AssetCollection.prototype), _BaseCollection.Symbols.getUpdatedItems, this).call(this, since), this.fetchRaw(Object.assign(this.fetchOptions, { since: since }), { modelId: 'deleted' })]);
-              _promise$all2 = _slicedToArray(_promise$all, 2);
-              parent = _promise$all2[0];
-              removed = _promise$all2[1];
+              _promise$all = promise.all([_get(AssetCollection.prototype.__proto__ || Object.getPrototypeOf(AssetCollection.prototype), _BaseCollection.Symbols.getUpdatedItems, this).call(this, since), this.fetchRaw(Object.assign(this.fetchOptions, { since: since }), { modelId: 'deleted' })]), _promise$all2 = _slicedToArray(_promise$all, 2), parent = _promise$all2[0], removed = _promise$all2[1];
 
 
               parent.removed = removed;
               return _context2.abrupt('return', parent);
 
-            case 6:
+            case 3:
             case 'end':
               return _context2.stop();
           }
@@ -216,21 +211,20 @@ var AssetCollection = function (_PictawallPagedCollec) {
   }, {
     key: 'sortOrder',
     get: function get() {
-      var _orderBy$toLowerCase$ = this._orderBy.toLowerCase().split(/[_ ]/);
-
-      var _orderBy$toLowerCase$2 = _slicedToArray(_orderBy$toLowerCase$, 2);
-
-      var property = _orderBy$toLowerCase$2[0];
-      var direction = _orderBy$toLowerCase$2[1];
+      var _orderBy$toLowerCase$ = this._orderBy.toLowerCase().split(/[_ ]/),
+          _orderBy$toLowerCase$2 = _slicedToArray(_orderBy$toLowerCase$, 2),
+          property = _orderBy$toLowerCase$2[0],
+          direction = _orderBy$toLowerCase$2[1];
 
       //noinspection JSValidateTypes
+
 
       return { property: SORT_PROPERTIES[property], direction: direction === 'asc' ? 1 : -1 };
     }
   }, {
     key: 'fetchOptions',
     get: function get() {
-      var options = _get(Object.getPrototypeOf(AssetCollection.prototype), 'fetchOptions', this);
+      var options = _get(AssetCollection.prototype.__proto__ || Object.getPrototypeOf(AssetCollection.prototype), 'fetchOptions', this);
 
       if (this._kindFilter) {
         options.kind = this._kindFilter;

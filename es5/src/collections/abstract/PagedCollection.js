@@ -28,7 +28,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class PagedCollection
  * @extends BaseCollection
  */
-
 var PagedCollection = function (_BaseCollection) {
   _inherits(PagedCollection, _BaseCollection);
 
@@ -36,11 +35,10 @@ var PagedCollection = function (_BaseCollection) {
    * @param {!Sdk} sdk The instance of the SDK owning this collection.
    * @param {number} [limit] How many models a fetch call should return.
    */
-
   function PagedCollection(sdk, limit) {
     _classCallCheck(this, PagedCollection);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PagedCollection).call(this, sdk));
+    var _this = _possibleConstructorReturn(this, (PagedCollection.__proto__ || Object.getPrototypeOf(PagedCollection)).call(this, sdk));
 
     _this._limit = limit;
 
@@ -73,7 +71,7 @@ var PagedCollection = function (_BaseCollection) {
      * @inheritDoc
      */
     value: function value(response) {
-      response = _get(Object.getPrototypeOf(PagedCollection.prototype), _FetchMixin.Symbols.parseResponse, this).call(this, response);
+      response = _get(PagedCollection.prototype.__proto__ || Object.getPrototypeOf(PagedCollection.prototype), _FetchMixin.Symbols.parseResponse, this).call(this, response);
 
       if (response.currentPage > this._currentPage) {
         this._currentPage = response.currentPage;
@@ -93,7 +91,7 @@ var PagedCollection = function (_BaseCollection) {
   }, {
     key: 'fetchOptions',
     get: function get() {
-      var options = _get(Object.getPrototypeOf(PagedCollection.prototype), 'fetchOptions', this);
+      var options = _get(PagedCollection.prototype.__proto__ || Object.getPrototypeOf(PagedCollection.prototype), 'fetchOptions', this);
       options.page = this._currentPage + 1;
 
       if (this._limit) {

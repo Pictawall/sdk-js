@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.ApiError = exports.NetworkError = exports.SdkError = exports.PictawallError = void 0;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _ClassUtil = require('../util/ClassUtil');
 
@@ -28,7 +28,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @property {Error} previousException - The exception that caused this one.
  * @property {*} thrower - The instance which throwed the exception.
  */
-
 var PictawallError = exports.PictawallError = function (_Error) {
   _inherits(PictawallError, _Error);
 
@@ -37,7 +36,6 @@ var PictawallError = exports.PictawallError = function (_Error) {
    * @param {!(String|Error)} message - A message to display.
    * @param {!(Error|String)} [previousException] - The previous error message.
    */
-
   function PictawallError(thrower, message, previousException) {
     _classCallCheck(this, PictawallError);
 
@@ -51,7 +49,7 @@ var PictawallError = exports.PictawallError = function (_Error) {
       message = '<No Message Specified>';
     }
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(PictawallError).call(this, '[' + _ClassUtil2.default.getName(thrower) + '] ' + message));
+    var _this = _possibleConstructorReturn(this, (PictawallError.__proto__ || Object.getPrototypeOf(PictawallError)).call(this, '[' + _ClassUtil2.default.getName(thrower) + '] ' + message));
 
     _ClassUtil2.default.defineFinal(_this, 'thrower', thrower);
     _ClassUtil2.default.defineFinal(_this, 'previousException', previousException);
@@ -74,7 +72,7 @@ var SdkError = exports.SdkError = function (_PictawallError) {
   _inherits(SdkError, _PictawallError);
 
   function SdkError() {
-    var _Object$getPrototypeO;
+    var _ref;
 
     _classCallCheck(this, SdkError);
 
@@ -82,7 +80,7 @@ var SdkError = exports.SdkError = function (_PictawallError) {
       args[_key] = arguments[_key];
     }
 
-    return _possibleConstructorReturn(this, (_Object$getPrototypeO = Object.getPrototypeOf(SdkError)).call.apply(_Object$getPrototypeO, [this].concat(args)));
+    return _possibleConstructorReturn(this, (_ref = SdkError.__proto__ || Object.getPrototypeOf(SdkError)).call.apply(_ref, [this].concat(args)));
   }
 
   return SdkError;
@@ -101,7 +99,7 @@ var NetworkError = exports.NetworkError = function (_PictawallError2) {
   _inherits(NetworkError, _PictawallError2);
 
   function NetworkError() {
-    var _Object$getPrototypeO2;
+    var _ref2;
 
     _classCallCheck(this, NetworkError);
 
@@ -109,7 +107,7 @@ var NetworkError = exports.NetworkError = function (_PictawallError2) {
       args[_key2] = arguments[_key2];
     }
 
-    return _possibleConstructorReturn(this, (_Object$getPrototypeO2 = Object.getPrototypeOf(NetworkError)).call.apply(_Object$getPrototypeO2, [this].concat(args)));
+    return _possibleConstructorReturn(this, (_ref2 = NetworkError.__proto__ || Object.getPrototypeOf(NetworkError)).call.apply(_ref2, [this].concat(args)));
   }
 
   return NetworkError;
@@ -134,11 +132,10 @@ var ApiError = exports.ApiError = function (_NetworkError) {
    * @param {!Response} response
    * @param {!(String|Error)} [previousException]
    */
-
   function ApiError(thrower, message, response, previousException) {
     _classCallCheck(this, ApiError);
 
-    var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(ApiError).call(this, thrower, message, previousException));
+    var _this4 = _possibleConstructorReturn(this, (ApiError.__proto__ || Object.getPrototypeOf(ApiError)).call(this, thrower, message, previousException));
 
     _ClassUtil2.default.defineFinal(_this4, 'response', response);
     return _this4;

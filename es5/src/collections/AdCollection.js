@@ -36,18 +36,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class AdCollection
  * @extends PictawallCollection
  */
-
 var AdCollection = function (_PictawallCollection) {
   _inherits(AdCollection, _PictawallCollection);
 
   /**
    * @param {!EventModel} event The owning event.
    */
-
   function AdCollection(event) {
     _classCallCheck(this, AdCollection);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AdCollection).call(this, event.sdk));
+    var _this = _possibleConstructorReturn(this, (AdCollection.__proto__ || Object.getPrototypeOf(AdCollection)).call(this, event.sdk));
 
     _this.apiPath = '/events/' + event.getProperty('identifier') + '/ads/{modelId}';
     return _this;

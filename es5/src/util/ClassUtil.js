@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.Symbols = void 0;
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _Errors = require('../core/Errors');
 
@@ -60,7 +60,6 @@ var ClassUtil = {
    * @param {object} instance An instance from which the class name will be fetched.
    * @returns {string} The name of the instance's class.
    */
-
   getName: function getName(instance) {
     if (instance == null) {
       return String(instance);
@@ -99,7 +98,7 @@ var ClassUtil = {
     for (var i = 0; i < mixins.length; i++) {
       var mixin = mixins[i];
       if (mixin == null) {
-        throw new _Errors.SdkError(this, 'Invalid mixin n°' + i + ', not defined.');
+        throw new _Errors.SdkError(this, 'Invalid mixin n\xB0' + i + ', not defined.');
       }
 
       if ((typeof mixin === 'undefined' ? 'undefined' : _typeof(mixin)) === 'object') {
@@ -107,7 +106,7 @@ var ClassUtil = {
       } else if (typeof mixin === 'function') {
         _mergeClass(receivingClass, mixin.prototype);
       } else {
-        throw new _Errors.SdkError(this, 'Invalid type for mixin n°' + i + ', only functions and objects are accepted as mixins.');
+        throw new _Errors.SdkError(this, 'Invalid type for mixin n\xB0' + i + ', only functions and objects are accepted as mixins.');
       }
     }
 

@@ -26,18 +26,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class PictawallModel
  * @extends BaseModel
  */
-
 var PictawallModel = function (_BaseModel) {
   _inherits(PictawallModel, _BaseModel);
 
   /**
    * @param {!Sdk} sdk The SDK in which this model is running.
    */
-
   function PictawallModel(sdk) {
     _classCallCheck(this, PictawallModel);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(PictawallModel).call(this, sdk));
+    return _possibleConstructorReturn(this, (PictawallModel.__proto__ || Object.getPrototypeOf(PictawallModel)).call(this, sdk));
   }
 
   /**

@@ -72,18 +72,16 @@ var EventModel = function (_PictawallModel) {
    * @param {boolean} [config.autoUpdate = false] - Should the collections periodically fetch their contents ?
    * @param {number} [config.autoUpdateVelocity = 10000] - Time in ms between each auto-update.
    */
-
   function EventModel(sdk, identifier) {
-    var _ref = arguments.length <= 2 || arguments[2] === void 0 ? {} : arguments[2];
-
-    var _ref$autoUpdate = _ref.autoUpdate;
-    var /* config = */autoUpdate = _ref$autoUpdate === void 0 ? false : _ref$autoUpdate;
-    var _ref$autoUpdateVeloci = _ref.autoUpdateVelocity;
-    var autoUpdateVelocity = _ref$autoUpdateVeloci === void 0 ? 15000 : _ref$autoUpdateVeloci;
+    var _ref = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : {},
+        _ref$autoUpdate = _ref.autoUpdate,
+        autoUpdate = _ref$autoUpdate === void 0 ? false : _ref$autoUpdate,
+        _ref$autoUpdateVeloci = _ref.autoUpdateVelocity,
+        autoUpdateVelocity = _ref$autoUpdateVeloci === void 0 ? 15000 : _ref$autoUpdateVeloci;
 
     _classCallCheck(this, EventModel);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(EventModel).call(this, sdk));
+    var _this = _possibleConstructorReturn(this, (EventModel.__proto__ || Object.getPrototypeOf(EventModel)).call(this, sdk));
 
     if (typeof identifier !== 'string' || !/^[a-z0-9\-_]+$/i.test(identifier)) {
       throw new _Errors.SdkError(_this, 'Event identifier "' + identifier + '" is not valid.');

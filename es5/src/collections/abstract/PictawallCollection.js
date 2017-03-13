@@ -28,18 +28,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class PictawallCollection
  * @extends BaseCollection
  */
-
 var PictawallCollection = function (_BaseCollection) {
   _inherits(PictawallCollection, _BaseCollection);
 
   /**
    * @param {!Sdk} sdk - The SDK instance.
    */
-
   function PictawallCollection(sdk) {
     _classCallCheck(this, PictawallCollection);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(PictawallCollection).call(this, sdk));
+    return _possibleConstructorReturn(this, (PictawallCollection.__proto__ || Object.getPrototypeOf(PictawallCollection)).call(this, sdk));
   }
 
   /**
@@ -50,7 +48,7 @@ var PictawallCollection = function (_BaseCollection) {
   _createClass(PictawallCollection, [{
     key: _FetchMixin.Symbols.parseResponse,
     value: function value(response) {
-      return _get(Object.getPrototypeOf(PictawallCollection.prototype), _FetchMixin.Symbols.parseResponse, this).call(this, response).data;
+      return _get(PictawallCollection.prototype.__proto__ || Object.getPrototypeOf(PictawallCollection.prototype), _FetchMixin.Symbols.parseResponse, this).call(this, response).data;
     }
   }]);
 

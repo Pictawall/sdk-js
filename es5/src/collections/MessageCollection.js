@@ -36,18 +36,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class MessageCollection
  * @extends PictawallCollection
  */
-
 var MessageCollection = function (_PictawallCollection) {
   _inherits(MessageCollection, _PictawallCollection);
 
   /**
    * @param {!EventModel} event The owning event.
    */
-
   function MessageCollection(event) {
     _classCallCheck(this, MessageCollection);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MessageCollection).call(this, event.sdk));
+    var _this = _possibleConstructorReturn(this, (MessageCollection.__proto__ || Object.getPrototypeOf(MessageCollection)).call(this, event.sdk));
 
     _this.apiPath = '/events/' + event.getProperty('identifier') + '/messages/{modelId}';
     return _this;

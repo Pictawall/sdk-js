@@ -26,18 +26,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class UserModel
  * @extends PictawallModel
  */
-
 var UserModel = function (_PictawallModel) {
   _inherits(UserModel, _PictawallModel);
 
   /**
    * @param {!EventModel} event The event this user is creating content for.
    */
-
   function UserModel(event) {
     _classCallCheck(this, UserModel);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(UserModel).call(this, event.sdk));
+    var _this = _possibleConstructorReturn(this, (UserModel.__proto__ || Object.getPrototypeOf(UserModel)).call(this, event.sdk));
 
     _this._event = event;
     return _this;
@@ -53,7 +51,7 @@ var UserModel = function (_PictawallModel) {
     value: function setProperties(properties) {
       this.apiPath = '/events/' + this._event.getProperty('identifier') + '/users/' + properties.id;
 
-      return _get(Object.getPrototypeOf(UserModel.prototype), 'setProperties', this).call(this, properties);
+      return _get(UserModel.prototype.__proto__ || Object.getPrototypeOf(UserModel.prototype), 'setProperties', this).call(this, properties);
     }
 
     /**
@@ -67,7 +65,7 @@ var UserModel = function (_PictawallModel) {
         this.apiPath = '/events/' + this._event.getProperty('identifier') + '/users/' + value;
       }
 
-      _get(Object.getPrototypeOf(UserModel.prototype), 'setProperty', this).call(this, name, value);
+      _get(UserModel.prototype.__proto__ || Object.getPrototypeOf(UserModel.prototype), 'setProperty', this).call(this, name, value);
     }
 
     /**

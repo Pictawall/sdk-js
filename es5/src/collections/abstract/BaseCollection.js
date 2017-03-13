@@ -63,7 +63,6 @@ var BaseCollection = function () {
   /**
    * @param {!Sdk} sdk
    */
-
   function BaseCollection(sdk) {
     _classCallCheck(this, BaseCollection);
 
@@ -274,8 +273,8 @@ var BaseCollection = function () {
   }, {
     key: 'add',
     value: function add(newModel) {
-      var replace = arguments.length <= 1 || arguments[1] === void 0 ? true : arguments[1];
-      var prepend = arguments.length <= 2 || arguments[2] === void 0 ? false : arguments[2];
+      var replace = arguments.length > 1 && arguments[1] !== void 0 ? arguments[1] : true;
+      var prepend = arguments.length > 2 && arguments[2] !== void 0 ? arguments[2] : false;
 
 
       var properties = instances.get(this);

@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -38,18 +38,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class AssetModel
  * @extends PictawallModel
  */
-
 var AssetModel = function (_PictawallModel) {
   _inherits(AssetModel, _PictawallModel);
 
   /**
    * @param {!EventModel} event The owning event model.
    */
-
   function AssetModel(event) {
     _classCallCheck(this, AssetModel);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(AssetModel).call(this, event.sdk));
+    var _this = _possibleConstructorReturn(this, (AssetModel.__proto__ || Object.getPrototypeOf(AssetModel)).call(this, event.sdk));
 
     if ((typeof event === 'undefined' ? 'undefined' : _typeof(event)) !== 'object') {
       throw new _Errors.SdkError(_this, 'event must be an EventModel.');
@@ -76,23 +74,25 @@ var AssetModel = function (_PictawallModel) {
         properties.source.additionalData = {};
       }
 
-      var userCollection = this._event.getCollection('users');
-      this._owner = userCollection != null ? userCollection.findOne({ id: properties.owner.id }) : null;
+      if (properties.owner) {
+        var userCollection = this._event.getCollection('users');
+        this._owner = userCollection != null ? userCollection.findOne({ id: properties.owner.id }) : null;
 
-      if (this._owner === null) {
-        var owner = new _UserModel2.default(this._event);
-        owner.setProperties(properties.owner);
+        if (this._owner === null) {
+          var owner = new _UserModel2.default(this._event);
+          owner.setProperties(properties.owner);
 
-        if (userCollection != null) {
-          this._owner = userCollection.add(owner, false, false);
-        } else {
-          this._owner = owner;
+          if (userCollection != null) {
+            this._owner = userCollection.add(owner, false, false);
+          } else {
+            this._owner = owner;
+          }
         }
       }
 
       this.apiPath = '/events/' + this._event.getProperty('identifier') + '/assets/' + properties.id;
 
-      return _get(Object.getPrototypeOf(AssetModel.prototype), 'setProperties', this).call(this, properties);
+      return _get(AssetModel.prototype.__proto__ || Object.getPrototypeOf(AssetModel.prototype), 'setProperties', this).call(this, properties);
     }
 
     /**
@@ -106,7 +106,7 @@ var AssetModel = function (_PictawallModel) {
         this.apiPath = '/events/' + this._event.getProperty('identifier') + '/assets/' + value;
       }
 
-      _get(Object.getPrototypeOf(AssetModel.prototype), 'setProperty', this).call(this, name, value);
+      _get(AssetModel.prototype.__proto__ || Object.getPrototypeOf(AssetModel.prototype), 'setProperty', this).call(this, name, value);
     }
 
     /**

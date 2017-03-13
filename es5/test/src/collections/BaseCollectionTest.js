@@ -32,7 +32,7 @@ var FakeCollection = function (_BaseCollection) {
   function FakeCollection(sdk) {
     _classCallCheck(this, FakeCollection);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(FakeCollection).call(this, sdk));
+    var _this = _possibleConstructorReturn(this, (FakeCollection.__proto__ || Object.getPrototypeOf(FakeCollection)).call(this, sdk));
 
     _this.apiPath = '/events/' + XhrMock.EVENT_ID + '/ads';
     return _this;

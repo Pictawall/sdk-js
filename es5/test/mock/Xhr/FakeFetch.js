@@ -32,14 +32,13 @@ var FakeResponse = function () {
 
 module.exports = {
   fetch: function fetch(requestPath) {
-    var _requestPath$split = requestPath.split('?');
-
-    var _requestPath$split2 = _slicedToArray(_requestPath$split, 2);
-
-    var path = _requestPath$split2[0];
-    var queryString = _requestPath$split2[1];
+    var _requestPath$split = requestPath.split('?'),
+        _requestPath$split2 = _slicedToArray(_requestPath$split, 2),
+        path = _requestPath$split2[0],
+        queryString = _requestPath$split2[1];
 
     // TODO replace qs with URL
+
 
     var queryParameters = qs.parse(queryString);
 
@@ -64,13 +63,13 @@ module.exports = {
     return Promise.resolve(route.response);
   },
   mockRoute: function mockRoute(_ref, _ref2) {
-    var path = _ref.path;
-    var _ref$queryParameters = _ref.queryParameters;
-    var queryParameters = _ref$queryParameters === void 0 ? {} : _ref$queryParameters;
-    var _ref2$body = _ref2.body;
-    var body = _ref2$body === void 0 ? '' : _ref2$body;
-    var _ref2$status = _ref2.status;
-    var status = _ref2$status === void 0 ? 200 : _ref2$status;
+    var path = _ref.path,
+        _ref$queryParameters = _ref.queryParameters,
+        queryParameters = _ref$queryParameters === void 0 ? {} : _ref$queryParameters;
+    var _ref2$body = _ref2.body,
+        body = _ref2$body === void 0 ? '' : _ref2$body,
+        _ref2$status = _ref2.status,
+        status = _ref2$status === void 0 ? 200 : _ref2$status;
 
     mockedRoutes.push({
       path: path,

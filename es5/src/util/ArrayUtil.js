@@ -19,7 +19,6 @@ var ArrayUtil = {
    * @param {Array} b Another array.
    * @returns {boolean} Both arrays are equal.
    */
-
   areEqual: function areEqual(a, b) {
     if (a === b) {
       return true;

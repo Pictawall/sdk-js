@@ -24,18 +24,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class MessageModel
  * @extends PictawallModel
  */
-
 var MessageModel = function (_PictawallModel) {
   _inherits(MessageModel, _PictawallModel);
 
   /**
    * @param {!Sdk} sdk The instance of the SDK.
    */
-
   function MessageModel(sdk) {
     _classCallCheck(this, MessageModel);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(MessageModel).call(this, sdk));
+    return _possibleConstructorReturn(this, (MessageModel.__proto__ || Object.getPrototypeOf(MessageModel)).call(this, sdk));
   }
 
   /**

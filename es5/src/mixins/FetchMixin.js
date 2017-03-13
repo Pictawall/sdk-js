@@ -43,7 +43,6 @@ var FetchMixin = {
    *
    * @instance
    */
-
   fetchRaw: function fetchRaw(queryParameters, pathParameters) {
     var response, body;
     return regeneratorRuntime.async(function fetchRaw$(_context) {

@@ -86,7 +86,6 @@ var MongoFinder = function () {
    * const cursor = new MongoCursor({ '$or': [{id: 1}, {name: 'John'}] }, [{ id: 0, name: 'John' }, { id: 1, name: 'Fred' }]);
    * cursor.sort({ id: -1 }).toArray(); // [{ id: 1, name: 'Fred' }, { id: 0, name: 'John' }]
    */
-
   function MongoFinder(query, iterable) {
     _classCallCheck(this, MongoFinder);
 

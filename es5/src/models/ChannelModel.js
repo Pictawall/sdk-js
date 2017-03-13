@@ -32,7 +32,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @class ChannelModel
  * @extends PictawallModel
  */
-
 var ChannelModel = function (_PictawallModel) {
   _inherits(ChannelModel, _PictawallModel);
 
@@ -43,11 +42,10 @@ var ChannelModel = function (_PictawallModel) {
    * @param {!String} channelId The pictawall channel identifier.
    * @param {Object} [eventConfig = {}] The config object to give as a third parameter to {@link EventModel#constructor}.
    */
-
   function ChannelModel(sdk, channelId, eventConfig) {
     _classCallCheck(this, ChannelModel);
 
-    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ChannelModel).call(this, sdk));
+    var _this = _possibleConstructorReturn(this, (ChannelModel.__proto__ || Object.getPrototypeOf(ChannelModel)).call(this, sdk));
 
     if (typeof channelId !== 'string') {
       throw new _Errors.SdkError(_this, 'Channel identifier "' + channelId + '" is not valid.');
@@ -74,7 +72,7 @@ var ChannelModel = function (_PictawallModel) {
         properties.properties = {};
       }
 
-      return _get(Object.getPrototypeOf(ChannelModel.prototype), 'setProperties', this).call(this, properties);
+      return _get(ChannelModel.prototype.__proto__ || Object.getPrototypeOf(ChannelModel.prototype), 'setProperties', this).call(this, properties);
     }
 
     /**

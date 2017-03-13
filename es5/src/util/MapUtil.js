@@ -14,7 +14,6 @@ var MapUtil = {
   /**
    * @param {!Map} map
    */
-
   toJson: function toJson(map) {
     var output = {};
 

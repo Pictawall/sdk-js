@@ -33,11 +33,10 @@ var AdModel = function (_PictawallModel) {
   /**
    * @param {!Sdk} sdk The instance of the SDK.
    */
-
   function AdModel(sdk) {
     _classCallCheck(this, AdModel);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(AdModel).call(this, sdk));
+    return _possibleConstructorReturn(this, (AdModel.__proto__ || Object.getPrototypeOf(AdModel)).call(this, sdk));
   }
 
   /**
